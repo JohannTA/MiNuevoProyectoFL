@@ -3,6 +3,9 @@ import time
 import joblib
 import numpy as np
 import socket
+import csv
+import os
+from datetime import datetime
 
 # 1. Carga modelo y preprocesador
 MODEL_DIR = 'model'  # Ajusta según donde tengas los .pkl
@@ -14,6 +17,20 @@ scaler = pre['scaler']
 # 2. Parámetros de flujo
 FLOW_TIMEOUT = 30  # Segundos de inactividad para cerrar un flujo
 INTERFACE = 'Wi-Fi'  # Cambia por tu interfaz, ej: 'Wi-Fi' en Windows
+
+# 2.1. Configuración del logger
+LOG_DIR = 'logs'
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+LOG_FILE = f"{LOG_DIR}/ataques_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+# Crear archivo de log con encabezados
+with open(LOG_FILE, 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['timestamp', 'src_ip', 'src_port', 'dst_ip', 'dst_port', 'proto', 
+                    'duration', 'fwd_packets', 'bwd_packets', 'fwd_bytes', 'bwd_bytes',
+                    'bytes_per_sec', 'pkts_per_sec', 'fwd_pkt_len_mean', 'bwd_pkt_len_mean',
+                    'confianza'])
 
 # 3. Estructura para flujos activos
 flujos = {}
@@ -31,6 +48,29 @@ def get_flow_key(pkt):
     except Exception:
         return None
 
+def log_attack(key, data, confianza):
+    """Registra un ataque detectado en el archivo de log"""
+    src_ip, src_port, dst_ip, dst_port, proto = key
+    
+    with open(LOG_FILE, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            src_ip, src_port, dst_ip, dst_port, proto,
+            data['duration'],
+            data['fwd_packets'],
+            data['bwd_packets'],
+            data['fwd_bytes'],
+            data['bwd_bytes'],
+            data['bytes_per_sec'],
+            data['pkts_per_sec'],
+            data['fwd_pkt_len_mean'],
+            data['bwd_pkt_len_mean'],
+            confianza
+        ])
+    
+    print(f"🚨 ALERTA: Ataque registrado en {LOG_FILE}")
+
 def process_flow(key, data):
     # Calcula features y predice
     feats = []
@@ -45,12 +85,29 @@ def process_flow(key, data):
     feats.append(data['bwd_pkt_len_mean'])  # Bwd Packet Length Mean
     feats = np.array(feats).reshape(1, -1)
     feats = scaler.transform(feats)
+    
+    # Obtener predicción y probabilidad
     pred = model.predict(feats)[0]
-    print(f"\n[{'⚠️ ATAQUE' if pred==1 else '✅ BENIGNO'}] {key} | {feats}")
+    
+    # Si se está usando un RandomForest, podemos obtener la confianza
+    try:
+        confianza = model.predict_proba(feats)[0][pred]
+    except:
+        confianza = 1.0  # Si no podemos obtener la probabilidad
+    
+    es_ataque = pred == 1
+    resultado = "⚠️ ATAQUE" if es_ataque else "✅ BENIGNO"
+    
+    print(f"\n[{resultado}] {key} | {feats}")
+    
+    # Log solo si es un ataque
+    if es_ataque:
+        log_attack(key, data, confianza)
 
 # 4. Captura en vivo
 capture = pyshark.LiveCapture(interface=INTERFACE)
 print("⏳ Capturando en tiempo real. Ctrl+C para detener.")
+print(f"📝 Registrando ataques en: {LOG_FILE}")
 
 try:
     for pkt in capture.sniff_continuously():
