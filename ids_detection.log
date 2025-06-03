@@ -11398,3 +11398,369 @@ task: <Task pending name='Task-3' coro=<Capture._handle_process_stderr_forever()
 2025-06-02 21:25:20,508 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
 2025-06-02 21:25:22,538 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
 2025-06-02 21:25:23,339 - INFO - [NORMAL] 192.168.18.5:53135 <-> 140.82.113.5:443 (TCP) - Prob: 0.1654
+2025-06-02 21:25:24,743 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:25,420 - INFO - [NORMAL] 192.168.18.5:53144 <-> 150.171.28.12:443 (TCP) - Prob: 0.1193
+2025-06-02 21:25:26,520 - INFO - [NORMAL] 192.168.18.5:53123 <-> 40.71.11.167:443 (TCP) - Prob: 0.1296
+2025-06-02 21:25:26,716 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:26,777 - INFO - [NORMAL] 192.168.18.5:53123 <-> 40.71.11.167:443 (TCP) - Prob: 0.1296
+2025-06-02 21:25:27,117 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1906
+2025-06-02 21:25:27,176 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1657
+2025-06-02 21:25:27,251 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1610
+2025-06-02 21:25:27,342 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1635
+2025-06-02 21:25:27,417 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1781
+2025-06-02 21:25:27,476 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1450
+2025-06-02 21:25:27,539 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1426
+2025-06-02 21:25:27,600 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1249
+2025-06-02 21:25:27,661 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1249
+2025-06-02 21:25:27,724 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1300
+2025-06-02 21:25:27,791 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1300
+2025-06-02 21:25:27,865 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1500
+2025-06-02 21:25:27,950 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1639
+2025-06-02 21:25:28,042 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1245
+2025-06-02 21:25:28,141 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1245
+2025-06-02 21:25:28,273 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1545
+2025-06-02 21:25:28,338 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1545
+2025-06-02 21:25:28,427 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:28,500 - INFO - [NORMAL] 192.168.18.5:53130 <-> 23.14.26.82:443 (TCP) - Prob: 0.1328
+2025-06-02 21:25:28,580 - INFO - [NORMAL] 192.168.18.5:60247 <-> 192.168.18.1:53 (UDP) - Prob: 0.0330
+2025-06-02 21:25:28,655 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:28,717 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:28,778 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:28,861 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:28,922 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:29,008 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1813
+2025-06-02 21:25:29,119 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1552
+2025-06-02 21:25:29,245 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1552
+2025-06-02 21:25:29,388 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1382
+2025-06-02 21:25:29,468 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1269
+2025-06-02 21:25:29,537 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1345
+2025-06-02 21:25:29,602 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1301
+2025-06-02 21:25:29,674 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1300
+2025-06-02 21:25:29,746 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1600
+2025-06-02 21:25:29,812 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:29,888 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:25:29,984 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:25:30,051 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:25:30,118 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:25:30,178 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:25:30,243 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:25:30,322 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:30,624 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:31,961 - INFO - [NORMAL] 192.168.18.5:53154 <-> 190.98.161.25:80 (TCP) - Prob: 0.0429
+2025-06-02 21:25:32,731 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:33,639 - INFO - [NORMAL] 192.168.18.70:0 <-> 224.0.0.22:0 (2) - Prob: 0.0761
+2025-06-02 21:25:33,695 - INFO - [NORMAL] 192.168.18.5:53145 <-> 2.21.75.41:80 (TCP) - Prob: 0.0393
+2025-06-02 21:25:34,579 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:35,574 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1751
+2025-06-02 21:25:35,856 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1753
+2025-06-02 21:25:36,186 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1654
+2025-06-02 21:25:36,576 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1553
+2025-06-02 21:25:36,697 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1653
+2025-06-02 21:25:37,481 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1568
+2025-06-02 21:25:38,336 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1756
+2025-06-02 21:25:38,478 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1753
+2025-06-02 21:25:38,589 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1754
+2025-06-02 21:25:38,704 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1756
+2025-06-02 21:25:39,247 - INFO - [NORMAL] 192.168.18.5:53148 <-> 140.82.112.4:443 (TCP) - Prob: 0.0788
+2025-06-02 21:25:39,517 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1753
+2025-06-02 21:25:40,015 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1754
+2025-06-02 21:25:40,135 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1553
+2025-06-02 21:25:40,390 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1753
+2025-06-02 21:25:40,708 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1568
+2025-06-02 21:25:40,899 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1553
+2025-06-02 21:25:40,986 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1753
+2025-06-02 21:25:41,121 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1568
+2025-06-02 21:25:41,258 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:41,575 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:41,674 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1799
+2025-06-02 21:25:41,779 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1552
+2025-06-02 21:25:41,845 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1382
+2025-06-02 21:25:41,920 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1327
+2025-06-02 21:25:42,001 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1355
+2025-06-02 21:25:42,116 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1311
+2025-06-02 21:25:42,210 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1300
+2025-06-02 21:25:42,364 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1799
+2025-06-02 21:25:42,484 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1552
+2025-06-02 21:25:42,634 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1382
+2025-06-02 21:25:42,741 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1327
+2025-06-02 21:25:42,842 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1255
+2025-06-02 21:25:42,935 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1500
+2025-06-02 21:25:43,052 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1245
+2025-06-02 21:25:43,208 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1545
+2025-06-02 21:25:43,647 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:44,008 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:44,090 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:44,169 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:44,253 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1345
+2025-06-02 21:25:44,514 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1500
+2025-06-02 21:25:44,706 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.0946
+2025-06-02 21:25:44,766 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.0949
+2025-06-02 21:25:44,854 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1301
+2025-06-02 21:25:44,916 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1301
+2025-06-02 21:25:44,976 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1301
+2025-06-02 21:25:45,041 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1301
+2025-06-02 21:25:45,120 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1401
+2025-06-02 21:25:45,202 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1345
+2025-06-02 21:25:45,263 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,323 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,391 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,454 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,520 - INFO - [NORMAL] 192.168.18.5:21743 <-> 104.18.0.181:443 (TCP) - Prob: 0.1409
+2025-06-02 21:25:45,580 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,653 - INFO - [NORMAL] 192.168.18.5:21743 <-> 104.18.0.181:443 (TCP) - Prob: 0.1509
+2025-06-02 21:25:45,724 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,786 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,843 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:25:45,907 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:25:45,969 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1163
+2025-06-02 21:25:46,039 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1063
+2025-06-02 21:25:46,101 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1328
+2025-06-02 21:25:46,122 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:46,193 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1328
+2025-06-02 21:25:46,269 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:46,341 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:46,399 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:46,458 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1545
+2025-06-02 21:25:46,524 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:25:46,587 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1235
+2025-06-02 21:25:46,654 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1235
+2025-06-02 21:25:48,224 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:49,575 - INFO - [NORMAL] 192.168.18.5:53149 <-> 190.98.161.25:80 (TCP) - Prob: 0.0393
+2025-06-02 21:25:50,345 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:52,434 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:54,542 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:54,632 - INFO - [NORMAL] 192.168.18.1:47793 <-> 239.255.255.250:1900 (UDP) - Prob: 0.1638
+2025-06-02 21:25:56,639 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:58,734 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:25:59,739 - INFO - [NORMAL] 192.168.18.14:55692 <-> 239.255.255.250:3702 (UDP) - Prob: 0.1026
+2025-06-02 21:25:59,792 - INFO - [NORMAL] 192.168.18.73:3955 <-> 239.255.255.250:1900 (UDP) - Prob: 0.1239
+2025-06-02 21:26:00,810 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:02,905 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:04,850 - INFO - [NORMAL] 192.168.18.5:53150 <-> 190.98.161.25:80 (TCP) - Prob: 0.0494
+2025-06-02 21:26:05,029 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:07,158 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:09,276 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:11,376 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:13,470 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:14,908 - INFO - [NORMAL] 192.168.18.5:53132 <-> 13.107.246.33:443 (TCP) - Prob: 0.1050
+2025-06-02 21:26:15,578 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:17,671 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:19,773 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:19,966 - INFO - [NORMAL] 192.168.18.5:53151 <-> 190.98.161.25:80 (TCP) - Prob: 0.0393
+2025-06-02 21:26:21,868 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:23,971 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:26,067 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:28,167 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:30,025 - INFO - [NORMAL] 192.168.18.5:53123 <-> 40.71.11.167:443 (TCP) - Prob: 0.1296
+2025-06-02 21:26:30,080 - INFO - [NORMAL] 192.168.18.5:53144 <-> 150.171.28.12:443 (TCP) - Prob: 0.1193
+2025-06-02 21:26:30,270 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:32,351 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:34,451 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:35,140 - INFO - [NORMAL] 192.168.18.70:5353 <-> 224.0.0.251:5353 (UDP) - Prob: 0.2312
+2025-06-02 21:26:35,196 - INFO - [NORMAL] 192.168.18.5:53153 <-> 104.208.16.92:443 (TCP) - Prob: 0.1352
+2025-06-02 21:26:35,250 - INFO - [NORMAL] 192.168.18.5:53154 <-> 190.98.161.25:80 (TCP) - Prob: 0.0429
+2025-06-02 21:26:36,544 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:38,639 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:40,732 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:42,837 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:44,946 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:45,309 - INFO - [NORMAL] 192.168.18.5:53159 <-> 20.42.65.84:443 (TCP) - Prob: 0.1345
+2025-06-02 21:26:47,052 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:49,150 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:50,366 - INFO - [NORMAL] 192.168.18.73:8001 <-> 224.0.0.7:8001 (UDP) - Prob: 0.0974
+2025-06-02 21:26:50,422 - INFO - [NORMAL] 192.168.18.5:21743 <-> 104.18.0.181:443 (TCP) - Prob: 0.1509
+2025-06-02 21:26:50,480 - INFO - [NORMAL] 192.168.18.5:53152 <-> 104.208.16.92:443 (TCP) - Prob: 0.1295
+2025-06-02 21:26:50,535 - INFO - [NORMAL] 192.168.18.5:53155 <-> 140.82.114.5:443 (TCP) - Prob: 0.1328
+2025-06-02 21:26:50,591 - INFO - [NORMAL] 192.168.18.5:53156 <-> 140.82.114.5:443 (TCP) - Prob: 0.1235
+2025-06-02 21:26:50,647 - INFO - [NORMAL] 192.168.18.5:53157 <-> 140.82.114.5:443 (TCP) - Prob: 0.1235
+2025-06-02 21:26:50,703 - INFO - [NORMAL] 192.168.18.5:53158 <-> 20.42.65.84:443 (TCP) - Prob: 0.1445
+2025-06-02 21:26:51,238 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:53,340 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:55,448 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:57,542 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:26:59,634 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:01,731 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:03,825 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:05,912 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:08,005 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:10,137 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:12,229 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:14,354 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:16,446 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:18,539 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:20,649 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:22,762 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:24,861 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:26,965 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:29,061 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:31,167 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:33,258 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:35,361 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:37,451 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:39,542 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:41,641 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:43,744 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:45,852 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:47,955 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:50,040 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:52,152 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:54,249 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:56,345 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:27:58,450 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:00,550 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:02,654 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:04,762 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:06,862 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:08,965 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:11,063 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:13,158 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:15,249 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:17,337 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:19,461 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:21,560 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:23,664 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:25,755 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:27,840 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:29,951 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:32,035 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:34,130 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:36,226 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:38,336 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:40,429 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:42,538 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:44,619 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:46,723 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:48,826 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:50,927 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:53,021 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:55,116 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:57,212 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:28:59,308 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:01,403 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:03,497 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:05,592 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:07,695 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:09,803 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:11,888 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:13,978 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:16,071 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:18,167 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:20,262 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:22,368 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:24,463 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:26,587 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:28,714 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:30,821 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:32,933 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:35,030 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:37,142 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:39,246 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:41,346 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:43,442 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:45,551 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:47,648 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:49,744 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:51,842 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:53,937 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:56,044 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:29:58,139 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:00,231 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:02,321 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:04,416 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:06,521 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:08,612 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:10,704 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:12,797 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:14,897 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:16,996 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:19,089 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:21,182 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:23,279 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:25,379 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:27,477 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:29,569 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:31,692 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:33,783 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:35,857 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:37,949 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:40,033 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:42,133 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:44,229 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:46,318 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:48,416 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:50,502 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:52,582 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:54,684 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:56,776 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:30:58,869 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:00,956 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:03,054 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:05,134 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:07,231 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:09,329 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:11,412 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:13,501 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:15,592 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:17,684 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:19,774 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:21,866 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:23,955 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:26,044 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:28,138 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:30,225 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:32,315 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:34,406 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:36,528 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:38,633 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:40,718 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:42,810 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:44,917 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:47,021 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:49,110 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:51,210 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:53,317 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:55,403 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:57,497 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:31:59,592 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:01,691 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:03,792 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:05,899 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:07,990 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:10,081 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:12,187 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:14,289 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:16,380 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:18,468 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:20,558 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:22,662 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:24,758 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:26,853 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:28,962 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:31,067 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:33,178 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:35,270 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:37,374 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:39,474 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:41,579 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:43,672 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:45,789 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:47,902 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:50,013 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:52,115 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:54,207 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:56,294 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:32:58,393 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:00,501 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:02,594 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:04,685 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:06,784 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:08,894 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:10,992 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:13,089 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:15,185 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:17,274 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:19,369 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:21,456 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:23,565 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:25,655 - ERROR - Error actualizando UI: main thread is not in main loop
+2025-06-02 21:33:27,752 - ERROR - Error actualizando UI: main thread is not in main loop
