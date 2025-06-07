@@ -72,3 +72,5 @@ TypeError: FederatedIDSServer.register_client() missing 1 required positional ar
 2025-06-07 12:00:47,256 - INFO - Señal 2 recibida, cerrando servidor...
 2025-06-07 12:00:47,256 - INFO - server closing
 2025-06-07 12:00:47,257 - INFO - server closed
+2025-06-07 12:25:55,204 - INFO - server listening on 192.168.18.14:5000
+2025-06-07 12:28:31,412 - INFO - connection open
