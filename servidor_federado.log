@@ -1,0 +1,74 @@
+2025-06-06 17:10:50,626 - INFO - server listening on 127.0.0.1:8765
+2025-06-06 17:10:50,626 - INFO - server listening on [::1]:8765
+2025-06-06 18:37:55,296 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-06 18:37:55,381 - INFO - server closing
+2025-06-06 18:37:55,384 - INFO - server closed
+2025-06-06 23:51:31,978 - INFO - server listening on 127.0.0.1:8765
+2025-06-06 23:51:31,979 - INFO - server listening on [::1]:8765
+2025-06-06 23:58:46,819 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-06 23:58:46,820 - INFO - server closing
+2025-06-06 23:58:46,820 - INFO - server closed
+2025-06-06 23:59:33,626 - INFO - server listening on 192.168.18.14:8765
+2025-06-07 00:00:35,737 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 00:00:35,737 - INFO - server closing
+2025-06-07 00:00:35,738 - INFO - server closed
+2025-06-07 00:00:41,249 - INFO - server listening on 192.168.18.14:8765
+2025-06-07 00:00:42,785 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 00:00:42,785 - INFO - server closing
+2025-06-07 00:00:42,785 - INFO - server closed
+2025-06-07 00:01:11,996 - INFO - server listening on 192.168.18.14:8765
+2025-06-07 00:47:48,673 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 00:47:48,674 - INFO - server closing
+2025-06-07 00:47:48,674 - INFO - server closed
+2025-06-07 00:47:51,956 - INFO - server listening on 192.168.18.14:8000
+2025-06-07 01:28:30,009 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 01:28:30,009 - INFO - server closing
+2025-06-07 01:28:30,010 - INFO - server closed
+2025-06-07 01:28:41,343 - INFO - server listening on 192.168.18.14:5000
+2025-06-07 01:30:40,663 - INFO - connection open
+2025-06-07 01:30:40,663 - ERROR - connection handler failed
+Traceback (most recent call last):
+  File "C:\Users\johan\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\websockets\asyncio\server.py", line 376, in conn_handler
+    await self.handler(connection)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: FederatedIDSServer.register_client() missing 1 required positional argument: 'path'
+2025-06-07 01:30:42,706 - INFO - connection open
+2025-06-07 01:30:42,707 - ERROR - connection handler failed
+Traceback (most recent call last):
+  File "C:\Users\johan\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\websockets\asyncio\server.py", line 376, in conn_handler
+    await self.handler(connection)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: FederatedIDSServer.register_client() missing 1 required positional argument: 'path'
+2025-06-07 01:30:46,736 - INFO - connection open
+2025-06-07 01:30:46,737 - ERROR - connection handler failed
+Traceback (most recent call last):
+  File "C:\Users\johan\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\websockets\asyncio\server.py", line 376, in conn_handler
+    await self.handler(connection)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: FederatedIDSServer.register_client() missing 1 required positional argument: 'path'
+2025-06-07 01:30:54,750 - INFO - connection open
+2025-06-07 01:30:54,750 - ERROR - connection handler failed
+Traceback (most recent call last):
+  File "C:\Users\johan\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\websockets\asyncio\server.py", line 376, in conn_handler
+    await self.handler(connection)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: FederatedIDSServer.register_client() missing 1 required positional argument: 'path'
+2025-06-07 01:31:04,493 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 01:31:04,494 - INFO - server closing
+2025-06-07 01:31:04,494 - INFO - server closed
+2025-06-07 01:42:02,566 - INFO - server listening on 0.0.0.0:5000
+2025-06-07 01:42:07,037 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 01:42:07,038 - INFO - server closing
+2025-06-07 01:42:07,038 - INFO - server closed
+2025-06-07 01:42:14,241 - INFO - server listening on 192.168.18.14:5000
+2025-06-07 11:52:17,496 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 11:52:17,496 - INFO - server closing
+2025-06-07 11:52:17,497 - INFO - server closed
+2025-06-07 11:52:26,054 - INFO - server listening on 192.168.18.14:5000
+2025-06-07 11:52:36,533 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 11:52:36,533 - INFO - server closing
+2025-06-07 11:52:36,533 - INFO - server closed
+2025-06-07 12:00:45,096 - INFO - server listening on 192.168.18.14:5000
+2025-06-07 12:00:47,256 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-07 12:00:47,256 - INFO - server closing
+2025-06-07 12:00:47,257 - INFO - server closed

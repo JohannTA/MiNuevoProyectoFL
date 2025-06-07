@@ -1,0 +1,19 @@
+# 1. Primero actualizar pip y setuptools
+pip install --upgrade pip setuptools wheel
+
+# 2. Instalar librerías básicas una por una
+pip install websockets
+pip install numpy
+pip install scikit-learn
+pip install joblib
+pip install pandas
+
+# 3. Instalar librerías de red
+sudo apt update
+sudo apt install python3-dev libpcap-dev  # Dependencias del sistema
+pip install scapy
+pip install psutil
+pip install netifaces
+
+# 4. Instalar utilidades
+pip install colorama tqdm python-dateutil

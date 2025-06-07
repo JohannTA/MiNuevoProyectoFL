@@ -2231,7 +2231,7 @@ def main():
     )
     parser.add_argument("--model", type=str, default="model/modelo_rf.pkl", 
                         help="Ruta al modelo entrenado")
-    parser.add_argument("--interface", type=str, default="Wi-Fi" if os.name == 'nt' else "eth0", 
+    parser.add_argument("--interface", type=str, default="Ethernet" if os.name == 'nt' else "eth0", 
                         help="Interfaz de red a monitorear")
     parser.add_argument("--duration", type=int, default=0, 
                         help="Duración del monitoreo en segundos (0=indefinido)")
