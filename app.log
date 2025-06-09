@@ -437,3 +437,6 @@ INFO - 192.168.149.241 - - [09/Jun/2025 12:30:34] "[32mGET /admin/logs/exportar
 INFO - 192.168.149.241 - - [09/Jun/2025 12:30:40] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
