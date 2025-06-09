@@ -27,10 +27,10 @@ def obtener_usuario_por_id(usuario_id):
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute("""
             SELECT u.id, u.username, u.email, u.first_name, u.last_name, 
-                   u.is_active, u.last_login, u.created_at, u.last_activity,
+                   u.is_active, u.last_login, u.created_at,
                    r.name as role
             FROM users u
-            JOIN roles r ON u.role_id = r.id
+            LEFT JOIN roles r ON u.role_id = r.id
             WHERE u.id = %s
             """, (usuario_id,))
             
@@ -80,7 +80,7 @@ def autenticar_usuario(username, password):
                 # Actualizar último login
                 cursor.execute("""
                 UPDATE users 
-                SET last_login = NOW(), last_activity = NOW() 
+                SET last_login = NOW()
                 WHERE id = %s
                 """, (user['id'],))
                 
@@ -118,18 +118,13 @@ def registrar_actividad_usuario(usuario_id, accion, detalles=None, ip_address=No
             return False
         
         with conn.cursor() as cursor:
-            # Registrar actividad
+            # Solo registrar actividad en la tabla user_activity
             cursor.execute("""
             INSERT INTO user_activity (user_id, action, details, ip_address, timestamp)
             VALUES (%s, %s, %s, %s, NOW())
             """, (usuario_id, accion, detalles, ip_address))
             
-            # Actualizar última actividad del usuario
-            cursor.execute("""
-            UPDATE users 
-            SET last_activity = NOW() 
-            WHERE id = %s
-            """, (usuario_id,))
+            # NO actualizar last_activity en users
             
             conn.commit()
             return True
@@ -165,7 +160,7 @@ def listar_usuarios(filtros=None, ordenar_por='username', limit=None, offset=Non
         
         query = """
         SELECT u.id, u.username, u.email, u.first_name, u.last_name, 
-               u.is_active, u.last_login, u.created_at, u.last_activity,
+               u.is_active, u.last_login, u.created_at,
                r.name as role, r.id as role_id
         FROM users u
         JOIN roles r ON u.role_id = r.id
@@ -266,11 +261,11 @@ def crear_usuario(datos, creado_por=None):
                 logger.warning(f"Ya existe un usuario con username {datos['username']} o email {datos['email']}")
                 return None
             
-            # Insertar el nuevo usuario
+            # Insertar el nuevo usuario (sin created_by si no existe)
             cursor.execute("""
             INSERT INTO users 
-            (username, email, password_hash, first_name, last_name, role_id, is_active, created_at, created_by)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), %s)
+            (username, email, password_hash, first_name, last_name, role_id, is_active, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
             RETURNING id
             """, (
                 datos['username'],
@@ -279,8 +274,7 @@ def crear_usuario(datos, creado_por=None):
                 datos.get('first_name'),
                 datos.get('last_name'),
                 datos['role_id'],
-                datos.get('is_active', True),
-                creado_por
+                datos.get('is_active', True)
             ))
             
             usuario_id = cursor.fetchone()['id']
@@ -366,10 +360,7 @@ def actualizar_usuario(usuario_id, datos, actualizado_por=None):
         if not update_fields:
             return True
         
-        # Agregar campos de auditoría
-        update_fields.append("updated_at = NOW()")
-        update_fields.append("updated_by = %s")
-        params.append(actualizado_por)
+        # NO incluir updated_at y updated_by si las columnas no existen
         
         # Añadir ID al final de los parámetros
         params.append(usuario_id)
@@ -429,7 +420,6 @@ def eliminar_usuario(usuario_id):
             return False
         
         # En lugar de eliminar físicamente, desactivar el usuario
-        # y anonimizar sus datos personales
         with conn.cursor() as cursor:
             # Obtener nombre de usuario para el registro de actividad
             cursor.execute("SELECT username FROM users WHERE id = %s", (usuario_id,))
@@ -441,7 +431,7 @@ def eliminar_usuario(usuario_id):
                 
             username = user_row[0]
             
-            # Anonymizar y desactivar usuario
+            # Desactivar usuario (sin deleted_at si no existe)
             cursor.execute("""
             UPDATE users
             SET username = %s,
@@ -449,8 +439,7 @@ def eliminar_usuario(usuario_id):
                 first_name = NULL,
                 last_name = NULL,
                 password_hash = %s,
-                is_active = FALSE,
-                deleted_at = NOW()
+                is_active = FALSE
             WHERE id = %s
             """, (
                 f"deleted_user_{usuario_id}",
@@ -462,16 +451,27 @@ def eliminar_usuario(usuario_id):
             deleted = cursor.rowcount > 0
             
             if deleted:
-                # Registrar la eliminación
-                cursor.execute("""
-                INSERT INTO system_logs (level, module, message, details, timestamp)
-                VALUES (%s, %s, %s, %s, NOW())
-                """, (
-                    'info',
-                    'users',
-                    f"Usuario eliminado",
-                    f"Usuario {username} (ID: {usuario_id}) ha sido eliminado del sistema"
-                ))
+                # Registrar la eliminación en system_logs si existe
+                try:
+                    cursor.execute("""
+                    INSERT INTO system_logs (level, module, message, details, timestamp)
+                    VALUES (%s, %s, %s, %s, NOW())
+                    """, (
+                        'info',
+                        'users',
+                        f"Usuario eliminado",
+                        f"Usuario {username} (ID: {usuario_id}) ha sido eliminado del sistema"
+                    ))
+                except:
+                    # Si la tabla system_logs no existe, registrar en user_activity
+                    cursor.execute("""
+                    INSERT INTO user_activity (user_id, action, details, timestamp)
+                    VALUES (%s, %s, %s, NOW())
+                    """, (
+                        usuario_id,
+                        'usuario_eliminado',
+                        f"Usuario {username} eliminado del sistema"
+                    ))
                 
                 conn.commit()
             
@@ -520,11 +520,10 @@ def cambiar_contrasena_usuario(usuario_id, contrasena_actual, contrasena_nueva):
                 logger.warning(f"Intento de cambio de contraseña con contraseña actual incorrecta para usuario ID {usuario_id}")
                 return False
             
-            # Actualizar la contraseña
+            # Actualizar la contraseña (sin password_changed_at si no existe)
             cursor.execute("""
             UPDATE users 
-            SET password_hash = %s,
-                password_changed_at = NOW()
+            SET password_hash = %s
             WHERE id = %s
             """, (hash_nueva, usuario_id))
             

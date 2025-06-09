@@ -30,11 +30,17 @@ def obtener_logs_sistema(limit=100, offset=0, filtros=None):
             logger.error("No se pudo establecer conexión con la base de datos")
             return []
         
+        # Consulta base - usar user_activity como fuente de logs del sistema
         query = """
-        SELECT sl.id, sl.timestamp, sl.level, sl.module, sl.message, 
-               sl.user_id, u.username, sl.ip_address, sl.details
-        FROM system_logs sl
-        LEFT JOIN users u ON sl.user_id = u.id
+        SELECT 
+            ua.id,
+            ua.timestamp as fecha_hora,
+            COALESCE(u.username, 'Sistema') as usuario,
+            ua.action as accion,
+            ua.details as detalles,
+            ua.ip_address as ip
+        FROM user_activity ua
+        LEFT JOIN users u ON ua.user_id = u.id
         WHERE 1=1
         """
         
@@ -42,38 +48,58 @@ def obtener_logs_sistema(limit=100, offset=0, filtros=None):
         
         # Aplicar filtros si existen
         if filtros:
-            if 'level' in filtros and filtros['level']:
-                query += " AND sl.level = %s"
-                params.append(filtros['level'])
+            if 'usuario' in filtros and filtros['usuario']:
+                query += " AND u.username ILIKE %s"
+                params.append(f"%{filtros['usuario']}%")
                 
-            if 'module' in filtros and filtros['module']:
-                query += " AND sl.module = %s"
-                params.append(filtros['module'])
-                
-            if 'user_id' in filtros and filtros['user_id']:
-                query += " AND sl.user_id = %s"
-                params.append(filtros['user_id'])
+            if 'accion' in filtros and filtros['accion']:
+                query += " AND ua.action ILIKE %s"
+                params.append(f"%{filtros['accion']}%")
                 
             if 'fecha_inicio' in filtros and filtros['fecha_inicio']:
-                query += " AND sl.timestamp >= %s"
+                query += " AND ua.timestamp >= %s"
                 params.append(filtros['fecha_inicio'])
                 
             if 'fecha_fin' in filtros and filtros['fecha_fin']:
-                query += " AND sl.timestamp <= %s"
+                query += " AND ua.timestamp <= %s"
                 params.append(filtros['fecha_fin'])
                 
-            if 'texto' in filtros and filtros['texto']:
-                query += " AND (sl.message ILIKE %s OR sl.details ILIKE %s)"
-                search_term = f"%{filtros['texto']}%"
-                params.extend([search_term, search_term])
+            if 'ip' in filtros and filtros['ip']:
+                query += " AND ua.ip_address::text ILIKE %s"
+                params.append(f"%{filtros['ip']}%")
         
-        # Ordenar y limitar resultados
-        query += " ORDER BY sl.timestamp DESC LIMIT %s OFFSET %s"
-        params.extend([limit, offset])
+        # Ordenar por fecha descendente
+        query += " ORDER BY ua.timestamp DESC"
+        
+        # Aplicar límite y offset
+        if limit:
+            query += " LIMIT %s"
+            params.append(limit)
+            
+        if offset:
+            query += " OFFSET %s"
+            params.append(offset)
         
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute(query, params)
-            return cursor.fetchall()
+            logs = cursor.fetchall()
+            
+            # Convertir a formato esperado por la plantilla
+            logs_formateados = []
+            for log in logs:
+                logs_formateados.append({
+                    'id': log['id'],
+                    'timestamp': log['fecha_hora'],
+                    'level': 'info',  # Nivel por defecto
+                    'module': 'users',  # Módulo por defecto
+                    'message': log['accion'],
+                    'details': log['detalles'],
+                    'user_id': None,
+                    'username': log['usuario'],
+                    'ip_address': log['ip']
+                })
+            
+            return logs_formateados
             
     except Exception as e:
         logger.error(f"Error al obtener logs del sistema: {e}")
@@ -104,18 +130,18 @@ def registrar_log_sistema(level, module, message, user_id=None, ip_address=None,
             logger.error("No se pudo establecer conexión con la base de datos")
             return False
         
+        # Usar user_activity para registrar logs del sistema
         with conn.cursor() as cursor:
             cursor.execute("""
-            INSERT INTO system_logs 
-            (timestamp, level, module, message, user_id, ip_address, details)
-            VALUES (NOW(), %s, %s, %s, %s, %s, %s)
-            """, (level, module, message, user_id, ip_address, details))
+            INSERT INTO user_activity (user_id, action, details, ip_address, timestamp)
+            VALUES (%s, %s, %s, %s, NOW())
+            """, (user_id, f"[{level.upper()}] {module}: {message}", details, ip_address))
             
             conn.commit()
             return True
             
     except Exception as e:
-        logger.error(f"Error al registrar log del sistema: {e}")
+        logger.error(f"Error al agregar log del sistema: {e}")
         if conn:
             conn.rollback()
         return False
@@ -125,112 +151,149 @@ def registrar_log_sistema(level, module, message, user_id=None, ip_address=None,
 
 def obtener_configuracion_sistema():
     """
-    Obtiene la configuración general del sistema desde el archivo de configuración
-    o crea un archivo con valores predeterminados si no existe
-    
-    Returns:
-        dict: Diccionario con la configuración del sistema
+    Obtiene la configuración actual del sistema
     """
+    conn = None
     try:
-        # Asegurar que el directorio existe
-        os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return {}
         
-        # Si el archivo no existe, crear uno con configuración predeterminada
-        if not os.path.exists(CONFIG_FILE):
-            config_default = {
-                'federated_server_host': 'localhost',
-                'federated_server_port': 8080,
-                'aggregation_rounds': 10,
-                'min_clients_per_round': 2,
-                'confidence_threshold': 0.7,
-                'model_update_interval': 3600,  # segundos
-                'alert_threshold': 'medium',
-                'alert_notification_emails': '',
-                'retention_period': 90,  # días
-                'max_clients': 100,
-                'updated_at': datetime.now().isoformat(),
-                'updated_by': 'system'
-            }
-            
-            with open(CONFIG_FILE, 'w') as f:
-                json.dump(config_default, f, indent=4)
+        # Intentar obtener configuración de una tabla de configuración
+        # Si no existe, devolver valores por defecto
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT * FROM system_configuration LIMIT 1")
+                config = cursor.fetchone()
                 
-            return config_default
-        
-        # Leer la configuración del archivo
-        with open(CONFIG_FILE, 'r') as f:
-            return json.load(f)
+                if config:
+                    return dict(config)
+                else:
+                    return obtener_configuracion_por_defecto()
+                    
+        except Exception:
+            # Si la tabla no existe, devolver configuración por defecto
+            return obtener_configuracion_por_defecto()
             
     except Exception as e:
         logger.error(f"Error al obtener configuración del sistema: {e}")
-        
-        # Devolver configuración por defecto en caso de error
-        return {
-            'federated_server_host': 'localhost',
-            'federated_server_port': 8080,
-            'aggregation_rounds': 10,
-            'min_clients_per_round': 2,
-            'confidence_threshold': 0.7,
-            'model_update_interval': 3600,
-            'alert_threshold': 'medium',
-            'alert_notification_emails': '',
-            'retention_period': 90,
-            'max_clients': 100,
-            'error': str(e)
-        }
+        return obtener_configuracion_por_defecto()
+    finally:
+        if conn:
+            conn.close()
 
-def actualizar_configuracion_sistema(nueva_config, user_id):
+def obtener_configuracion_por_defecto():
+    """
+    Devuelve la configuración por defecto del sistema
+    """
+    return {
+        'federated_server_host': 'localhost',
+        'federated_server_port': '8080',
+        'aggregation_rounds': '10',
+        'min_clients_per_round': '3',
+        'model_update_interval': '24',
+        'alert_notification_emails': 'admin@ejemplo.com'
+    }
+
+def actualizar_configuracion_sistema(configuracion, usuario_id=None):
     """
     Actualiza la configuración del sistema
-    
-    Args:
-        nueva_config (dict): Nueva configuración a aplicar
-        user_id (int): ID del usuario que realiza el cambio
-        
-    Returns:
-        bool: True si se actualizó correctamente, False en caso contrario
     """
+    conn = None
     try:
-        # Obtener configuración actual
-        config_actual = obtener_configuracion_sistema()
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return False
         
-        # Actualizar solo los campos proporcionados
-        for key, value in nueva_config.items():
-            if key in config_actual:
-                # Convertir valores numéricos si es necesario
-                if key in ['aggregation_rounds', 'min_clients_per_round', 'model_update_interval',
-                          'federated_server_port', 'confidence_threshold', 'retention_period', 'max_clients']:
-                    try:
-                        if value is not None and value != '':
-                            config_actual[key] = int(value) if isinstance(config_actual[key], int) else float(value)
-                    except (ValueError, TypeError):
-                        # Si la conversión falla, mantener el valor anterior
-                        logger.warning(f"No se pudo convertir el valor de {key}: {value}")
-                else:
-                    config_actual[key] = value
-        
-        # Actualizar metadatos
-        config_actual['updated_at'] = datetime.now().isoformat()
-        config_actual['updated_by'] = user_id
-        
-        # Guardar configuración actualizada
-        with open(CONFIG_FILE, 'w') as f:
-            json.dump(config_actual, f, indent=4)
-        
-        # Registrar cambio en el log del sistema
-        registrar_log_sistema(
-            'info',
-            'system_config',
-            'Configuración del sistema actualizada',
-            user_id=user_id,
-            details=f"Configuración actualizada: {', '.join(nueva_config.keys())}"
-        )
-        
-        return True
-        
+        with conn.cursor() as cursor:
+            # Verificar si existe la tabla de configuración
+            cursor.execute("""
+            SELECT EXISTS (
+                SELECT 1 FROM information_schema.tables 
+                WHERE table_name = 'system_configuration'
+            )
+            """)
+            
+            table_exists = cursor.fetchone()[0]
+            
+            if not table_exists:
+                # Crear la tabla si no existe
+                cursor.execute("""
+                CREATE TABLE system_configuration (
+                    id SERIAL PRIMARY KEY,
+                    federated_server_host VARCHAR(255) DEFAULT 'localhost',
+                    federated_server_port VARCHAR(10) DEFAULT '8080',
+                    aggregation_rounds INTEGER DEFAULT 10,
+                    min_clients_per_round INTEGER DEFAULT 3,
+                    model_update_interval INTEGER DEFAULT 24,
+                    alert_notification_emails TEXT,
+                    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    updated_by INTEGER REFERENCES users(id)
+                )
+                """)
+                
+                # Insertar configuración inicial
+                cursor.execute("""
+                INSERT INTO system_configuration 
+                (federated_server_host, federated_server_port, aggregation_rounds, 
+                 min_clients_per_round, model_update_interval, alert_notification_emails, updated_by)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    configuracion.get('federated_server_host', 'localhost'),
+                    configuracion.get('federated_server_port', '8080'),
+                    int(configuracion.get('aggregation_rounds', 10)),
+                    int(configuracion.get('min_clients_per_round', 3)),
+                    int(configuracion.get('model_update_interval', 24)),
+                    configuracion.get('alert_notification_emails', ''),
+                    usuario_id
+                ))
+            else:
+                # Actualizar configuración existente
+                cursor.execute("""
+                UPDATE system_configuration SET
+                    federated_server_host = %s,
+                    federated_server_port = %s,
+                    aggregation_rounds = %s,
+                    min_clients_per_round = %s,
+                    model_update_interval = %s,
+                    alert_notification_emails = %s,
+                    updated_at = CURRENT_TIMESTAMP,
+                    updated_by = %s
+                WHERE id = (SELECT MIN(id) FROM system_configuration)
+                """, (
+                    configuracion.get('federated_server_host', 'localhost'),
+                    configuracion.get('federated_server_port', '8080'),
+                    int(configuracion.get('aggregation_rounds', 10)),
+                    int(configuracion.get('min_clients_per_round', 3)),
+                    int(configuracion.get('model_update_interval', 24)),
+                    configuracion.get('alert_notification_emails', ''),
+                    usuario_id
+                ))
+            
+            conn.commit()
+            
+            # Registrar la actividad
+            if usuario_id:
+                from controladores.controlador_usuario import registrar_actividad_usuario
+                registrar_actividad_usuario(
+                    usuario_id,
+                    'actualizar_configuracion_sistema',
+                    'Configuración del sistema actualizada',
+                    None
+                )
+            
+            return True
+            
     except Exception as e:
         logger.error(f"Error al actualizar configuración del sistema: {e}")
+        if conn:
+            conn.rollback()
         return False
+    finally:
+        if conn:
+            conn.close()
 
 def obtener_estado_sistema():
     """
@@ -356,7 +419,7 @@ def limpiar_logs_antiguos(dias=30):
         
         with conn.cursor() as cursor:
             cursor.execute("""
-            DELETE FROM system_logs
+            DELETE FROM user_activity
             WHERE timestamp < NOW() - INTERVAL %s DAY
             """, (dias,))
             
@@ -406,7 +469,7 @@ def obtener_estadisticas_sistema():
                 (SELECT COUNT(*) FROM detections) as total_detections,
                 (SELECT COUNT(*) FROM federated_clients) as total_clients,
                 (SELECT COUNT(*) FROM users) as total_users,
-                (SELECT COUNT(*) FROM system_logs) as total_logs
+                (SELECT COUNT(*) FROM user_activity) as total_logs
             """)
             
             stats['general'] = cursor.fetchone()
@@ -416,7 +479,7 @@ def obtener_estadisticas_sistema():
             SELECT 
                 DATE(timestamp) as fecha,
                 COUNT(*) as count
-            FROM system_logs
+            FROM user_activity
             WHERE timestamp >= NOW() - INTERVAL '7 days'
             GROUP BY fecha
             ORDER BY fecha
@@ -429,7 +492,7 @@ def obtener_estadisticas_sistema():
             SELECT 
                 module,
                 COUNT(*) as count
-            FROM system_logs
+            FROM user_activity
             GROUP BY module
             ORDER BY count DESC
             LIMIT 5
@@ -442,7 +505,7 @@ def obtener_estadisticas_sistema():
             SELECT 
                 level,
                 COUNT(*) as count
-            FROM system_logs
+            FROM user_activity
             GROUP BY level
             ORDER BY 
                 CASE 
@@ -461,7 +524,7 @@ def obtener_estadisticas_sistema():
             SELECT 
                 u.username,
                 COUNT(sl.id) as count
-            FROM system_logs sl
+            FROM user_activity sl
             JOIN users u ON sl.user_id = u.id
             WHERE sl.user_id IS NOT NULL
             GROUP BY u.username

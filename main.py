@@ -3,12 +3,15 @@ import os
 import jwt
 import datetime
 import hashlib
+import logging
 from functools import wraps
 from db.db import obtener_conexion
-# Evitar importaciones duplicadas
+
+# Importaciones de controladores
 from controladores.controlador_usuario import (
     obtener_usuario_por_id, autenticar_usuario, registrar_actividad_usuario, 
-    listar_usuarios, crear_usuario, actualizar_usuario, eliminar_usuario
+    listar_usuarios, crear_usuario, actualizar_usuario, eliminar_usuario, 
+    cambiar_contrasena_usuario
 )
 from controladores.controlador_detecciones import (
     obtener_detecciones, obtener_deteccion_por_id, actualizar_deteccion, 
@@ -25,16 +28,18 @@ from controladores.controlador_reportes import (
 from controladores.controlador_dashboard import obtener_datos_dashboard
 from controladores.controlador_sistema import obtener_logs_sistema, obtener_configuracion_sistema, actualizar_configuracion_sistema
 
-import logging
-
 # Configurar logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filename='app.log',  # Añadir archivo de log
-    filemode='a'
+    format='%(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()  # Esto enviará los logs a la consola
+    ]
 )
 logger = logging.getLogger(__name__)
+# Configuración para mostrar logs de requests HTTP
+logging.getLogger('werkzeug').setLevel(logging.INFO)
 
 # Inicializar la aplicación Flask
 app = Flask(__name__)
@@ -49,7 +54,10 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__fil
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Decorador para proteger rutas
+#---------------------------------------------------------
+# Decoradores para protección de rutas
+#---------------------------------------------------------
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -60,11 +68,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico')
-
-# Decorador para verificar rol de administrador
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -80,7 +83,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Decorador para verificar rol de supervisor
 def supervisor_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -95,6 +97,45 @@ def supervisor_required(f):
         
         return f(*args, **kwargs)
     return decorated_function
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        
+        # Verificar si el token viene en el header
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+        
+        if not token:
+            return jsonify({'error': 'Token no proporcionado'}), 401
+        
+        try:
+            # Decodificar el token
+            data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
+            user_id = data['user_id']
+            current_user = obtener_usuario_por_id(user_id)
+            
+            if not current_user:
+                return jsonify({'error': 'Token inválido'}), 401
+            
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token expirado'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Token inválido'}), 401
+        
+        return f(current_user, *args, **kwargs)
+    
+    return decorated
+
+#---------------------------------------------------------
+# Rutas de autenticación
+#---------------------------------------------------------
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -174,7 +215,46 @@ def logout():
     flash('Has cerrado sesión correctamente.', 'info')
     return redirect(url_for('login'))
 
-# Ruta principal - Dashboard
+@app.route('/cambiar_contrasena', methods=['POST'])
+@login_required
+def cambiar_contrasena():
+    actual = request.form.get('actual')
+    nueva = request.form.get('nueva')
+    confirmar = request.form.get('confirmar')
+    
+    if not actual or not nueva or not confirmar:
+        flash('Todos los campos son obligatorios', 'warning')
+        return redirect(url_for('dashboard'))
+    
+    if nueva != confirmar:
+        flash('Las contraseñas nuevas no coinciden', 'warning')
+        return redirect(url_for('dashboard'))
+    
+    # Verificar que la longitud mínima sea adecuada
+    if len(nueva) < 8:
+        flash('La contraseña nueva debe tener al menos 8 caracteres', 'warning')
+        return redirect(url_for('dashboard'))
+    
+    # Implementar cambio de contraseña
+    exito = cambiar_contrasena_usuario(session['user_id'], actual, nueva)
+    
+    if exito:
+        flash('Contraseña actualizada exitosamente', 'success')
+        registrar_actividad_usuario(
+            session['user_id'],
+            'cambiar_contrasena',
+            'Contraseña actualizada',
+            request.remote_addr
+        )
+    else:
+        flash('Error al actualizar la contraseña. Verifique su contraseña actual.', 'danger')
+    
+    return redirect(url_for('dashboard'))
+
+#---------------------------------------------------------
+# Rutas principales de la aplicación
+#---------------------------------------------------------
+
 @app.route('/')
 @app.route('/dashboard')
 @login_required
@@ -185,7 +265,10 @@ def dashboard():
     
     return render_template('dashboard.html', user=user, datos=datos_dashboard)
 
-# Ruta para detecciones/alertas
+#---------------------------------------------------------
+# Rutas para detecciones
+#---------------------------------------------------------
+
 @app.route('/detecciones')
 @login_required
 def detecciones():
@@ -234,7 +317,6 @@ def detecciones():
                           total_paginas=total_pages,
                           total_detecciones=total_detecciones)
 
-# Detalle de una detección
 @app.route('/detecciones/<int:deteccion_id>')
 @login_required
 def deteccion_detalle(deteccion_id):
@@ -247,7 +329,6 @@ def deteccion_detalle(deteccion_id):
     
     return render_template('deteccion_detalle.html', user=user, deteccion=deteccion)
 
-# Exportar detecciones a CSV
 @app.route('/detecciones/exportar')
 @login_required
 def exportar_detecciones():
@@ -286,40 +367,10 @@ def exportar_detecciones():
         flash('Error al exportar detecciones', 'danger')
         return redirect(url_for('detecciones'))
 
-# Actualizar estado de una detección (AJAX)
-@app.route('/api/detecciones/<int:deteccion_id>', methods=['POST'])
-@token_required
-def actualizar_deteccion_api(current_user, deteccion_id):
-    data = request.get_json()
-    
-    if not data:
-        return jsonify({'error': 'No se proporcionaron datos'}), 400
-    
-    # Extraer datos
-    revisado = data.get('revisado')
-    notas = data.get('notas')
-    
-    # Actualizar
-    exito = actualizar_deteccion(
-        deteccion_id=deteccion_id,
-        revisado=revisado,
-        notas=notas,
-        usuario_id=current_user['id']
-    )
-    
-    if exito:
-        # Registrar actividad
-        registrar_actividad_usuario(
-            current_user['id'],
-            'actualizar_deteccion',
-            f'Detección {deteccion_id} actualizada',
-            request.remote_addr
-        )
-        return jsonify({'success': True, 'message': 'Detección actualizada correctamente'})
-    else:
-        return jsonify({'error': 'Error al actualizar la detección'}), 500
+#---------------------------------------------------------
+# Rutas para clientes federados
+#---------------------------------------------------------
 
-# Ruta para clientes federados
 @app.route('/clientes')
 @login_required
 def clientes():
@@ -328,7 +379,6 @@ def clientes():
     
     return render_template('clientes.html', user=user, clientes=lista_clientes)
 
-# Detalle de un cliente
 @app.route('/clientes/<int:cliente_id>')
 @login_required
 def cliente_detalle(cliente_id):
@@ -345,7 +395,6 @@ def cliente_detalle(cliente_id):
     
     return render_template('cliente_detalle.html', user=user, cliente=cliente, detecciones=detecciones)
 
-# Crear cliente (solo admin)
 @app.route('/clientes/nuevo', methods=['POST'])
 @admin_required
 def crear_cliente_route():
@@ -372,7 +421,6 @@ def crear_cliente_route():
     
     return redirect(url_for('clientes'))
 
-# Actualizar cliente (solo admin)
 @app.route('/clientes/<int:cliente_id>/actualizar', methods=['POST'])
 @admin_required
 def actualizar_cliente_route(cliente_id):
@@ -398,7 +446,6 @@ def actualizar_cliente_route(cliente_id):
     
     return redirect(url_for('cliente_detalle', cliente_id=cliente_id))
 
-# Eliminar cliente (solo admin)
 @app.route('/clientes/<int:cliente_id>/eliminar', methods=['POST'])
 @admin_required
 def eliminar_cliente_route(cliente_id):
@@ -418,7 +465,6 @@ def eliminar_cliente_route(cliente_id):
     
     return redirect(url_for('clientes'))
 
-# Regenerar API Key (solo admin)
 @app.route('/clientes/<int:cliente_id>/regenerar_key', methods=['POST'])
 @admin_required
 def regenerar_key_route(cliente_id):
@@ -438,7 +484,10 @@ def regenerar_key_route(cliente_id):
         flash('Error al regenerar API Key', 'danger')
         return jsonify({'error': 'No se pudo regenerar la API Key'}), 500
 
-# Ruta para reportes
+#---------------------------------------------------------
+# Rutas para reportes
+#---------------------------------------------------------
+
 @app.route('/reportes')
 @login_required
 def reportes():
@@ -481,7 +530,6 @@ def reportes():
                           clientes=clientes,
                           tipos_ataque=tipos_ataque)
 
-# Exportar reportes a CSV
 @app.route('/reportes/exportar')
 @login_required
 def exportar_reporte():
@@ -520,7 +568,10 @@ def exportar_reporte():
         flash('Error al exportar reporte', 'danger')
         return redirect(url_for('reportes', tipo=tipo))
 
-# Ruta para administración (solo para admins)
+#---------------------------------------------------------
+# Rutas para administración
+#---------------------------------------------------------
+
 @app.route('/admin')
 @admin_required
 def admin():
@@ -541,7 +592,6 @@ def admin():
                            logs=logs,
                            configuracion=configuracion)
 
-# Administración de usuarios
 @app.route('/admin/usuarios/nuevo', methods=['POST'])
 @admin_required
 def crear_usuario_route():
@@ -628,7 +678,6 @@ def eliminar_usuario_route(usuario_id):
     
     return redirect(url_for('admin'))
 
-# Configuración del sistema
 @app.route('/admin/configuracion/actualizar', methods=['POST'])
 @admin_required
 def actualizar_configuracion_route():
@@ -656,7 +705,42 @@ def actualizar_configuracion_route():
     
     return redirect(url_for('admin'))
 
-# API para obtener token JWT
+#---------------------------------------------------------
+# Rutas de API
+#---------------------------------------------------------
+
+@app.route('/api/detecciones/<int:deteccion_id>', methods=['POST'])
+@token_required
+def actualizar_deteccion_api(current_user, deteccion_id):
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({'error': 'No se proporcionaron datos'}), 400
+    
+    # Extraer datos
+    revisado = data.get('revisado')
+    notas = data.get('notas')
+    
+    # Actualizar
+    exito = actualizar_deteccion(
+        deteccion_id=deteccion_id,
+        revisado=revisado,
+        notas=notas,
+        usuario_id=current_user['id']
+    )
+    
+    if exito:
+        # Registrar actividad
+        registrar_actividad_usuario(
+            current_user['id'],
+            'actualizar_deteccion',
+            f'Detección {deteccion_id} actualizada',
+            request.remote_addr
+        )
+        return jsonify({'success': True, 'message': 'Detección actualizada correctamente'})
+    else:
+        return jsonify({'error': 'Error al actualizar la detección'}), 500
+
 @app.route('/api/token', methods=['POST'])
 def get_token():
     data = request.get_json()
@@ -695,39 +779,6 @@ def get_token():
         'role': user_data['role']
     })
 
-# Middleware para la API que verifica token JWT
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        
-        # Verificar si el token viene en el header
-        auth_header = request.headers.get('Authorization')
-        if auth_header and auth_header.startswith('Bearer '):
-            token = auth_header.split(' ')[1]
-        
-        if not token:
-            return jsonify({'error': 'Token no proporcionado'}), 401
-        
-        try:
-            # Decodificar el token
-            data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
-            user_id = data['user_id']
-            current_user = obtener_usuario_por_id(user_id)
-            
-            if not current_user:
-                return jsonify({'error': 'Token inválido'}), 401
-            
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token expirado'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'error': 'Token inválido'}), 401
-        
-        return f(current_user, *args, **kwargs)
-    
-    return decorated
-
-# API de ejemplo protegida con JWT
 @app.route('/api/dashboard/stats', methods=['GET'])
 @token_required
 def get_dashboard_stats(current_user):
@@ -735,7 +786,6 @@ def get_dashboard_stats(current_user):
     datos_dashboard = obtener_datos_dashboard()
     return jsonify(datos_dashboard)
 
-# API para obtener detecciones
 @app.route('/api/detecciones', methods=['GET'])
 @token_required
 def get_detecciones_api(current_user):
@@ -768,68 +818,33 @@ def get_detecciones_api(current_user):
         'offset': offset
     })
 
-# API para obtener clientes
 @app.route('/api/clientes', methods=['GET'])
 @token_required
 def get_clientes_api(current_user):
     clientes = obtener_clientes()
     return jsonify(clientes)
 
-# Manejador de errores 404
+#---------------------------------------------------------
+# Manejadores de errores
+#---------------------------------------------------------
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
-# Manejador de errores 500
 @app.errorhandler(500)
 def server_error(e):
     logger.error(f"Error 500: {str(e)}")
     return render_template('500.html'), 500
 
-# Manejador de errores 403
 @app.errorhandler(403)
 def forbidden(e):
     return render_template('403.html'), 403
 
-# Ruta para cambiar contraseña de usuario
-@app.route('/cambiar_contrasena', methods=['POST'])
-@login_required
-def cambiar_contrasena():
-    actual = request.form.get('actual')
-    nueva = request.form.get('nueva')
-    confirmar = request.form.get('confirmar')
-    
-    if not actual or not nueva or not confirmar:
-        flash('Todos los campos son obligatorios', 'warning')
-        return redirect(url_for('dashboard'))
-    
-    if nueva != confirmar:
-        flash('Las contraseñas nuevas no coinciden', 'warning')
-        return redirect(url_for('dashboard'))
-    
-    # Verificar que la longitud mínima sea adecuada
-    if len(nueva) < 8:
-        flash('La contraseña nueva debe tener al menos 8 caracteres', 'warning')
-        return redirect(url_for('dashboard'))
-    
-    # Implementar cambio de contraseña (debes crear esta función en el controlador)
-    from controladores.controlador_usuario import cambiar_contrasena_usuario
-    exito = cambiar_contrasena_usuario(session['user_id'], actual, nueva)
-    
-    if exito:
-        flash('Contraseña actualizada exitosamente', 'success')
-        registrar_actividad_usuario(
-            session['user_id'],
-            'cambiar_contrasena',
-            'Contraseña actualizada',
-            request.remote_addr
-        )
-    else:
-        flash('Error al actualizar la contraseña. Verifique su contraseña actual.', 'danger')
-    
-    return redirect(url_for('dashboard'))
+#---------------------------------------------------------
+# Rutas de desarrollo/debug (solo disponibles en modo debug)
+#---------------------------------------------------------
 
-# Ruta para verificar manualmente hash (solo para desarrollo)
 @app.route('/verificar_hash/<username>/<password>')
 def verificar_hash(username, password):
     # Esta ruta solo debe estar disponible en entorno de desarrollo
@@ -874,7 +889,115 @@ def verificar_hash(username, password):
         if conn:
             conn.close()
 
-if __name__ == '__main__':
+#---------------------------------------------------------
+# Inicialización de la aplicación
+#---------------------------------------------------------
+@app.route('/admin/logs/buscar')
+@admin_required
+def buscar_logs():
+    query = request.args.get('q', '')
+    usuario_filtro = request.args.get('usuario', '')
+    fecha_inicio = request.args.get('fecha_inicio', '')
+    fecha_fin = request.args.get('fecha_fin', '')
+    
+    filtros = {}
+    if usuario_filtro:
+        filtros['usuario'] = usuario_filtro
+    if fecha_inicio:
+        filtros['fecha_inicio'] = fecha_inicio
+    if fecha_fin:
+        filtros['fecha_fin'] = fecha_fin
+    if query:
+        filtros['accion'] = query
+    
+    logs = obtener_logs_sistema(limit=50, filtros=filtros)
+    
+    return jsonify({
+        'logs': logs,
+        'total': len(logs)
+    })
+
+@app.route('/admin/logs/exportar')
+@admin_required
+def exportar_logs():
+    import csv
+    import io
+    from datetime import datetime
+    from flask import make_response
+    
+    try:
+        # Obtener filtros de los parámetros de la URL
+        filtros = {}
+        
+        usuario_filtro = request.args.get('usuario', '').strip()
+        if usuario_filtro:
+            filtros['usuario'] = usuario_filtro
+            
+        fecha_inicio = request.args.get('fecha_inicio', '').strip()
+        if fecha_inicio:
+            filtros['fecha_inicio'] = fecha_inicio
+            
+        fecha_fin = request.args.get('fecha_fin', '').strip()
+        if fecha_fin:
+            filtros['fecha_fin'] = fecha_fin
+            
+        accion_filtro = request.args.get('accion', '').strip()
+        if accion_filtro:
+            filtros['accion'] = accion_filtro
+        
+        # Obtener logs del sistema usando el controlador
+        logs = obtener_logs_sistema(limit=10000, filtros=filtros)
+        
+        if not logs:
+            # Si no hay logs, crear CSV vacío con headers
+            output = io.StringIO()
+            writer = csv.writer(output)
+            writer.writerow(['ID', 'Fecha/Hora', 'Usuario', 'Acción', 'Detalles', 'IP'])
+            writer.writerow(['', '', '', 'No hay logs para exportar', '', ''])
+        else:
+            # Crear CSV en memoria
+            output = io.StringIO()
+            writer = csv.writer(output)
+            
+            # Escribir cabecera
+            writer.writerow(['ID', 'Fecha/Hora', 'Usuario', 'Acción', 'Detalles', 'IP'])
+            
+            # Escribir datos
+            for log in logs:
+                writer.writerow([
+                    log.get('id', ''),
+                    str(log.get('timestamp', '')),
+                    log.get('username', 'Sistema'),
+                    log.get('message', log.get('action', '')),
+                    log.get('details', ''),
+                    log.get('ip_address', '')
+                ])
+        
+        # Preparar el contenido del CSV
+        csv_content = output.getvalue()
+        output.close()
+        
+        # Crear respuesta HTTP con el CSV
+        response = make_response(csv_content)
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = f'attachment; filename="logs_sistema_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        
+        # Registrar la actividad de exportación
+        registrar_actividad_usuario(
+            session['user_id'],
+            'exportar_logs',
+            'Exportación de logs del sistema a CSV',
+            request.remote_addr
+        )
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error al exportar logs: {e}")
+        flash('Error al exportar logs del sistema', 'danger')
+        return redirect(url_for('admin'))
+
+if __name__ == "__main__":
     # Verificar existencia de directorios necesarios
     for dir_path in ['static', 'static/css', 'static/js', 'static/img', 'uploads']:
         full_path = os.path.join(app.root_path, dir_path)
@@ -884,4 +1007,4 @@ if __name__ == '__main__':
     
     # Iniciar la aplicación
     logger.info("Iniciando aplicación IDS Federado...")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

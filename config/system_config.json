@@ -1,0 +1,14 @@
+{
+    "federated_server_host": "localhost",
+    "federated_server_port": 8080,
+    "aggregation_rounds": 10,
+    "min_clients_per_round": 2,
+    "confidence_threshold": 0.7,
+    "model_update_interval": 3600,
+    "alert_threshold": "medium",
+    "alert_notification_emails": "",
+    "retention_period": 90,
+    "max_clients": 100,
+    "updated_at": "2025-06-09T10:40:46.062784",
+    "updated_by": "system"
+}

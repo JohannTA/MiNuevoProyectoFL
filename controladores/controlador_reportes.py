@@ -293,3 +293,71 @@ def generar_reporte_rendimiento():
     finally:
         if conn:
             conn.close()
+
+def exportar_reporte_csv(tipo, filtros=None):
+    """
+    Exporta un reporte a CSV según el tipo especificado
+    """
+    try:
+        # Agregar caso para logs_sistema
+        if tipo == 'logs_sistema':
+            return exportar_logs_sistema_csv(filtros)
+        elif tipo == 'detecciones':
+            return exportar_detecciones_csv(filtros)
+        elif tipo == 'clientes':
+            return exportar_clientes_csv(filtros)
+        elif tipo == 'rendimiento':
+            return exportar_rendimiento_csv()
+        else:
+            logger.warning(f"Tipo de reporte no reconocido: {tipo}")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error al exportar reporte {tipo}: {e}")
+        return None
+
+def exportar_logs_sistema_csv(filtros=None):
+    """
+    Exporta los logs del sistema a CSV
+    """
+    try:
+        from controladores.controlador_sistema import obtener_logs_sistema
+        
+        # Obtener logs con filtros
+        logs = obtener_logs_sistema(limit=10000, filtros=filtros)
+        
+        if not logs:
+            return None
+        
+        # Crear DataFrame
+        import pandas as pd
+        
+        df_logs = pd.DataFrame([
+            {
+                'ID': log['id'],
+                'Fecha/Hora': log.get('timestamp', ''),
+                'Usuario': log.get('username', ''),
+                'Acción': log.get('message', log.get('action', '')),
+                'Detalles': log.get('details', ''),
+                'IP': log.get('ip_address', '')
+            }
+            for log in logs
+        ])
+        
+        # Generar nombre de archivo
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"logs_sistema_{timestamp}.csv"
+        filepath = os.path.join('uploads', filename)
+        
+        # Crear directorio si no existe
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        
+        # Exportar a CSV
+        df_logs.to_csv(filepath, index=False, encoding='utf-8-sig')
+        
+        logger.info(f"Logs del sistema exportados a {filepath}")
+        return os.path.abspath(filepath)
+        
+    except Exception as e:
+        logger.error(f"Error al exportar logs del sistema: {e}")
+        return None

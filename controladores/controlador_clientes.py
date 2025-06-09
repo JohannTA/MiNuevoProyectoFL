@@ -290,3 +290,51 @@ def obtener_estadisticas_clientes():
     finally:
         if conn:
             conn.close()
+
+def eliminar_cliente(cliente_id):
+    """
+    Elimina un cliente federado
+    
+    Args:
+        cliente_id (int): ID del cliente a eliminar
+        
+    Returns:
+        bool: True si se eliminó correctamente, False en caso contrario
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return False
+        
+        with conn.cursor() as cursor:
+            # Primero verificar si el cliente existe
+            cursor.execute("SELECT name FROM federated_clients WHERE id = %s", (cliente_id,))
+            cliente = cursor.fetchone()
+            
+            if not cliente:
+                logger.warning(f"No se encontró el cliente con ID {cliente_id}")
+                return False
+            
+            # Eliminar el cliente
+            cursor.execute("DELETE FROM federated_clients WHERE id = %s", (cliente_id,))
+            eliminado = cursor.rowcount > 0
+            
+            if eliminado:
+                # También podríamos eliminar registros relacionados si es necesario
+                # Por ejemplo: cursor.execute("DELETE FROM detections WHERE client_id = %s", (cliente_id,))
+                
+                conn.commit()
+                logger.info(f"Cliente ID {cliente_id} eliminado correctamente")
+            
+            return eliminado
+            
+    except Exception as e:
+        logger.error(f"Error al eliminar cliente: {e}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn:
+            conn.close()

@@ -18,22 +18,26 @@
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">
+                        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users"
+                            type="button" role="tab" aria-controls="users" aria-selected="true">
                             <i class="fas fa-users me-2"></i>Usuarios
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button" role="tab" aria-controls="roles" aria-selected="false">
+                        <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles"
+                            type="button" role="tab" aria-controls="roles" aria-selected="false">
                             <i class="fas fa-user-tag me-2"></i>Roles y Permisos
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">
+                        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config"
+                            type="button" role="tab" aria-controls="config" aria-selected="false">
                             <i class="fas fa-cogs me-2"></i>Configuración
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab" aria-controls="logs" aria-selected="false">
+                        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button"
+                            role="tab" aria-controls="logs" aria-selected="false">
                             <i class="fas fa-list me-2"></i>Logs del Sistema
                         </button>
                     </li>
@@ -46,13 +50,14 @@
                         <div class="d-flex justify-content-between mb-3">
                             <h5>Gestión de Usuarios</h5>
                             <div class="input-group" style="width: 300px;">
-                                <input type="text" class="form-control" placeholder="Buscar usuarios..." id="searchUsers">
+                                <input type="text" class="form-control" placeholder="Buscar usuarios..."
+                                    id="searchUsers">
                                 <button class="btn btn-outline-secondary" type="button">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="table-responsive">
                             <table class="table table-hover table-admin">
                                 <thead>
@@ -103,7 +108,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <!-- Paginación -->
                         <nav aria-label="Paginación de usuarios">
                             <ul class="pagination justify-content-center">
@@ -119,7 +124,7 @@
                             </ul>
                         </nav>
                     </div>
-                    
+
                     <!-- Tab de Roles y Permisos -->
                     <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
                         <div class="d-flex justify-content-between mb-3">
@@ -128,7 +133,7 @@
                                 <i class="fas fa-plus me-1"></i> Nuevo Rol
                             </button>
                         </div>
-                        
+
                         <div class="table-responsive mb-4">
                             <table class="table table-hover table-admin">
                                 <thead>
@@ -196,7 +201,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <h5>Permisos del Sistema</h5>
                         <div class="table-responsive">
                             <table class="table table-hover table-admin">
@@ -234,11 +239,11 @@
                             </table>
                         </div>
                     </div>
-                    
+
                     <!-- Tab de Configuración -->
                     <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
                         <h5 class="mb-4">Configuración del Sistema</h5>
-                        
+
                         <form>
                             <div class="row mb-4">
                                 <div class="col-md-6">
@@ -249,24 +254,30 @@
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <label for="siteName" class="form-label">Nombre del Sitio</label>
-                                                <input type="text" class="form-control" id="siteName" value="IDS Federado">
+                                                <input type="text" class="form-control" id="siteName"
+                                                    value="IDS Federado">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="siteDescription" class="form-label">Descripción</label>
-                                                <textarea class="form-control" id="siteDescription" rows="2">Sistema de Detección de Intrusiones Federado</textarea>
+                                                <textarea class="form-control" id="siteDescription"
+                                                    rows="2">Sistema de Detección de Intrusiones Federado</textarea>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="adminEmail" class="form-label">Email de Administración</label>
-                                                <input type="email" class="form-control" id="adminEmail" value="admin@example.com">
+                                                <label for="adminEmail" class="form-label">Email de
+                                                    Administración</label>
+                                                <input type="email" class="form-control" id="adminEmail"
+                                                    value="admin@example.com">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="sessionTimeout" class="form-label">Tiempo de Expiración de Sesión (horas)</label>
-                                                <input type="number" class="form-control" id="sessionTimeout" min="1" max="24" value="8">
+                                                <label for="sessionTimeout" class="form-label">Tiempo de Expiración de
+                                                    Sesión (horas)</label>
+                                                <input type="number" class="form-control" id="sessionTimeout" min="1"
+                                                    max="24" value="8">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
@@ -279,25 +290,31 @@
                                             </div>
                                             <div class="mb-3 form-check">
                                                 <input type="checkbox" class="form-check-input" id="allowRegistration">
-                                                <label class="form-check-label" for="allowRegistration">Permitir Registro Público</label>
+                                                <label class="form-check-label" for="allowRegistration">Permitir
+                                                    Registro Público</label>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="maxLoginAttempts" class="form-label">Máximo de Intentos de Login</label>
-                                                <input type="number" class="form-control" id="maxLoginAttempts" min="1" max="10" value="5">
+                                                <label for="maxLoginAttempts" class="form-label">Máximo de Intentos de
+                                                    Login</label>
+                                                <input type="number" class="form-control" id="maxLoginAttempts" min="1"
+                                                    max="10" value="5">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="passwordPolicy" class="form-label">Política de Contraseñas</label>
+                                                <label for="passwordPolicy" class="form-label">Política de
+                                                    Contraseñas</label>
                                                 <select class="form-select" id="passwordPolicy">
                                                     <option value="1">Básica (mínimo 8 caracteres)</option>
-                                                    <option value="2" selected>Intermedia (8 caracteres, minúsculas, mayúsculas)</option>
-                                                    <option value="3">Fuerte (8 caracteres, minúsculas, mayúsculas, números, símbolos)</option>
+                                                    <option value="2" selected>Intermedia (8 caracteres, minúsculas,
+                                                        mayúsculas)</option>
+                                                    <option value="3">Fuerte (8 caracteres, minúsculas, mayúsculas,
+                                                        números, símbolos)</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <div class="card">
@@ -310,17 +327,21 @@
                                                 <label class="form-check-label" for="enableAPI">Habilitar API</label>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="apiTimeout" class="form-label">Tiempo de Expiración de Tokens (horas)</label>
-                                                <input type="number" class="form-control" id="apiTimeout" min="1" max="72" value="2">
+                                                <label for="apiTimeout" class="form-label">Tiempo de Expiración de
+                                                    Tokens (horas)</label>
+                                                <input type="number" class="form-control" id="apiTimeout" min="1"
+                                                    max="72" value="2">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="rateLimitPerMinute" class="form-label">Límite de Peticiones por Minuto</label>
-                                                <input type="number" class="form-control" id="rateLimitPerMinute" min="10" max="1000" value="60">
+                                                <label for="rateLimitPerMinute" class="form-label">Límite de Peticiones
+                                                    por Minuto</label>
+                                                <input type="number" class="form-control" id="rateLimitPerMinute"
+                                                    min="10" max="1000" value="60">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
@@ -328,15 +349,19 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="enableEmailAlerts" checked>
-                                                <label class="form-check-label" for="enableEmailAlerts">Habilitar Alertas por Email</label>
+                                                <input type="checkbox" class="form-check-input" id="enableEmailAlerts"
+                                                    checked>
+                                                <label class="form-check-label" for="enableEmailAlerts">Habilitar
+                                                    Alertas por Email</label>
                                             </div>
                                             <div class="mb-3 form-check">
                                                 <input type="checkbox" class="form-check-input" id="enableSmsAlerts">
-                                                <label class="form-check-label" for="enableSmsAlerts">Habilitar Alertas por SMS</label>
+                                                <label class="form-check-label" for="enableSmsAlerts">Habilitar Alertas
+                                                    por SMS</label>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="severityThreshold" class="form-label">Umbral de Severidad para Alertas</label>
+                                                <label for="severityThreshold" class="form-label">Umbral de Severidad
+                                                    para Alertas</label>
                                                 <select class="form-select" id="severityThreshold">
                                                     <option value="low">Baja</option>
                                                     <option value="medium" selected>Media</option>
@@ -345,14 +370,16 @@
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="maxNotificationsPerHour" class="form-label">Máximo de Notificaciones por Hora</label>
-                                                <input type="number" class="form-control" id="maxNotificationsPerHour" min="1" max="100" value="10">
+                                                <label for="maxNotificationsPerHour" class="form-label">Máximo de
+                                                    Notificaciones por Hora</label>
+                                                <input type="number" class="form-control" id="maxNotificationsPerHour"
+                                                    min="1" max="100" value="10">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-1"></i> Guardar Configuración
@@ -363,7 +390,7 @@
                             </div>
                         </form>
                     </div>
-                    
+
                     <!-- Tab de Logs del Sistema -->
                     <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
                         <div class="d-flex justify-content-between mb-3">
@@ -375,12 +402,13 @@
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
-                                <button class="btn btn-outline-secondary">
+                                <!-- Por: -->
+                                <button class="btn btn-outline-secondary" id="btnExportarLogs">
                                     <i class="fas fa-download me-1"></i> Exportar
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="table-responsive">
                             <table class="table table-hover table-admin">
                                 <thead>
@@ -411,7 +439,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <!-- Paginación -->
                         <nav aria-label="Paginación de logs">
                             <ul class="pagination justify-content-center">
@@ -434,7 +462,8 @@
 </div>
 
 <!-- Modal para Nuevo Usuario -->
-<div class="modal fade" id="modalNuevoUsuario" tabindex="-1" aria-labelledby="modalNuevoUsuarioLabel" aria-hidden="true">
+<div class="modal fade" id="modalNuevoUsuario" tabindex="-1" aria-labelledby="modalNuevoUsuarioLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -495,15 +524,15 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Código JavaScript específico para la página de administración
-        
+
         // Inicializar tooltips para los botones de acción
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
-        
+
         // Mantener el tab activo después de recargar la página
         var activeTab = localStorage.getItem('adminActiveTab');
         if (activeTab) {
@@ -513,14 +542,177 @@
                 tab.show();
             }
         }
-        
+
         // Guardar el tab activo al cambiar
         var tabEls = document.querySelectorAll('#adminTabs button[data-bs-toggle="tab"]');
-        tabEls.forEach(function(tabEl) {
+        tabEls.forEach(function (tabEl) {
             tabEl.addEventListener('shown.bs.tab', function (e) {
                 localStorage.setItem('adminActiveTab', e.target.getAttribute('data-bs-target'));
             });
         });
+
+        // =============== NUEVA FUNCIONALIDAD PARA EXPORTAR LOGS ===============
+
+        // Manejar exportación de logs
+        const btnExportarLogs = document.getElementById('btnExportarLogs');
+        if (btnExportarLogs) {
+            btnExportarLogs.addEventListener('click', function() {
+                exportarLogs();
+            });
+        }
+
+        // Manejar búsqueda en logs
+        const searchLogsInput = document.querySelector('#logs input[type="text"]');
+        if (searchLogsInput) {
+            let searchTimeout;
+            searchLogsInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    buscarLogs(this.value);
+                }, 500);
+            });
+        }
     });
+
+    // Función para exportar logs
+    function exportarLogs() {
+        // Obtener filtros actuales
+        const searchValue = document.querySelector('#logs input[type="text"]')?.value || '';
+
+        // Construir parámetros de URL
+        const params = new URLSearchParams();
+        if (searchValue) {
+            params.append('accion', searchValue);
+        }
+
+        // Agregar otros filtros si existen
+        // params.append('usuario', '');
+        // params.append('fecha_inicio', '');
+        // params.append('fecha_fin', '');
+
+        // Mostrar indicador de carga
+        const originalText = document.getElementById('btnExportarLogs').innerHTML;
+        document.getElementById('btnExportarLogs').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Exportando...';
+        document.getElementById('btnExportarLogs').disabled = true;
+
+        // Realizar la descarga
+        const url = `/admin/logs/exportar?${params.toString()}`;
+
+        // Crear enlace temporal para descarga
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'logs_sistema.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Restaurar botón después de un momento
+        setTimeout(() => {
+            document.getElementById('btnExportarLogs').innerHTML = originalText;
+            document.getElementById('btnExportarLogs').disabled = false;
+        }, 2000);
+
+        // Mostrar mensaje de éxito
+        mostrarToast('Logs exportados exitosamente', 'success');
+    }
+
+    // Función para buscar logs (opcional - para búsqueda en tiempo real)
+    function buscarLogs(query) {
+        if (query.length < 3 && query.length > 0) return; // Buscar solo si hay 3+ caracteres o está vacío
+
+        const params = new URLSearchParams();
+        if (query) {
+            params.append('q', query);
+        }
+
+        fetch(`/admin/logs/buscar?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                actualizarTablaLogs(data.logs);
+            })
+            .catch(error => {
+                console.error('Error al buscar logs:', error);
+                mostrarToast('Error al buscar logs', 'error');
+            });
+    }
+
+    // Función para actualizar la tabla de logs
+    function actualizarTablaLogs(logs) {
+        const tbody = document.querySelector('#logs table tbody');
+        if (!tbody) return;
+
+        if (logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3">No hay logs para mostrar.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = logs.map(log => `
+            <tr>
+                <td>${log.id}</td>
+                <td>${formatearFecha(log.timestamp)}</td>
+                <td>${log.username || 'Sistema'}</td>
+                <td>${log.message || log.action}</td>
+                <td>${log.details || ''}</td>
+                <td>${log.ip_address || ''}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Función para formatear fecha
+    function formatearFecha(timestamp) {
+        if (!timestamp) return '';
+        const fecha = new Date(timestamp);
+        return fecha.toLocaleString('es-ES', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    // Función para mostrar toasts/notificaciones
+    function mostrarToast(mensaje, tipo = 'info') {
+        // Crear toast dinámicamente
+        const toastContainer = document.getElementById('toast-container') || crearToastContainer();
+
+        const toastId = 'toast-' + Date.now();
+        const toastClass = tipo === 'success' ? 'bg-success' : tipo === 'error' ? 'bg-danger' : 'bg-info';
+
+        const toastHTML = `
+            <div id="${toastId}" class="toast ${toastClass} text-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header ${toastClass} text-white border-0">
+                    <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                    <strong class="me-auto">Sistema</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${mensaje}
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        toast.show();
+
+        // Eliminar toast después de que se oculte
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            toastElement.remove();
+        });
+    }
+
+    // Función para crear contenedor de toasts si no existe
+    function crearToastContainer() {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        container.style.zIndex = '1055';
+        document.body.appendChild(container);
+        return container;
+    }
 </script>
 {% endblock %}

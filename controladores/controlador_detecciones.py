@@ -76,6 +76,68 @@ def obtener_detecciones(limite=100, offset=0, filtros=None):
         if conn:
             conn.close()
 
+  
+def obtener_total_detecciones(filtros=None):
+    """
+    Obtiene el número total de detecciones aplicando los filtros especificados.
+    
+    Args:
+        filtros (dict, optional): Diccionario con los filtros a aplicar. Defaults to None.
+        
+    Returns:
+        int: Número total de detecciones.
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return 0
+        
+        # Construir la consulta base
+        query = "SELECT COUNT(*) FROM detections WHERE 1=1"
+        params = []
+        
+        # Aplicar filtros si existen
+        if filtros:
+            if 'client_id' in filtros and filtros['client_id']:
+                query += " AND client_id = %s"
+                params.append(filtros['client_id'])
+                
+            if 'severity' in filtros and filtros['severity']:
+                query += " AND severity = %s"
+                params.append(filtros['severity'])
+                
+            if 'attack_type' in filtros and filtros['attack_type']:
+                query += " AND attack_type = %s"
+                params.append(filtros['attack_type'])
+                
+            if 'ip' in filtros and filtros['ip']:
+                query += " AND (src_ip = %s OR dst_ip = %s)"
+                params.extend([filtros['ip'], filtros['ip']])
+                
+            if 'fecha_inicio' in filtros and filtros['fecha_inicio']:
+                query += " AND timestamp >= %s"
+                params.append(filtros['fecha_inicio'])
+                
+            if 'fecha_fin' in filtros and filtros['fecha_fin']:
+                query += " AND timestamp <= %s"
+                params.append(filtros['fecha_fin'])
+                
+            if 'revisado' in filtros and filtros['revisado'] is not None:
+                query += " AND reviewed = %s"
+                params.append(filtros['revisado'])
+        
+        with conn.cursor() as cursor:
+            cursor.execute(query, params)
+            return cursor.fetchone()[0]
+            
+    except Exception as e:
+        logger.error(f"Error al obtener total de detecciones: {e}")
+        return 0
+    finally:
+        if conn:
+            conn.close()
 def obtener_deteccion_por_id(deteccion_id):
     """
     Obtiene los detalles de una detección específica por su ID
