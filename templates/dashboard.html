@@ -1,0 +1,350 @@
+{% extends "maestra.html" %}
+
+{% block title %}Dashboard - IDS Federado{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <button type="button" class="btn btn-outline-secondary">
+        <i class="fas fa-calendar"></i> Últimas 24 horas
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Overview Cards Row -->
+<div class="row">
+    <!-- Total Detections Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-muted small mb-1">Total Detecciones</div>
+                        <div class="h3 mb-0 font-weight-bold">2,453</div>
+                        <div class="small mt-2 text-success">
+                            <i class="fas fa-arrow-up"></i> 12% desde ayer
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-muted small mb-1">Alertas Activas</div>
+                        <div class="h3 mb-0 font-weight-bold">64</div>
+                        <div class="small mt-2 text-danger">
+                            <i class="fas fa-arrow-up"></i> 8% desde ayer
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connected Clients Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-muted small mb-1">Clientes Conectados</div>
+                        <div class="h3 mb-0 font-weight-bold">8</div>
+                        <div class="small mt-2 text-success">
+                            <i class="fas fa-check"></i> Todos activos
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-laptop fa-2x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Version Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-muted small mb-1">Versión del Modelo</div>
+                        <div class="h3 mb-0 font-weight-bold">v3.2</div>
+                        <div class="small mt-2">
+                            <i class="fas fa-clock"></i> Actualizado hace 2 días
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-brain fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <!-- Detection Chart -->
+    <div class="col-lg-8 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Detecciones por Tiempo</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary period-button" data-period="daily">Diario</button>
+                    <button class="btn btn-sm btn-outline-secondary period-button" data-period="weekly">Semanal</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="detectionChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detection Types -->
+    <div class="col-lg-4 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Tipos de Ataques</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="attackTypesChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Detections and Clients Row -->
+<div class="row">
+    <!-- Recent Detections -->
+    <div class="col-lg-8 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Detecciones Recientes</h5>
+                <a href="{{ url_for('detecciones') }}" class="btn btn-sm btn-primary">Ver Todas</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Tipo</th>
+                                <th scope="col">IP Origen</th>
+                                <th scope="col">IP Destino</th>
+                                <th scope="col">Severidad</th>
+                                <th scope="col">Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cliente Norte</td>
+                                <td>Port Scan</td>
+                                <td>192.168.1.45</td>
+                                <td>10.0.0.5</td>
+                                <td><span class="status-circle status-warning"></span> Sospechoso</td>
+                                <td>10:23 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Sur</td>
+                                <td>Brute Force</td>
+                                <td>203.45.67.89</td>
+                                <td>10.0.0.12</td>
+                                <td><span class="status-circle status-alert"></span> Crítico</td>
+                                <td>10:15 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Este</td>
+                                <td>Data Exfiltration</td>
+                                <td>192.168.5.22</td>
+                                <td>45.67.89.100</td>
+                                <td><span class="status-circle status-alert"></span> Crítico</td>
+                                <td>09:58 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Oeste</td>
+                                <td>SQL Injection</td>
+                                <td>192.168.3.78</td>
+                                <td>10.0.0.8</td>
+                                <td><span class="status-circle status-warning"></span> Sospechoso</td>
+                                <td>09:45 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Norte</td>
+                                <td>Malware Communication</td>
+                                <td>192.168.1.90</td>
+                                <td>23.45.67.89</td>
+                                <td><span class="status-circle status-alert"></span> Crítico</td>
+                                <td>09:37 AM</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Status -->
+    <div class="col-lg-4 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Estado de Clientes</h5>
+                <a href="{{ url_for('clientes') }}" class="btn btn-sm btn-primary">Ver Todos</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Alertas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cliente Norte</td>
+                                <td><span class="badge bg-success">En línea</span></td>
+                                <td>24</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Sur</td>
+                                <td><span class="badge bg-success">En línea</span></td>
+                                <td>17</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Este</td>
+                                <td><span class="badge bg-success">En línea</span></td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Oeste</td>
+                                <td><span class="badge bg-success">En línea</span></td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Cliente Central</td>
+                                <td><span class="badge bg-danger">Desconectado</span></td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Detection Chart
+        var detectionCtx = document.getElementById('detectionChart').getContext('2d');
+        var detectionChart = new Chart(detectionCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+                datasets: [
+                    {
+                        label: 'Normal',
+                        data: [65, 59, 80, 81, 56, 55, 40, 70, 75, 85, 90, 100],
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Sospechoso',
+                        data: [28, 48, 40, 19, 86, 27, 90, 60, 30, 40, 50, 70],
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Crítico',
+                        data: [5, 15, 10, 8, 25, 17, 40, 30, 20, 15, 10, 5],
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // Attack Types Chart
+        var attackTypesCtx = document.getElementById('attackTypesChart').getContext('2d');
+        var attackTypesChart = new Chart(attackTypesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Port Scan', 'Brute Force', 'SQL Injection', 'DDoS', 'Malware', 'Otros'],
+                datasets: [{
+                    data: [35, 25, 15, 10, 10, 5],
+                    backgroundColor: [
+                        'rgba(13, 110, 253, 0.8)',
+                        'rgba(220, 53, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(25, 135, 84, 0.8)',
+                        'rgba(102, 16, 242, 0.8)',
+                        'rgba(108, 117, 125, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,526 @@
+{% extends "maestra.html" %}
+
+{% block title %}Administración - IDS Federado{% endblock %}
+
+{% block page_title %}Administración del Sistema{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
+    <i class="fas fa-plus"></i> Nuevo Usuario
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Navegación por tabs -->
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">
+                            <i class="fas fa-users me-2"></i>Usuarios
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button" role="tab" aria-controls="roles" aria-selected="false">
+                            <i class="fas fa-user-tag me-2"></i>Roles y Permisos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">
+                            <i class="fas fa-cogs me-2"></i>Configuración
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab" aria-controls="logs" aria-selected="false">
+                            <i class="fas fa-list me-2"></i>Logs del Sistema
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="adminTabsContent">
+                    <!-- Tab de Usuarios -->
+                    <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5>Gestión de Usuarios</h5>
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Buscar usuarios..." id="searchUsers">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover table-admin">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Usuario</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th>Último Login</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for usuario in usuarios %}
+                                    <tr>
+                                        <td>{{ usuario.id }}</td>
+                                        <td>{{ usuario.username }}</td>
+                                        <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
+                                        <td>{{ usuario.email }}</td>
+                                        <td><span class="badge bg-info">{{ usuario.role }}</span></td>
+                                        <td>
+                                            {% if usuario.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ usuario.last_login|default('Nunca', true) }}</td>
+                                        <td class="text-center actions">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" title="Cambiar contraseña">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center py-3">No hay usuarios para mostrar.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Paginación -->
+                        <nav aria-label="Paginación de usuarios">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    
+                    <!-- Tab de Roles y Permisos -->
+                    <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5>Roles del Sistema</h5>
+                            <button class="btn btn-sm btn-primary">
+                                <i class="fas fa-plus me-1"></i> Nuevo Rol
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover table-admin">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Descripción</th>
+                                        <th>Usuarios</th>
+                                        <th>Permisos</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>admin</td>
+                                        <td>Administrador del Sistema</td>
+                                        <td>1</td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-secondary">9 permisos</span>
+                                        </td>
+                                        <td class="text-center actions">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" title="Ver permisos">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>analyst</td>
+                                        <td>Analista de seguridad</td>
+                                        <td>0</td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-secondary">6 permisos</span>
+                                        </td>
+                                        <td class="text-center actions">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" title="Ver permisos">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>viewer</td>
+                                        <td>Visor de datos</td>
+                                        <td>0</td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-secondary">4 permisos</span>
+                                        </td>
+                                        <td class="text-center actions">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" title="Ver permisos">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <h5>Permisos del Sistema</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-admin">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Descripción</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>ver_dashboard</td>
+                                        <td>Ver Dashboard</td>
+                                        <td class="text-center actions">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>ver_detecciones</td>
+                                        <td>Ver Detecciones</td>
+                                        <td class="text-center actions">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Más permisos aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab de Configuración -->
+                    <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+                        <h5 class="mb-4">Configuración del Sistema</h5>
+                        
+                        <form>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Configuración General</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="siteName" class="form-label">Nombre del Sitio</label>
+                                                <input type="text" class="form-control" id="siteName" value="IDS Federado">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="siteDescription" class="form-label">Descripción</label>
+                                                <textarea class="form-control" id="siteDescription" rows="2">Sistema de Detección de Intrusiones Federado</textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="adminEmail" class="form-label">Email de Administración</label>
+                                                <input type="email" class="form-control" id="adminEmail" value="admin@example.com">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="sessionTimeout" class="form-label">Tiempo de Expiración de Sesión (horas)</label>
+                                                <input type="number" class="form-control" id="sessionTimeout" min="1" max="24" value="8">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Seguridad</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="forceSSL" checked>
+                                                <label class="form-check-label" for="forceSSL">Forzar SSL</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="allowRegistration">
+                                                <label class="form-check-label" for="allowRegistration">Permitir Registro Público</label>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="maxLoginAttempts" class="form-label">Máximo de Intentos de Login</label>
+                                                <input type="number" class="form-control" id="maxLoginAttempts" min="1" max="10" value="5">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="passwordPolicy" class="form-label">Política de Contraseñas</label>
+                                                <select class="form-select" id="passwordPolicy">
+                                                    <option value="1">Básica (mínimo 8 caracteres)</option>
+                                                    <option value="2" selected>Intermedia (8 caracteres, minúsculas, mayúsculas)</option>
+                                                    <option value="3">Fuerte (8 caracteres, minúsculas, mayúsculas, números, símbolos)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">API</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="enableAPI" checked>
+                                                <label class="form-check-label" for="enableAPI">Habilitar API</label>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="apiTimeout" class="form-label">Tiempo de Expiración de Tokens (horas)</label>
+                                                <input type="number" class="form-control" id="apiTimeout" min="1" max="72" value="2">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="rateLimitPerMinute" class="form-label">Límite de Peticiones por Minuto</label>
+                                                <input type="number" class="form-control" id="rateLimitPerMinute" min="10" max="1000" value="60">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Notificaciones</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="enableEmailAlerts" checked>
+                                                <label class="form-check-label" for="enableEmailAlerts">Habilitar Alertas por Email</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="enableSmsAlerts">
+                                                <label class="form-check-label" for="enableSmsAlerts">Habilitar Alertas por SMS</label>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="severityThreshold" class="form-label">Umbral de Severidad para Alertas</label>
+                                                <select class="form-select" id="severityThreshold">
+                                                    <option value="low">Baja</option>
+                                                    <option value="medium" selected>Media</option>
+                                                    <option value="high">Alta</option>
+                                                    <option value="critical">Crítica</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="maxNotificationsPerHour" class="form-label">Máximo de Notificaciones por Hora</label>
+                                                <input type="number" class="form-control" id="maxNotificationsPerHour" min="1" max="100" value="10">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Guardar Configuración
+                                </button>
+                                <button type="button" class="btn btn-secondary ms-2">
+                                    <i class="fas fa-undo me-1"></i> Restaurar Valores por Defecto
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Tab de Logs del Sistema -->
+                    <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5>Logs del Sistema</h5>
+                            <div class="d-flex">
+                                <div class="input-group me-2" style="width: 300px;">
+                                    <input type="text" class="form-control" placeholder="Buscar en logs...">
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-outline-secondary">
+                                    <i class="fas fa-download me-1"></i> Exportar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover table-admin">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Fecha/Hora</th>
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                        <th>Detalles</th>
+                                        <th>IP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in logs %}
+                                    <tr>
+                                        <td>{{ log.id }}</td>
+                                        <td>{{ log.timestamp }}</td>
+                                        <td>{{ log.username }}</td>
+                                        <td>{{ log.action }}</td>
+                                        <td>{{ log.details }}</td>
+                                        <td>{{ log.ip_address }}</td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-3">No hay logs para mostrar.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Paginación -->
+                        <nav aria-label="Paginación de logs">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Nuevo Usuario -->
+<div class="modal fade" id="modalNuevoUsuario" tabindex="-1" aria-labelledby="modalNuevoUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNuevoUsuarioLabel">Crear Nuevo Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevoUsuario">
+                    <div class="mb-3">
+                        <label for="newUsername" class="form-label">Nombre de Usuario</label>
+                        <input type="text" class="form-control" id="newUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="newEmail" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="newFirstName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="newFirstName">
+                        </div>
+                        <div class="col">
+                            <label for="newLastName" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="newLastName">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newRole" class="form-label">Rol</label>
+                        <select class="form-select" id="newRole" required>
+                            <option value="">Seleccione...</option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Analista</option>
+                            <option value="3">Visor</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPasswordConfirm" class="form-label">Confirmar Contraseña</label>
+                        <input type="password" class="form-control" id="newPasswordConfirm" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="newIsActive" checked>
+                        <label class="form-check-label" for="newIsActive">Usuario Activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Crear Usuario</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Código JavaScript específico para la página de administración
+        
+        // Inicializar tooltips para los botones de acción
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Mantener el tab activo después de recargar la página
+        var activeTab = localStorage.getItem('adminActiveTab');
+        if (activeTab) {
+            var triggerEl = document.querySelector('#adminTabs button[data-bs-target="' + activeTab + '"]');
+            if (triggerEl) {
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+        
+        // Guardar el tab activo al cambiar
+        var tabEls = document.querySelectorAll('#adminTabs button[data-bs-toggle="tab"]');
+        tabEls.forEach(function(tabEl) {
+            tabEl.addEventListener('shown.bs.tab', function (e) {
+                localStorage.setItem('adminActiveTab', e.target.getAttribute('data-bs-target'));
+            });
+        });
+    });
+</script>
+{% endblock %}

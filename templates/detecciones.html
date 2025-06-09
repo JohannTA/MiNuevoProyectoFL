@@ -1,0 +1,215 @@
+{% extends "maestra.html" %}
+
+{% block title %}Detecciones - IDS Federado{% endblock %}
+
+{% block page_title %}Detecciones{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group me-2">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fas fa-filter"></i> Filtrar
+    </button>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Todos</a>
+        <a class="dropdown-item" href="#">Alta severidad</a>
+        <a class="dropdown-item" href="#">Media severidad</a>
+        <a class="dropdown-item" href="#">Baja severidad</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">No revisados</a>
+    </div>
+</div>
+<div class="btn-group">
+    <button type="button" class="btn btn-primary">
+        <i class="fas fa-download"></i> Exportar
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Filtros avanzados -->
+    <div class="col-12">
+        <div class="dashboard-card card">
+            <div class="card-header">
+                <h5 class="mb-0">Filtros avanzados</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="dateRange" class="form-label">Rango de fechas</label>
+                            <input type="text" class="form-control" id="dateRange" placeholder="DD/MM/YYYY - DD/MM/YYYY">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="clientSelector" class="form-label">Cliente</label>
+                            <select class="form-select" id="clientSelector">
+                                <option value="">Todos los clientes</option>
+                                <option value="1">Oficina Principal</option>
+                                <option value="2">Sucursal Norte</option>
+                                <option value="3">Sucursal Sur</option>
+                                <option value="4">Centro de Datos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="attackType" class="form-label">Tipo de ataque</label>
+                            <select class="form-select" id="attackType">
+                                <option value="">Todos los tipos</option>
+                                <option value="dos">DoS / DDoS</option>
+                                <option value="sql">Inyección SQL</option>
+                                <option value="xss">Cross-site Scripting (XSS)</option>
+                                <option value="bruteforce">Fuerza Bruta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="severity" class="form-label">Severidad</label>
+                            <select class="form-select" id="severity">
+                                <option value="">Todas</option>
+                                <option value="high">Alta</option>
+                                <option value="medium">Media</option>
+                                <option value="low">Baja</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ipAddress" class="form-label">Dirección IP</label>
+                            <input type="text" class="form-control" id="ipAddress" placeholder="Origen o destino (ej. 192.168.1.1)">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="reviewStatus" class="form-label">Estado de revisión</label>
+                            <select class="form-select" id="reviewStatus">
+                                <option value="">Todos</option>
+                                <option value="reviewed">Revisados</option>
+                                <option value="pending">Pendientes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de detecciones -->
+    <div class="col-12 mt-4">
+        <div class="dashboard-card card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Listado de detecciones</h5>
+                <span class="badge bg-primary">2,453 detecciones</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Origen</th>
+                                <th scope="col">Destino</th>
+                                <th scope="col">Tipo de Ataque</th>
+                                <th scope="col">Severidad</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>24601</td>
+                                <td>08/06/2025 14:32:15</td>
+                                <td>Oficina Principal</td>
+                                <td>192.168.1.45:52134</td>
+                                <td>192.168.1.10:80</td>
+                                <td>SQL Injection</td>
+                                <td><span class="badge bg-danger">Alta</span></td>
+                                <td><i class="fas fa-circle text-warning"></i> Pendiente</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>24600</td>
+                                <td>08/06/2025 14:30:22</td>
+                                <td>Sucursal Norte</td>
+                                <td>45.67.89.123:44245</td>
+                                <td>192.168.2.15:443</td>
+                                <td>DDoS</td>
+                                <td><span class="badge bg-danger">Alta</span></td>
+                                <td><i class="fas fa-circle text-warning"></i> Pendiente</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>24599</td>
+                                <td>08/06/2025 14:28:11</td>
+                                <td>Sucursal Sur</td>
+                                <td>192.168.3.55:33521</td>
+                                <td>192.168.3.1:22</td>
+                                <td>Brute Force</td>
+                                <td><span class="badge bg-warning">Media</span></td>
+                                <td><i class="fas fa-circle text-success"></i> Revisado</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>24598</td>
+                                <td>08/06/2025 14:25:45</td>
+                                <td>Centro de Datos</td>
+                                <td>10.0.0.34:51234</td>
+                                <td>10.0.0.1:8080</td>
+                                <td>XSS</td>
+                                <td><span class="badge bg-warning">Media</span></td>
+                                <td><i class="fas fa-circle text-warning"></i> Pendiente</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>24597</td>
+                                <td>08/06/2025 14:20:09</td>
+                                <td>Oficina Principal</td>
+                                <td>192.168.1.67:49876</td>
+                                <td>192.168.1.10:3306</td>
+                                <td>SQL Injection</td>
+                                <td><span class="badge bg-info">Baja</span></td>
+                                <td><i class="fas fa-circle text-success"></i> Revisado</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginación -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
