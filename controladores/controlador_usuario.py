@@ -248,9 +248,6 @@ def crear_usuario(datos, creado_por=None):
             logger.warning("Faltan campos obligatorios para crear usuario")
             return None
         
-        # Generar hash de la contraseña
-        password_hash = hashlib.sha256(datos['password'].encode('utf-8')).hexdigest()
-        
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             # Verificar si ya existe un usuario con ese username o email
             cursor.execute("""
@@ -260,6 +257,15 @@ def crear_usuario(datos, creado_por=None):
             if cursor.fetchone():
                 logger.warning(f"Ya existe un usuario con username {datos['username']} o email {datos['email']}")
                 return None
+            
+            # Verificar que el rol existe
+            cursor.execute("SELECT id FROM roles WHERE id = %s", (datos['role_id'],))
+            if not cursor.fetchone():
+                logger.error(f"El rol ID {datos['role_id']} no existe")
+                return None
+            
+            # Hash de la contraseña
+            password_hash = hashlib.sha256(datos['password'].encode('utf-8')).hexdigest()
             
             # Insertar el nuevo usuario (sin created_by si no existe)
             cursor.execute("""
@@ -280,17 +286,16 @@ def crear_usuario(datos, creado_por=None):
             usuario_id = cursor.fetchone()['id']
             conn.commit()
             
+            logger.info(f"Usuario creado exitosamente: ID {usuario_id}, username: {datos['username']}")
+            
             # Registrar actividad
             if creado_por:
-                cursor.execute("""
-                INSERT INTO user_activity (user_id, action, details, timestamp)
-                VALUES (%s, %s, %s, NOW())
-                """, (
+                registrar_actividad_usuario(
                     creado_por,
                     'crear_usuario',
-                    f"Usuario {datos['username']} creado con ID {usuario_id}"
-                ))
-                conn.commit()
+                    f'Usuario {datos["username"]} creado con ID {usuario_id}',
+                    None
+                )
             
             # Devolver el usuario creado
             cursor.execute("""
@@ -331,67 +336,54 @@ def actualizar_usuario(usuario_id, datos, actualizado_por=None):
             logger.error("No se pudo establecer conexión con la base de datos")
             return False
         
-        # Construir query dinámica
-        update_fields = []
-        params = []
-        
-        # Mapeo de campos permitidos
-        allowed_fields = {
-            'username': 'username',
-            'email': 'email',
-            'first_name': 'first_name',
-            'last_name': 'last_name',
-            'role_id': 'role_id',
-            'is_active': 'is_active'
-        }
-        
-        for field, db_field in allowed_fields.items():
-            if field in datos and datos[field] is not None:
-                update_fields.append(f"{db_field} = %s")
-                params.append(datos[field])
-        
-        # Caso especial: contraseña
-        if 'password' in datos and datos['password']:
-            password_hash = hashlib.sha256(datos['password'].encode('utf-8')).hexdigest()
-            update_fields.append("password_hash = %s")
-            params.append(password_hash)
-        
-        # Si no hay campos para actualizar, retornar éxito
-        if not update_fields:
-            return True
-        
-        # NO incluir updated_at y updated_by si las columnas no existen
-        
-        # Añadir ID al final de los parámetros
-        params.append(usuario_id)
-        
-        # Ejecutar actualización
-        with conn.cursor() as cursor:
-            query = f"""
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            # Verificar que el usuario existe
+            cursor.execute("SELECT username FROM users WHERE id = %s", (usuario_id,))
+            usuario_actual = cursor.fetchone()
+            if not usuario_actual:
+                logger.warning(f"No se encontró el usuario con ID: {usuario_id}")
+                return False
+            
+            # Verificar que el rol existe
+            if datos.get('role_id'):
+                cursor.execute("SELECT id FROM roles WHERE id = %s", (datos['role_id'],))
+                if not cursor.fetchone():
+                    logger.error(f"El rol ID {datos['role_id']} no existe")
+                    return False
+            
+            # Actualizar usuario
+            cursor.execute("""
             UPDATE users 
-            SET {", ".join(update_fields)}
+            SET username = %s, email = %s, first_name = %s, last_name = %s, 
+                role_id = %s, is_active = %s, updated_at = NOW()
             WHERE id = %s
-            """
+            """, (
+                datos['username'],
+                datos['email'],
+                datos.get('first_name', ''),
+                datos.get('last_name', ''),
+                datos['role_id'],
+                datos.get('is_active', True),
+                usuario_id
+            ))
             
-            cursor.execute(query, params)
-            updated = cursor.rowcount > 0
+            actualizado = cursor.rowcount > 0
             
-            if updated:
+            if actualizado:
                 conn.commit()
                 
                 # Registrar actividad
                 if actualizado_por:
-                    cursor.execute("""
-                    INSERT INTO user_activity (user_id, action, details, timestamp)
-                    VALUES (%s, %s, %s, NOW())
-                    """, (
+                    registrar_actividad_usuario(
                         actualizado_por,
                         'actualizar_usuario',
-                        f"Usuario ID {usuario_id} actualizado"
-                    ))
-                    conn.commit()
+                        f'Usuario ID {usuario_id} actualizado',
+                        None
+                    )
+                
+                logger.info(f"Usuario actualizado exitosamente: ID {usuario_id}")
             
-            return updated
+            return actualizado
             
     except Exception as e:
         logger.error(f"Error al actualizar usuario: {e}")
@@ -402,7 +394,7 @@ def actualizar_usuario(usuario_id, datos, actualizado_por=None):
         if conn:
             conn.close()
 
-def eliminar_usuario(usuario_id):
+def eliminar_usuario(usuario_id, eliminado_por=None):
     """
     Elimina un usuario del sistema
     
@@ -419,63 +411,34 @@ def eliminar_usuario(usuario_id):
             logger.error("No se pudo establecer conexión con la base de datos")
             return False
         
-        # En lugar de eliminar físicamente, desactivar el usuario
         with conn.cursor() as cursor:
-            # Obtener nombre de usuario para el registro de actividad
+            # Verificar que el usuario existe
             cursor.execute("SELECT username FROM users WHERE id = %s", (usuario_id,))
-            user_row = cursor.fetchone()
-            
-            if not user_row:
-                logger.warning(f"No se encontró el usuario con ID {usuario_id}")
+            usuario_actual = cursor.fetchone()
+            if not usuario_actual:
+                logger.warning(f"No se encontró el usuario con ID: {usuario_id}")
                 return False
-                
-            username = user_row[0]
             
-            # Desactivar usuario (sin deleted_at si no existe)
-            cursor.execute("""
-            UPDATE users
-            SET username = %s,
-                email = %s,
-                first_name = NULL,
-                last_name = NULL,
-                password_hash = %s,
-                is_active = FALSE
-            WHERE id = %s
-            """, (
-                f"deleted_user_{usuario_id}",
-                f"deleted_{usuario_id}@example.com",
-                hashlib.sha256(f"deleted_{datetime.now().timestamp()}".encode('utf-8')).hexdigest(),
-                usuario_id
-            ))
+            # Eliminar usuario (soft delete o hard delete según prefieras)
+            cursor.execute("DELETE FROM users WHERE id = %s", (usuario_id,))
             
-            deleted = cursor.rowcount > 0
+            eliminado = cursor.rowcount > 0
             
-            if deleted:
-                # Registrar la eliminación en system_logs si existe
-                try:
-                    cursor.execute("""
-                    INSERT INTO system_logs (level, module, message, details, timestamp)
-                    VALUES (%s, %s, %s, %s, NOW())
-                    """, (
-                        'info',
-                        'users',
-                        f"Usuario eliminado",
-                        f"Usuario {username} (ID: {usuario_id}) ha sido eliminado del sistema"
-                    ))
-                except:
-                    # Si la tabla system_logs no existe, registrar en user_activity
-                    cursor.execute("""
-                    INSERT INTO user_activity (user_id, action, details, timestamp)
-                    VALUES (%s, %s, %s, NOW())
-                    """, (
-                        usuario_id,
-                        'usuario_eliminado',
-                        f"Usuario {username} eliminado del sistema"
-                    ))
-                
+            if eliminado:
                 conn.commit()
+                
+                # Registrar actividad
+                if eliminado_por:
+                    registrar_actividad_usuario(
+                        eliminado_por,
+                        'eliminar_usuario',
+                        f'Usuario {usuario_actual[0]} (ID {usuario_id}) eliminado',
+                        None
+                    )
+                
+                logger.info(f"Usuario eliminado exitosamente: ID {usuario_id}")
             
-            return deleted
+            return eliminado
             
     except Exception as e:
         logger.error(f"Error al eliminar usuario: {e}")
@@ -505,11 +468,18 @@ def cambiar_contrasena_usuario(usuario_id, contrasena_actual, contrasena_nueva):
             logger.error("No se pudo establecer conexión con la base de datos")
             return False
         
-        # Generar hashes
-        hash_actual = hashlib.sha256(contrasena_actual.encode('utf-8')).hexdigest()
-        hash_nueva = hashlib.sha256(contrasena_nueva.encode('utf-8')).hexdigest()
-        
         with conn.cursor() as cursor:
+            # Verificar que el usuario existe
+            cursor.execute("SELECT username FROM users WHERE id = %s", (usuario_id,))
+            usuario_actual = cursor.fetchone()
+            if not usuario_actual:
+                logger.warning(f"No se encontró el usuario con ID: {usuario_id}")
+                return False
+            
+            # Generar hashes
+            hash_actual = hashlib.sha256(contrasena_actual.encode('utf-8')).hexdigest()
+            hash_nueva = hashlib.sha256(contrasena_nueva.encode('utf-8')).hexdigest()
+            
             # Verificar si la contraseña actual es correcta
             cursor.execute("""
             SELECT 1 FROM users 
@@ -654,6 +624,298 @@ def verificar_permiso(usuario_id, permiso):
     except Exception as e:
         logger.error(f"Error al verificar permiso: {e}")
         return False
+    finally:
+        if conn:
+            conn.close()
+
+def crear_usuario(datos, creado_por=None):
+    """
+    Crea un nuevo usuario en el sistema
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return None
+        
+        with conn.cursor() as cursor:
+            # Verificar que el rol existe
+            cursor.execute("SELECT id FROM roles WHERE id = %s", (datos['role_id'],))
+            if not cursor.fetchone():
+                logger.error(f"El rol ID {datos['role_id']} no existe")
+                return None
+            
+            # Hash de la contraseña
+            password_hash = generate_password_hash(datos['password'])
+            
+            # Insertar usuario
+            cursor.execute("""
+            INSERT INTO users (username, email, password_hash, first_name, last_name, 
+                              role_id, is_active, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
+            RETURNING id
+            """, (
+                datos['username'],
+                datos['email'],
+                password_hash,
+                datos.get('first_name', ''),
+                datos.get('last_name', ''),
+                datos['role_id'],
+                datos.get('is_active', True)
+            ))
+            
+            nuevo_id = cursor.fetchone()[0]
+            conn.commit()
+            
+            logger.info(f"Usuario creado exitosamente: ID {nuevo_id}, username: {datos['username']}")
+            
+            # Registrar actividad
+            if creado_por:
+                registrar_actividad_usuario(
+                    creado_por,
+                    'crear_usuario',
+                    f'Usuario {datos["username"]} creado con ID {nuevo_id}',
+                    None
+                )
+            
+            return nuevo_id
+            
+    except Exception as e:
+        logger.error(f"Error al crear usuario: {e}")
+        if conn:
+            conn.rollback()
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+def actualizar_usuario(user_id, datos, actualizado_por=None):
+    """
+    Actualiza los datos de un usuario
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return False
+        
+        with conn.cursor() as cursor:
+            # Verificar que el usuario existe
+            cursor.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+            usuario_actual = cursor.fetchone()
+            if not usuario_actual:
+                logger.warning(f"No se encontró el usuario con ID: {user_id}")
+                return False
+            
+            # Verificar que el rol existe
+            if datos.get('role_id'):
+                cursor.execute("SELECT id FROM roles WHERE id = %s", (datos['role_id'],))
+                if not cursor.fetchone():
+                    logger.error(f"El rol ID {datos['role_id']} no existe")
+                    return False
+            
+            # Actualizar usuario
+            cursor.execute("""
+            UPDATE users 
+            SET username = %s, email = %s, first_name = %s, last_name = %s, 
+                role_id = %s, is_active = %s, updated_at = NOW()
+            WHERE id = %s
+            """, (
+                datos['username'],
+                datos['email'],
+                datos.get('first_name', ''),
+                datos.get('last_name', ''),
+                datos['role_id'],
+                datos.get('is_active', True),
+                user_id
+            ))
+            
+            actualizado = cursor.rowcount > 0
+            
+            if actualizado:
+                conn.commit()
+                
+                # Registrar actividad
+                if actualizado_por:
+                    registrar_actividad_usuario(
+                        actualizado_por,
+                        'actualizar_usuario',
+                        f'Usuario ID {user_id} actualizado',
+                        None
+                    )
+                
+                logger.info(f"Usuario actualizado exitosamente: ID {user_id}")
+            
+            return actualizado
+            
+    except Exception as e:
+        logger.error(f"Error al actualizar usuario: {e}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+def eliminar_usuario(user_id, eliminado_por=None):
+    """
+    Elimina un usuario del sistema
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return False
+        
+        with conn.cursor() as cursor:
+            # Verificar que el usuario existe
+            cursor.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+            usuario_actual = cursor.fetchone()
+            if not usuario_actual:
+                logger.warning(f"No se encontró el usuario con ID: {user_id}")
+                return False
+            
+            # Eliminar usuario (soft delete o hard delete según prefieras)
+            cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+            
+            eliminado = cursor.rowcount > 0
+            
+            if eliminado:
+                conn.commit()
+                
+                # Registrar actividad
+                if eliminado_por:
+                    registrar_actividad_usuario(
+                        eliminado_por,
+                        'eliminar_usuario',
+                        f'Usuario {usuario_actual[0]} (ID {user_id}) eliminado',
+                        None
+                    )
+                
+                logger.info(f"Usuario eliminado exitosamente: ID {user_id}")
+            
+            return eliminado
+            
+    except Exception as e:
+        logger.error(f"Error al eliminar usuario: {e}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+def cambiar_password_usuario(user_id, nueva_password, cambiado_por=None):
+    """
+    Cambia la contraseña de un usuario
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.error("No se pudo establecer conexión con la base de datos")
+            return False
+        
+        with conn.cursor() as cursor:
+            # Verificar que el usuario existe
+            cursor.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+            usuario_actual = cursor.fetchone()
+            if not usuario_actual:
+                logger.warning(f"No se encontró el usuario con ID: {user_id}")
+                return False
+            
+            # Hash de la nueva contraseña
+            password_hash = generate_password_hash(nueva_password)
+            
+            # Actualizar contraseña
+            cursor.execute("""
+            UPDATE users 
+            SET password_hash = %s, updated_at = NOW()
+            WHERE id = %s
+            """, (password_hash, user_id))
+            
+            actualizado = cursor.rowcount > 0
+            
+            if actualizado:
+                conn.commit()
+                
+                # Registrar actividad
+                if cambiado_por:
+                    registrar_actividad_usuario(
+                        cambiado_por,
+                        'cambiar_password',
+                        f'Contraseña del usuario {usuario_actual[0]} (ID {user_id}) cambiada',
+                        None
+                    )
+                
+                logger.info(f"Contraseña actualizada exitosamente para usuario ID {user_id}")
+            
+            return actualizado
+            
+    except Exception as e:
+        logger.error(f"Error al cambiar contraseña: {e}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+def obtener_usuario_por_username(username):
+    """
+    Obtiene un usuario por su username
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return None
+        
+        from psycopg2.extras import RealDictCursor
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+            SELECT u.*, r.name as role_name, r.display_name as role_display_name
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.username = %s
+            """, (username,))
+            
+            return cursor.fetchone()
+            
+    except Exception as e:
+        logger.error(f"Error al obtener usuario por username: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+def obtener_usuario_por_email(email):
+    """
+    Obtiene un usuario por su email
+    """
+    conn = None
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return None
+        
+        from psycopg2.extras import RealDictCursor
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+            SELECT u.*, r.name as role_name, r.display_name as role_display_name
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.email = %s
+            """, (email,))
+            
+            return cursor.fetchone()
+            
+    except Exception as e:
+        logger.error(f"Error al obtener usuario por email: {e}")
+        return None
     finally:
         if conn:
             conn.close()

@@ -440,3 +440,778 @@ INFO -  * Restarting with stat
 INFO - Iniciando aplicación IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.149.241 - - [09/Jun/2025 12:39:47] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:39:59] "GET /admin/logs/exportar HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:40:52] "GET /admin/logs/buscar HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:40:58] "GET /admin/logs/buscar?q=csv HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:04] "GET /admin/logs/buscar?q=csv HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:07] "GET /admin/logs/buscar?q=csv HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:08] "GET /admin/logs/buscar HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:13] "GET /admin/logs/buscar?q=CSV HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:18] "GET /admin/logs/buscar HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:23] "GET /admin/logs/buscar?q=Contra HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:30] "GET /admin/logs/buscar HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:35] "GET /admin/logs/buscar?q=Exporta HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:41:40] "GET /admin/logs/exportar?accion=Exporta HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:42:09] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 12:42:52] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_sistema.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.149.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.149.241 - - [09/Jun/2025 14:19:12] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:19:30] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:19:36] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:20:49] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:21:07] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:21:13] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:51:05] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - 192.168.149.241 - - [09/Jun/2025 14:51:11] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.43.62:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 127.0.0.1 - - [09/Jun/2025 17:23:57] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:23:57] "GET /login?next=http://127.0.0.1:5000/ HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:24:00] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:24:32] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:24:41] "GET /dashboard HTTP/1.1" 200 -
+ERROR - Error al obtener permisos: column p.display_name does not exist
+LINE 5:                 p.display_name,
+                        ^
+
+INFO - 127.0.0.1 - - [09/Jun/2025 17:29:58] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:30:00] "GET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:30:00] "GET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:30:00] "GET /admin?__debugger__=yes&cmd=resource&f=console.png&s=pIlgFrbWobHwAtTsdNDV HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:30:00] "GET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:30:51] "GET /dashboard HTTP/1.1" 200 -
+ERROR - Error al obtener permisos: column p.display_name does not exist
+LINE 5:                 p.display_name,
+                        ^
+
+INFO - 127.0.0.1 - - [09/Jun/2025 17:31:15] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:31:17] "[36mGET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:31:17] "[36mGET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO - 127.0.0.1 - - [09/Jun/2025 17:31:17] "[36mGET /admin?__debugger__=yes&cmd=resource&f=console.png&s=pIlgFrbWobHwAtTsdNDV HTTP/1.1[0m" 304 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.43.62:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 10.40.43.62 - - [09/Jun/2025 17:31:47] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:31:47] "GET /login?next=http://10.40.43.62:5000/ HTTP/1.1" 200 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:31:50] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:02] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:06] "GET /dashboard HTTP/1.1" 200 -
+ERROR - Error al obtener permisos: column p.display_name does not exist
+LINE 5:                 p.display_name,
+                        ^
+
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:24] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:25] "GET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:25] "GET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:25] "GET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO - 10.40.43.62 - - [09/Jun/2025 17:32:25] "GET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://26.127.52.20:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 26.127.52.20 - - [10/Jun/2025 07:10:06] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:10:06] "GET /login?next=http://26.127.52.20:5000/ HTTP/1.1" 200 -
+ERROR - No se pudo establecer conexión con la base de datos
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 26.127.52.20 - - [10/Jun/2025 07:10:22] "POST /login HTTP/1.1" 200 -
+ERROR - No se pudo establecer conexión con la base de datos
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 26.127.52.20 - - [10/Jun/2025 07:10:25] "POST /login HTTP/1.1" 200 -
+ERROR - No se pudo establecer conexión con la base de datos
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 26.127.52.20 - - [10/Jun/2025 07:10:54] "POST /login HTTP/1.1" 200 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:12:45] "GET /login HTTP/1.1" 200 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:13:10] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:13:42] "GET /dashboard HTTP/1.1" 200 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:14:02] "GET /dashboard HTTP/1.1" 200 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:14:04] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - Se obtuvieron 3 roles
+ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexión con la base de datos
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:03] "GET /admin HTTP/1.1" 200 -
+ERROR - No se pudo establecer conexión con la base de datos
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:08] "[32mGET /admin HTTP/1.1[0m" 302 -
+ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexión con la base de datos
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:08] "GET /dashboard HTTP/1.1" 200 -
+ERROR - No se pudo establecer conexión con la base de datos
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:10] "[32mGET /admin HTTP/1.1[0m" 302 -
+ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexión con la base de datos
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:10] "GET /dashboard HTTP/1.1" 200 -
+ERROR - No se pudo establecer conexión con la base de datos
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:12] "[32mGET /logout HTTP/1.1[0m" 302 -
+INFO - 26.127.52.20 - - [10/Jun/2025 07:17:12] "GET /login HTTP/1.1" 200 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.61:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 26.127.52.20 - - [10/Jun/2025 07:20:50] "GET /login HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:20:54] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:20:54] "GET /login?next=http://192.168.137.61:5000/ HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:20:55] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:21:01] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:21:04] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:21:15] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:00] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:04] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:28] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:31] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:34] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:36] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:39] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:42] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:22:44] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:31:44] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:33:51] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 1 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:33:59] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.61:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.137.61 - - [10/Jun/2025 07:43:43] "GET / HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:45:54] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:47:14] "GET /admin HTTP/1.1" 200 -
+INFO - Rol actualizado exitosamente: ID 1
+INFO - 192.168.137.61 - - [10/Jun/2025 07:47:32] "[32mPOST /admin/roles/1/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:47:39] "GET /admin HTTP/1.1" 200 -
+INFO - Rol actualizado exitosamente: ID 1
+INFO - 192.168.137.61 - - [10/Jun/2025 07:47:52] "[32mPOST /admin/roles/1/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:47:58] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:48:13] "GET /admin HTTP/1.1" 200 -
+INFO - Rol actualizado exitosamente: ID 1
+INFO - 192.168.137.61 - - [10/Jun/2025 07:49:21] "[32mPOST /admin/roles/1/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:49:27] "GET /admin HTTP/1.1" 200 -
+INFO - Rol actualizado exitosamente: ID 1
+INFO - 192.168.137.61 - - [10/Jun/2025 07:50:03] "[32mPOST /admin/roles/1/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:50:10] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:55:15] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:55:24] "GET /admin/logs/buscar?q=rol HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:55:28] "GET /admin/logs/exportar?accion=rol HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:55:50] "GET /admin/logs/buscar HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 07:56:18] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:56:25] "GET /admin HTTP/1.1" 200 -
+ERROR - Error al crear rol: null value in column "display_name" of relation "roles" violates not-null constraint
+DETAIL:  Failing row contains (4, visualizador, null, Visualiza nomas, 2025-06-10 12:56:57.208059+00).
+
+INFO - 192.168.137.61 - - [10/Jun/2025 07:56:56] "[32mPOST /admin/roles/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 07:57:03] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.61:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:02:24] "GET /admin HTTP/1.1" 200 -
+INFO - Rol creado exitosamente: visualizador
+INFO - 192.168.137.61 - - [10/Jun/2025 08:02:43] "[32mPOST /admin/roles/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:02:49] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.61:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.137.61 - - [10/Jun/2025 08:10:48] "GET / HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "GET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "GET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "GET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.61:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:16:00] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 5 tiene 0 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:16:08] "GET /admin/roles/5/permisos HTTP/1.1" 200 -
+INFO - Rol 5 tiene 0 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:16:26] "GET /admin/roles/5/permisos HTTP/1.1" 200 -
+INFO - Rol 3 tiene 4 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:16:28] "GET /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Rol eliminado exitosamente: visualizador
+INFO - 192.168.137.61 - - [10/Jun/2025 08:16:33] "[32mPOST /admin/roles/5/eliminar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:16:40] "GET /admin HTTP/1.1" 200 -
+INFO - Rol creado exitosamente: visor
+INFO - 192.168.137.61 - - [10/Jun/2025 08:17:38] "[32mPOST /admin/roles/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:17:45] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 6 tiene 0 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:18:05] "GET /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Permisos asignados exitosamente al rol ID 6
+INFO - 192.168.137.61 - - [10/Jun/2025 08:18:10] "POST /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:18:18] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 6 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:18:28] "GET /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Rol 6 tiene 9 permisos asignados
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:19:06] "GET /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Permisos asignados exitosamente al rol ID 6
+INFO - 192.168.137.61 - - [10/Jun/2025 08:19:15] "POST /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:19:22] "GET /admin HTTP/1.1" 200 -
+INFO - Rol actualizado exitosamente: ID 6
+INFO - 192.168.137.61 - - [10/Jun/2025 08:20:23] "[32mPOST /admin/roles/6/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:20:30] "GET /admin HTTP/1.1" 200 -
+INFO - Rol actualizado exitosamente: ID 6
+INFO - 192.168.137.61 - - [10/Jun/2025 08:21:27] "[32mPOST /admin/roles/6/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:21:33] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:21:51] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:50:28] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:50:29] "[36mGET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:50:29] "[36mGET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:50:29] "[36mGET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.137.61:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 192.168.137.61 - - [10/Jun/2025 08:50:59] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:50:59] "[36mGET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:51:00] "[36mGET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO - 192.168.137.61 - - [10/Jun/2025 08:51:00] "[36mGET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.9.37:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 10.40.9.37 - - [10/Jun/2025 09:04:02] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:04:04] "GET /login?next=http://10.40.9.37:5000/ HTTP/1.1" 200 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:04:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:04:24] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:04:31] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 9 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:04:51] "GET /admin HTTP/1.1" 200 -
+INFO - Permiso creado exitosamente: general
+INFO - 10.40.9.37 - - [10/Jun/2025 09:05:26] "[32mPOST /admin/permisos/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:05:43] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 6 tiene 1 permisos asignados
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:06:25] "GET /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Permisos asignados exitosamente al rol ID 6
+INFO - 10.40.9.37 - - [10/Jun/2025 09:06:40] "POST /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:06:51] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 6 tiene 1 permisos asignados
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:07:18] "GET /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Rol 6 tiene 1 permisos asignados
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:07:22] "GET /admin/roles/6/permisos HTTP/1.1" 200 -
+INFO - Rol 3 tiene 4 permisos asignados
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:07:35] "GET /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Rol 3 tiene 4 permisos asignados
+INFO - Permisos asignados exitosamente al rol ID 3
+INFO - 10.40.9.37 - - [10/Jun/2025 09:07:38] "POST /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:07:38] "GET /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:07:48] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.9.37:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:20:09] "GET /admin HTTP/1.1" 200 -
+INFO - Permiso actualizado exitosamente: ID 10
+INFO - 10.40.9.37 - - [10/Jun/2025 09:21:41] "POST /admin/permisos/10/actualizar HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:22:01] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:38:18] "GET /admin HTTP/1.1" 200 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:38:47] "[32mGET /logout HTTP/1.1[0m" 302 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:38:47] "GET /login HTTP/1.1" 200 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:38:55] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 10.40.9.37 - - [10/Jun/2025 09:38:58] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:39:09] "GET /admin HTTP/1.1" 200 -
+INFO - Rol eliminado exitosamente: visor
+INFO - 10.40.9.37 - - [10/Jun/2025 09:40:15] "[32mPOST /admin/roles/6/eliminar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.9.37 - - [10/Jun/2025 09:40:23] "GET /admin HTTP/1.1" 200 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.178.241 - - [10/Jun/2025 09:58:25] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 192.168.178.241 - - [10/Jun/2025 09:58:25] "GET /login?next=http://192.168.178.241:5000/ HTTP/1.1" 200 -
+INFO - 192.168.178.241 - - [10/Jun/2025 09:58:32] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 192.168.178.241 - - [10/Jun/2025 09:58:41] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 192.168.178.241 - - [10/Jun/2025 09:58:47] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 09:59:07] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 10:00:22] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 10:07:16] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.28.166:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 10.40.28.166 - - [10/Jun/2025 10:20:32] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 10.40.28.166 - - [10/Jun/2025 10:20:32] "GET /login?next=http://10.40.28.166:5000/ HTTP/1.1" 200 -
+INFO - 10.40.28.166 - - [10/Jun/2025 10:20:34] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 10.40.28.166 - - [10/Jun/2025 10:20:40] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 10.40.28.166 - - [10/Jun/2025 10:20:43] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:21:02] "GET /admin HTTP/1.1" 200 -
+INFO - Permiso creado exitosamente: general2
+INFO - 10.40.28.166 - - [10/Jun/2025 10:21:30] "[32mPOST /admin/permisos/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:21:36] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 3 tiene 4 permisos asignados
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:22:27] "GET /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Rol 3 tiene 4 permisos asignados
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:25:16] "GET /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Permisos asignados exitosamente al rol ID 3
+INFO - 10.40.28.166 - - [10/Jun/2025 10:25:22] "POST /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:25:29] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:28:12] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:28:48] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:29:15] "GET /admin HTTP/1.1" 200 -
+WARNING - No se puede eliminar el permiso ID 10: está asignado a 1 rol(es)
+INFO - 10.40.28.166 - - [10/Jun/2025 10:29:35] "[32mPOST /admin/permisos/10/eliminar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 3 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:29:41] "GET /admin HTTP/1.1" 200 -
+INFO - Rol creado exitosamente: Administrador
+INFO - 10.40.28.166 - - [10/Jun/2025 10:30:24] "[32mPOST /admin/roles/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:30:31] "GET /admin HTTP/1.1" 200 -
+WARNING - No se puede eliminar el rol ID 1: tiene 1 usuarios asignados
+INFO - 10.40.28.166 - - [10/Jun/2025 10:30:44] "[32mPOST /admin/roles/1/eliminar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:30:50] "GET /admin HTTP/1.1" 200 -
+INFO - Rol 3 tiene 5 permisos asignados
+INFO - Se obtuvieron 11 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:31:21] "GET /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Permisos asignados exitosamente al rol ID 3
+INFO - 10.40.28.166 - - [10/Jun/2025 10:31:27] "POST /admin/roles/3/permisos HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - Permiso eliminado exitosamente: ID 11
+INFO - 10.40.28.166 - - [10/Jun/2025 10:31:34] "[32mPOST /admin/permisos/11/eliminar HTTP/1.1[0m" 302 -
+INFO - 10.40.28.166 - - [10/Jun/2025 10:31:34] "GET /admin HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 10 permisos
+INFO - 10.40.28.166 - - [10/Jun/2025 10:31:40] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Permisos básicos del sistema inicializados
+INFO - Permisos del sistema inicializados
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Permisos básicos del sistema inicializados
+INFO - Permisos del sistema inicializados
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.178.241 - - [10/Jun/2025 13:56:39] "GET / HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 13:56:50] "GET /admin HTTP/1.1" 200 -
+INFO - Permisos básicos del sistema inicializados
+INFO - Permisos del sistema inicializados
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Permisos básicos del sistema inicializados
+INFO - Permisos del sistema inicializados
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.178.241 - - [10/Jun/2025 13:58:32] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 13:58:41] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 127.0.0.1 - - [10/Jun/2025 13:59:39] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [10/Jun/2025 13:59:39] "GET /login?next=http://127.0.0.1:5000/ HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [10/Jun/2025 13:59:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 127.0.0.1 - - [10/Jun/2025 13:59:46] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [10/Jun/2025 13:59:50] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 127.0.0.1 - - [10/Jun/2025 14:00:02] "GET /admin HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [10/Jun/2025 14:00:15] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 127.0.0.1 - - [10/Jun/2025 14:00:25] "GET /admin HTTP/1.1" 200 -
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 127.0.0.1 - - [10/Jun/2025 15:12:56] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO - 192.168.178.241 - - [10/Jun/2025 15:14:24] "GET / HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 15:14:36] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.178.241 - - [10/Jun/2025 15:32:57] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 25 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 15:33:06] "GET /admin HTTP/1.1" 200 -
+INFO - Permiso creado exitosamente: mipermiso
+INFO - 192.168.178.241 - - [10/Jun/2025 15:35:18] "[32mPOST /admin/permisos/nuevo HTTP/1.1[0m" 302 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 26 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 15:35:28] "GET /admin HTTP/1.1" 200 -
+INFO - 192.168.178.241 - - [10/Jun/2025 15:37:26] "GET /detecciones HTTP/1.1" 200 -
+INFO - Se obtuvieron 4 roles
+INFO - Se obtuvieron 26 permisos
+INFO - 192.168.178.241 - - [10/Jun/2025 15:37:44] "GET /admin HTTP/1.1" 200 -

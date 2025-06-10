@@ -88,14 +88,20 @@
                                             {% endif %}
                                         </td>
                                         <td>{{ usuario.last_login|default('Nunca', true) }}</td>
+                                        <!-- Reemplazar la sección de acciones en la tabla de usuarios: -->
                                         <td class="text-center actions">
-                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar usuario" 
+                                                onclick="editarUsuario({{ usuario.id }}, '{{ usuario.username|replace("'", "\\'") }}', '{{ usuario.email|replace("'", "\\'") }}', '{{ (usuario.first_name or '')|replace("'", "\\'") }}', '{{ (usuario.last_name or '')|replace("'", "\\'") }}', {{ usuario.role_id or 'null' }}, {{ 'true' if usuario.is_active else 'false' }})">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                            {% if usuario.id != session.user_id %}
+                                            <button class="btn btn-sm btn-outline-danger" title="Eliminar usuario" 
+                                                onclick="eliminarUsuario({{ usuario.id }}, '{{ usuario.username|replace("'", "\\'") }}')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-secondary" title="Cambiar contraseña">
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-secondary" title="Cambiar contraseña" 
+                                                onclick="cambiarPassword({{ usuario.id }}, '{{ usuario.username|replace("'", "\\'") }}')">
                                                 <i class="fas fa-key"></i>
                                             </button>
                                         </td>
@@ -129,11 +135,13 @@
                     <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
                         <div class="d-flex justify-content-between mb-3">
                             <h5>Roles del Sistema</h5>
-                            <button class="btn btn-sm btn-primary">
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalNuevoRol">
                                 <i class="fas fa-plus me-1"></i> Nuevo Rol
                             </button>
                         </div>
 
+                        <!-- Reemplazar toda la sección de la tabla de roles (líneas 150-180 aproximadamente): -->
                         <div class="table-responsive mb-4">
                             <table class="table table-hover table-admin">
                                 <thead>
@@ -147,62 +155,52 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for rol in roles %}
                                     <tr>
-                                        <td>1</td>
-                                        <td>admin</td>
-                                        <td>Administrador del Sistema</td>
-                                        <td>1</td>
+                                        <td>{{ rol.id }}</td>
+                                        <td>{{ rol.display_name or rol.name }}</td>
+                                        <td>{{ rol.description }}</td>
+                                        <td>{{ rol.user_count }}</td>
                                         <td>
-                                            <span class="badge rounded-pill bg-secondary">9 permisos</span>
+                                            <span class="badge rounded-pill bg-secondary">{{ rol.permission_count }}
+                                                permisos</span>
                                         </td>
                                         <td class="text-center actions">
-                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar"
+                                                onclick="editarRol({{ rol.id }}, '{{ rol.name|replace("'", "\\'") }}', '{{ (rol.display_name or rol.name)|replace("'", "\\'") }}', '{{ (rol.description or '')|replace("'", "\\'") }}')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-info" title="Ver permisos">
-                                                <i class="fas fa-eye"></i>
+                                            <button class="btn btn-sm btn-outline-info" title="Gestionar permisos"
+                                                onclick="gestionarPermisos({{ rol.id }}, '{{ (rol.display_name or rol.name)|replace("'", "\\'") }}')">
+                                                <i class="fas fa-key"></i>
                                             </button>
+                                            <!-- Botón Eliminar -->
+                                            
+                                            <button class="btn btn-sm btn-outline-danger" title="Eliminar rol"
+                                                onclick="eliminarRol({{ rol.id }}, '{{ (rol.display_name or rol.name)|replace("'", "\\'") }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            
                                         </td>
                                     </tr>
+                                    {% else %}
                                     <tr>
-                                        <td>2</td>
-                                        <td>analyst</td>
-                                        <td>Analista de seguridad</td>
-                                        <td>0</td>
-                                        <td>
-                                            <span class="badge rounded-pill bg-secondary">6 permisos</span>
-                                        </td>
-                                        <td class="text-center actions">
-                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-info" title="Ver permisos">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </td>
+                                        <td colspan="6" class="text-center py-3">No hay roles para mostrar.</td>
                                     </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>viewer</td>
-                                        <td>Visor de datos</td>
-                                        <td>0</td>
-                                        <td>
-                                            <span class="badge rounded-pill bg-secondary">4 permisos</span>
-                                        </td>
-                                        <td class="text-center actions">
-                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-info" title="Ver permisos">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
 
-                        <h5>Permisos del Sistema</h5>
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5>Permisos del Sistema</h5>
+                            <button class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                data-bs-target="#modalNuevoPermiso">
+                                <i class="fas fa-plus me-1"></i> Nuevo Permiso
+                            </button>
+                        </div>
+
+                                                <!-- Reemplazar la tabla de permisos con esta versión simplificada: -->
                         <div class="table-responsive">
                             <table class="table table-hover table-admin">
                                 <thead>
@@ -210,31 +208,48 @@
                                         <th>ID</th>
                                         <th>Nombre</th>
                                         <th>Descripción</th>
+                                        <th>Roles Asignados</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for permiso in permisos %}
                                     <tr>
-                                        <td>1</td>
-                                        <td>ver_dashboard</td>
-                                        <td>Ver Dashboard</td>
+                                        <td>{{ permiso.id }}</td>
+                                        <td>
+                                            <strong>{{ permiso.name }}</strong>
+                                        </td>
+                                        <td>{{ permiso.description or 'Sin descripción' }}</td>
+                                        <td>
+                                            {% set role_count = permiso.role_count|int %}
+                                            <span class="badge {{ 'bg-warning' if role_count > 0 else 'bg-success' }}">
+                                                {{ role_count }} rol{{ 'es' if role_count != 1 else '' }}
+                                            </span>
+                                        </td>
                                         <td class="text-center actions">
-                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <!-- Botón Editar -->
+                                            <button class="btn btn-sm btn-outline-primary" title="Editar permiso" 
+                                                onclick="editarPermiso({{ permiso.id }}, '{{ permiso.name|replace("'", "\\'") }}', '{{ permiso.name|replace("'", "\\'") }}', '{{ (permiso.description or '')|replace("'", "\\'") }}', 'general')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
+                                            
+                                            <!-- Botón Eliminar -->
+                                            
+                                                <button class="btn btn-sm btn-outline-danger" title="Eliminar permiso" 
+                                                    onclick="eliminarPermiso({{ permiso.id }}, '{{ permiso.name|replace("'", "\\'") }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            
                                         </td>
                                     </tr>
+                                    {% else %}
                                     <tr>
-                                        <td>2</td>
-                                        <td>ver_detecciones</td>
-                                        <td>Ver Detecciones</td>
-                                        <td class="text-center actions">
-                                            <button class="btn btn-sm btn-outline-primary" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                                        <td colspan="5" class="text-center py-3">
+                                            <i class="fas fa-info-circle text-muted"></i>
+                                            No hay permisos para mostrar.
                                         </td>
                                     </tr>
-                                    <!-- Más permisos aquí -->
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -244,35 +259,44 @@
                     <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
                         <h5 class="mb-4">Configuración del Sistema</h5>
 
-                        <form>
+                        <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+                            method="POST">
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">Configuración General</h6>
+                                            <h6 class="mb-0">Configuración del Servidor Federado</h6>
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3">
-                                                <label for="siteName" class="form-label">Nombre del Sitio</label>
-                                                <input type="text" class="form-control" id="siteName"
-                                                    value="IDS Federado">
+                                                <label for="federated_server_host" class="form-label">Host del
+                                                    Servidor</label>
+                                                <input type="text" class="form-control" id="federated_server_host"
+                                                    name="federated_server_host"
+                                                    value="{{ configuracion.federated_server_host or 'localhost' }}"
+                                                    required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="siteDescription" class="form-label">Descripción</label>
-                                                <textarea class="form-control" id="siteDescription"
-                                                    rows="2">Sistema de Detección de Intrusiones Federado</textarea>
+                                                <label for="federated_server_port" class="form-label">Puerto del
+                                                    Servidor</label>
+                                                <input type="number" class="form-control" id="federated_server_port"
+                                                    name="federated_server_port" min="1" max="65535"
+                                                    value="{{ configuracion.federated_server_port or '8080' }}"
+                                                    required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="adminEmail" class="form-label">Email de
-                                                    Administración</label>
-                                                <input type="email" class="form-control" id="adminEmail"
-                                                    value="admin@example.com">
+                                                <label for="aggregation_rounds" class="form-label">Rondas de
+                                                    Agregación</label>
+                                                <input type="number" class="form-control" id="aggregation_rounds"
+                                                    name="aggregation_rounds" min="1" max="100"
+                                                    value="{{ configuracion.aggregation_rounds or '10' }}" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="sessionTimeout" class="form-label">Tiempo de Expiración de
-                                                    Sesión (horas)</label>
-                                                <input type="number" class="form-control" id="sessionTimeout" min="1"
-                                                    max="24" value="8">
+                                                <label for="min_clients_per_round" class="form-label">Mínimo de Clientes
+                                                    por Ronda</label>
+                                                <input type="number" class="form-control" id="min_clients_per_round"
+                                                    name="min_clients_per_round" min="1" max="50"
+                                                    value="{{ configuracion.min_clients_per_round or '3' }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -281,34 +305,37 @@
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">Seguridad</h6>
+                                            <h6 class="mb-0">Configuración de Modelos</h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="forceSSL" checked>
-                                                <label class="form-check-label" for="forceSSL">Forzar SSL</label>
-                                            </div>
-                                            <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="allowRegistration">
-                                                <label class="form-check-label" for="allowRegistration">Permitir
-                                                    Registro Público</label>
+                                            <div class="mb-3">
+                                                <label for="model_update_interval" class="form-label">Intervalo de
+                                                    Actualización de Modelo (horas)</label>
+                                                <input type="number" class="form-control" id="model_update_interval"
+                                                    name="model_update_interval" min="1" max="168"
+                                                    value="{{ configuracion.model_update_interval or '24' }}" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="maxLoginAttempts" class="form-label">Máximo de Intentos de
+                                                <label for="alert_notification_emails" class="form-label">Emails para
+                                                    Notificaciones</label>
+                                                <textarea class="form-control" id="alert_notification_emails"
+                                                    name="alert_notification_emails" rows="3"
+                                                    placeholder="email1@ejemplo.com, email2@ejemplo.com">{{ configuracion.alert_notification_emails or 'admin@ejemplo.com' }}</textarea>
+                                                <div class="form-text">Separe múltiples emails con comas</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="session_timeout" class="form-label">Tiempo de Expiración de
+                                                    Sesión (horas)</label>
+                                                <input type="number" class="form-control" id="session_timeout"
+                                                    name="session_timeout" min="1" max="24"
+                                                    value="{{ configuracion.session_timeout or '8' }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="max_login_attempts" class="form-label">Máximo de Intentos de
                                                     Login</label>
-                                                <input type="number" class="form-control" id="maxLoginAttempts" min="1"
-                                                    max="10" value="5">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="passwordPolicy" class="form-label">Política de
-                                                    Contraseñas</label>
-                                                <select class="form-select" id="passwordPolicy">
-                                                    <option value="1">Básica (mínimo 8 caracteres)</option>
-                                                    <option value="2" selected>Intermedia (8 caracteres, minúsculas,
-                                                        mayúsculas)</option>
-                                                    <option value="3">Fuerte (8 caracteres, minúsculas, mayúsculas,
-                                                        números, símbolos)</option>
-                                                </select>
+                                                <input type="number" class="form-control" id="max_login_attempts"
+                                                    name="max_login_attempts" min="1" max="10"
+                                                    value="{{ configuracion.max_login_attempts or '5' }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -319,24 +346,26 @@
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">API</h6>
+                                            <h6 class="mb-0">Configuración de Seguridad</h6>
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="enableAPI" checked>
-                                                <label class="form-check-label" for="enableAPI">Habilitar API</label>
+                                                <input type="checkbox" class="form-check-input" id="force_ssl"
+                                                    name="force_ssl" {{ 'checked' if configuracion.force_ssl else '' }}>
+                                                <label class="form-check-label" for="force_ssl">Forzar SSL</label>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="enable_api"
+                                                    name="enable_api" {{ 'checked' if configuracion.enable_api !=False
+                                                    else 'checked' }}>
+                                                <label class="form-check-label" for="enable_api">Habilitar API</label>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="apiTimeout" class="form-label">Tiempo de Expiración de
-                                                    Tokens (horas)</label>
-                                                <input type="number" class="form-control" id="apiTimeout" min="1"
-                                                    max="72" value="2">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="rateLimitPerMinute" class="form-label">Límite de Peticiones
-                                                    por Minuto</label>
-                                                <input type="number" class="form-control" id="rateLimitPerMinute"
-                                                    min="10" max="1000" value="60">
+                                                <label for="api_token_expiration" class="form-label">Tiempo de
+                                                    Expiración de Tokens API (horas)</label>
+                                                <input type="number" class="form-control" id="api_token_expiration"
+                                                    name="api_token_expiration" min="1" max="72"
+                                                    value="{{ configuracion.api_token_expiration or '2' }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -345,35 +374,41 @@
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">Notificaciones</h6>
+                                            <h6 class="mb-0">Configuración de Alertas</h6>
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="enableEmailAlerts"
-                                                    checked>
-                                                <label class="form-check-label" for="enableEmailAlerts">Habilitar
+                                                <input type="checkbox" class="form-check-input" id="enable_email_alerts"
+                                                    name="enable_email_alerts" {{ 'checked' if
+                                                    configuracion.enable_email_alerts !=False else 'checked' }}>
+                                                <label class="form-check-label" for="enable_email_alerts">Habilitar
                                                     Alertas por Email</label>
                                             </div>
-                                            <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="enableSmsAlerts">
-                                                <label class="form-check-label" for="enableSmsAlerts">Habilitar Alertas
-                                                    por SMS</label>
-                                            </div>
                                             <div class="mb-3">
-                                                <label for="severityThreshold" class="form-label">Umbral de Severidad
-                                                    para Alertas</label>
-                                                <select class="form-select" id="severityThreshold">
-                                                    <option value="low">Baja</option>
-                                                    <option value="medium" selected>Media</option>
-                                                    <option value="high">Alta</option>
-                                                    <option value="critical">Crítica</option>
+                                                <label for="alert_severity_threshold" class="form-label">Umbral de
+                                                    Severidad para Alertas</label>
+                                                <select class="form-select" id="alert_severity_threshold"
+                                                    name="alert_severity_threshold" required>
+                                                    <option value="low" {{ 'selected' if
+                                                        configuracion.alert_severity_threshold=='low' else '' }}>Baja
+                                                    </option>
+                                                    <option value="medium" {{ 'selected' if
+                                                        configuracion.alert_severity_threshold=='medium' or not
+                                                        configuracion.alert_severity_threshold else '' }}>Media</option>
+                                                    <option value="high" {{ 'selected' if
+                                                        configuracion.alert_severity_threshold=='high' else '' }}>Alta
+                                                    </option>
+                                                    <option value="critical" {{ 'selected' if
+                                                        configuracion.alert_severity_threshold=='critical' else '' }}>
+                                                        Crítica</option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="maxNotificationsPerHour" class="form-label">Máximo de
-                                                    Notificaciones por Hora</label>
-                                                <input type="number" class="form-control" id="maxNotificationsPerHour"
-                                                    min="1" max="100" value="10">
+                                                <label for="max_alerts_per_hour" class="form-label">Máximo de Alertas
+                                                    por Hora</label>
+                                                <input type="number" class="form-control" id="max_alerts_per_hour"
+                                                    name="max_alerts_per_hour" min="1" max="100"
+                                                    value="{{ configuracion.max_alerts_per_hour or '10' }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -381,10 +416,10 @@
                             </div>
 
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary btn-lg" id="btnGuardarConfig">
                                     <i class="fas fa-save me-1"></i> Guardar Configuración
                                 </button>
-                                <button type="button" class="btn btn-secondary ms-2">
+                                <button type="button" class="btn btn-secondary btn-lg ms-2" id="btnRestaurarConfig">
                                     <i class="fas fa-undo me-1"></i> Restaurar Valores por Defecto
                                 </button>
                             </div>
@@ -402,7 +437,6 @@
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
-                                <!-- Por: -->
                                 <button class="btn btn-outline-secondary" id="btnExportarLogs">
                                     <i class="fas fa-download me-1"></i> Exportar
                                 </button>
@@ -494,9 +528,9 @@
                         <label for="newRole" class="form-label">Rol</label>
                         <select class="form-select" id="newRole" required>
                             <option value="">Seleccione...</option>
-                            <option value="1">Administrador</option>
-                            <option value="2">Analista</option>
-                            <option value="3">Visor</option>
+                            {% for rol in roles %}
+                            <option value="{{ rol.id }}">{{ rol.display_name or rol.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
@@ -515,18 +549,444 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Crear Usuario</button>
+                <button type="button" class="btn btn-primary" id="btnCrearUsuario">Crear Usuario</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal para Editar Rol -->
+<div class="modal fade" id="modalEditarRol" tabindex="-1" aria-labelledby="modalEditarRolLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarRolLabel">Editar Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarRol">
+                    <div class="mb-3">
+                        <label for="editRolName" class="form-label">Nombre del Rol</label>
+                        <input type="text" class="form-control" id="editRolName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRolDisplayName" class="form-label">Nombre para Mostrar</label>
+                        <input type="text" class="form-control" id="editRolDisplayName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRolDescription" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="editRolDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarRol">
+                    <i class="fas fa-save me-1"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Nuevo Rol -->
+<div class="modal fade" id="modalNuevoRol" tabindex="-1" aria-labelledby="modalNuevoRolLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNuevoRolLabel">Crear Nuevo Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('crear_rol_route') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="rolName" class="form-label">Nombre del Rol</label>
+                        <input type="text" class="form-control" id="rolName" name="name" required>
+                        <div class="form-text">Nombre interno del rol (ej: editor, supervisor)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rolDisplayName" class="form-label">Nombre para Mostrar</label>
+                        <input type="text" class="form-control" id="rolDisplayName" name="display_name" required>
+                        <div class="form-text">Nombre que se mostrará en la interfaz</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rolDescription" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="rolDescription" name="description" rows="3"
+                            placeholder="Describe las responsabilidades de este rol..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Crear Rol
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Nuevo Permiso -->
+<div class="modal fade" id="modalNuevoPermiso" tabindex="-1" aria-labelledby="modalNuevoPermisoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNuevoPermisoLabel">Crear Nuevo Permiso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('crear_permiso_route') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="permisoName" class="form-label">Nombre del Permiso</label>
+                        <input type="text" class="form-control" id="permisoName" name="name" required>
+                        <div class="form-text">Nombre interno del permiso (ej: ver_reportes, editar_usuarios)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="permisoDisplayName" class="form-label">Nombre para Mostrar</label>
+                        <input type="text" class="form-control" id="permisoDisplayName" name="display_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="permisoDescription" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="permisoDescription" name="description" rows="3"
+                            placeholder="Describe qué permite hacer este permiso..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="permisoModule" class="form-label">Módulo</label>
+                        <select class="form-select" id="permisoModule" name="module" required>
+                            <option value="">Seleccione un módulo</option>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="detecciones">Detecciones</option>
+                            <option value="clientes">Clientes</option>
+                            <option value="reportes">Reportes</option>
+                            <option value="admin">Administración</option>
+                            <option value="api">API</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i> Crear Permiso
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Permiso -->
+<div class="modal fade" id="modalEditarPermiso" tabindex="-1" aria-labelledby="modalEditarPermisoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarPermisoLabel">Editar Permiso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarPermiso" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editPermisoName" class="form-label">Nombre del Permiso</label>
+                        <input type="text" class="form-control" id="editPermisoName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPermisoDisplayName" class="form-label">Nombre para Mostrar</label>
+                        <input type="text" class="form-control" id="editPermisoDisplayName" name="display_name"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPermisoDescription" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="editPermisoDescription" name="description"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPermisoModule" class="form-label">Módulo</label>
+                        <select class="form-select" id="editPermisoModule" name="module" required>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="detecciones">Detecciones</option>
+                            <option value="clientes">Clientes</option>
+                            <option value="reportes">Reportes</option>
+                            <option value="admin">Administración</option>
+                            <option value="api">API</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarPermiso">
+                        <i class="fas fa-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Gestionar Permisos -->
+<div class="modal fade" id="modalGestionarPermisos" tabindex="-1" aria-labelledby="modalGestionarPermisosLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalGestionarPermisosLabel">Gestionar Permisos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formGestionarPermisos" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="buscarPermisos" class="form-label">Buscar Permisos</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="buscarPermisos"
+                                        placeholder="Buscar permisos...">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscarPermisos">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-outline-success btn-sm"
+                                        id="btnSeleccionarTodos">
+                                        <i class="fas fa-check-square me-1"></i> Seleccionar Todos
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning btn-sm"
+                                        id="btnDeseleccionarTodos">
+                                        <i class="fas fa-square me-1"></i> Deseleccionar Todos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="permisosContainer" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Aquí se cargarán los permisos dinámicamente -->
+                        <div class="text-center py-3">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p class="mt-2">Cargando permisos...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarPermisos">
+                        <i class="fas fa-save me-1"></i> Guardar Permisos
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Usuario -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarUsuarioLabel">Editar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarUsuario">
+                    <div class="mb-3">
+                        <label for="editUsername" class="form-label">Nombre de Usuario</label>
+                        <input type="text" class="form-control" id="editUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="editFirstName" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editFirstName">
+                        </div>
+                        <div class="col">
+                            <label for="editLastName" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="editLastName">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRole" class="form-label">Rol</label>
+                        <select class="form-select" id="editRole" required>
+                            <option value="">Seleccione...</option>
+                            {% for rol in roles %}
+                            <option value="{{ rol.id }}">{{ rol.display_name or rol.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editIsActive">
+                        <label class="form-check-label" for="editIsActive">Usuario Activo</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarUsuario">
+                    <i class="fas fa-save me-1"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Cambiar Contraseña -->
+<div class="modal fade" id="modalCambiarPassword" tabindex="-1" aria-labelledby="modalCambiarPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCambiarPasswordLabel">Cambiar Contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCambiarPassword">
+                    <div class="mb-3">
+                        <label for="nuevaPassword" class="form-label">Nueva Contraseña</label>
+                        <input type="password" class="form-control" id="nuevaPassword" required minlength="6">
+                        <div class="form-text">La contraseña debe tener al menos 6 caracteres</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmarPassword" class="form-label">Confirmar Contraseña</label>
+                        <input type="password" class="form-control" id="confirmarPassword" required minlength="6">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnCambiarPassword">
+                    <i class="fas fa-key me-1"></i> Cambiar Contraseña
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agregar estilos CSS mejorados -->
+<style>
+    /* Estilos mejorados para la selección de permisos */
+    .permiso-item .form-check {
+        transition: all 0.3s ease;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: #ffffff;
+    }
+
+    .permiso-item .form-check:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .permiso-item .form-check.selected {
+        background-color: #e7f3ff !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.25);
+    }
+
+    .permiso-item .form-check.selected .form-check-label {
+        color: #0d6efd;
+    }
+
+    .permiso-item .form-check.selected .form-check-label strong {
+        color: #0c63e4;
+        font-weight: 600;
+    }
+
+    .modulo-permisos {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        background-color: #
+        transition: all 0.2s ease;
+        border-width: 2px;
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        transform: scale(1.05);
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+
+    .form-check-input:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Estilos para botones de selección masiva */
+    .btn-outline-success:hover,
+    .btn-outline-warning:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mejorar la visualización del contenedor de permisos */
+    #permisosContainer {
+        background-color: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    /* Animaciones de carga */
+    .spinner-border-sm {
+        animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Mejorar estilos de los botones por módulo */
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 4px;
+    }
+
+    /* Estilos para el contador de permisos */
+    .badge.rounded-pill {
+        font-size: 0.7em;
+        padding: 0.25em 0.6em;
+    }
+
+    /* Hover effects para las filas de la tabla */
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    /* Estilos para los botones de acción */
+    .actions .btn {
+        margin: 0 2px;
+        transition: all 0.2s ease;
+    }
+
+    .actions .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Código JavaScript específico para la página de administración
-
         // Inicializar tooltips para los botones de acción
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -551,132 +1011,122 @@
             });
         });
 
-        // =============== NUEVA FUNCIONALIDAD PARA EXPORTAR LOGS ===============
+        // =============== FUNCIONALIDAD PARA ROLES Y PERMISOS ===============
 
-        // Manejar exportación de logs
-        const btnExportarLogs = document.getElementById('btnExportarLogs');
-        if (btnExportarLogs) {
-            btnExportarLogs.addEventListener('click', function() {
-                exportarLogs();
+        // Manejar edición de rol
+        const btnGuardarRol = document.getElementById('btnGuardarRol');
+        if (btnGuardarRol) {
+            btnGuardarRol.addEventListener('click', function () {
+                const id = document.getElementById('formEditarRol').getAttribute('data-id');
+                const name = document.getElementById('editRolName').value.trim();
+                const displayName = document.getElementById('editRolDisplayName').value.trim();
+                const description = document.getElementById('editRolDescription').value.trim();
+
+                if (!name || !displayName) {
+                    return mostrarToast('El nombre y el nombre para mostrar son obligatorios', 'error');
+                }
+
+                // Mostrar indicador de carga
+                const originalText = btnGuardarRol.innerHTML;
+                btnGuardarRol.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+                btnGuardarRol.disabled = true;
+
+                // Enviar datos por AJAX
+                fetch(`/admin/roles/${id}/actualizar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `name=${encodeURIComponent(name)}&display_name=${encodeURIComponent(displayName)}&description=${encodeURIComponent(description)}`
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            mostrarToast('Rol actualizado exitosamente', 'success');
+                            setTimeout(() => location.reload(), 1000);
+
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarRol'));
+                            modal?.hide();
+                        } else {
+                            mostrarToast('Error al actualizar rol: ' + (data.error || 'Desconocido'), 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al actualizar rol:', error);
+                        mostrarToast('Error al actualizar rol', 'error');
+                    })
+                    .finally(() => {
+                        btnGuardarRol.innerHTML = originalText;
+                        btnGuardarRol.disabled = false;
+                    });
             });
         }
 
-        // Manejar búsqueda en logs
-        const searchLogsInput = document.querySelector('#logs input[type="text"]');
-        if (searchLogsInput) {
-            let searchTimeout;
-            searchLogsInput.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    buscarLogs(this.value);
-                }, 500);
+        // Manejar gestión de permisos
+        const btnGuardarPermisos = document.getElementById('btnGuardarPermisos');
+        if (btnGuardarPermisos) {
+            btnGuardarPermisos.addEventListener('click', function (e) {
+                e.preventDefault();
+                guardarPermisosRol();
+            });
+        }
+
+        // Manejar búsqueda de permisos
+        const buscarPermisos = document.getElementById('buscarPermisos');
+        if (buscarPermisos) {
+            buscarPermisos.addEventListener('input', function () {
+                filtrarPermisos(this.value);
+            });
+        }
+
+        // Manejar seleccionar/deseleccionar todos
+        const btnSeleccionarTodos = document.getElementById('btnSeleccionarTodos');
+        const btnDeseleccionarTodos = document.getElementById('btnDeseleccionarTodos');
+
+        if (btnSeleccionarTodos) {
+            btnSeleccionarTodos.addEventListener('click', function () {
+                const checkboxes = document.querySelectorAll('#permisosContainer input[type="checkbox"]:not([style*="none"])');
+                checkboxes.forEach(checkbox => {
+                    if (!checkbox.checked) {
+                        checkbox.checked = true;
+                        checkbox.closest('.form-check').classList.add('selected');
+
+                        // Trigger change event
+                        const event = new Event('change', { bubbles: true });
+                        checkbox.dispatchEvent(event);
+                    }
+                });
+            });
+        }
+
+        if (btnDeseleccionarTodos) {
+            btnDeseleccionarTodos.addEventListener('click', function () {
+                const checkboxes = document.querySelectorAll('#permisosContainer input[type="checkbox"]:not([style*="none"])');
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        checkbox.checked = false;
+                        checkbox.closest('.form-check').classList.remove('selected');
+
+                        // Trigger change event
+                        const event = new Event('change', { bubbles: true });
+                        checkbox.dispatchEvent(event);
+                    }
+                });
+            });
+        }
+
+        // Manejar edición de permisos
+        const btnGuardarPermiso = document.getElementById('btnGuardarPermiso');
+        if (btnGuardarPermiso) {
+            btnGuardarPermiso.addEventListener('click', function () {
+                guardarCambiosPermiso();
             });
         }
     });
 
-    // Función para exportar logs
-    function exportarLogs() {
-        // Obtener filtros actuales
-        const searchValue = document.querySelector('#logs input[type="text"]')?.value || '';
-
-        // Construir parámetros de URL
-        const params = new URLSearchParams();
-        if (searchValue) {
-            params.append('accion', searchValue);
-        }
-
-        // Agregar otros filtros si existen
-        // params.append('usuario', '');
-        // params.append('fecha_inicio', '');
-        // params.append('fecha_fin', '');
-
-        // Mostrar indicador de carga
-        const originalText = document.getElementById('btnExportarLogs').innerHTML;
-        document.getElementById('btnExportarLogs').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Exportando...';
-        document.getElementById('btnExportarLogs').disabled = true;
-
-        // Realizar la descarga
-        const url = `/admin/logs/exportar?${params.toString()}`;
-
-        // Crear enlace temporal para descarga
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'logs_sistema.csv';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Restaurar botón después de un momento
-        setTimeout(() => {
-            document.getElementById('btnExportarLogs').innerHTML = originalText;
-            document.getElementById('btnExportarLogs').disabled = false;
-        }, 2000);
-
-        // Mostrar mensaje de éxito
-        mostrarToast('Logs exportados exitosamente', 'success');
-    }
-
-    // Función para buscar logs (opcional - para búsqueda en tiempo real)
-    function buscarLogs(query) {
-        if (query.length < 3 && query.length > 0) return; // Buscar solo si hay 3+ caracteres o está vacío
-
-        const params = new URLSearchParams();
-        if (query) {
-            params.append('q', query);
-        }
-
-        fetch(`/admin/logs/buscar?${params.toString()}`)
-            .then(response => response.json())
-            .then(data => {
-                actualizarTablaLogs(data.logs);
-            })
-            .catch(error => {
-                console.error('Error al buscar logs:', error);
-                mostrarToast('Error al buscar logs', 'error');
-            });
-    }
-
-    // Función para actualizar la tabla de logs
-    function actualizarTablaLogs(logs) {
-        const tbody = document.querySelector('#logs table tbody');
-        if (!tbody) return;
-
-        if (logs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3">No hay logs para mostrar.</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = logs.map(log => `
-            <tr>
-                <td>${log.id}</td>
-                <td>${formatearFecha(log.timestamp)}</td>
-                <td>${log.username || 'Sistema'}</td>
-                <td>${log.message || log.action}</td>
-                <td>${log.details || ''}</td>
-                <td>${log.ip_address || ''}</td>
-            </tr>
-        `).join('');
-    }
-
-    // Función para formatear fecha
-    function formatearFecha(timestamp) {
-        if (!timestamp) return '';
-        const fecha = new Date(timestamp);
-        return fecha.toLocaleString('es-ES', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-    }
-
     // Función para mostrar toasts/notificaciones
     function mostrarToast(mensaje, tipo = 'info') {
-        // Crear toast dinámicamente
         const toastContainer = document.getElementById('toast-container') || crearToastContainer();
-
         const toastId = 'toast-' + Date.now();
         const toastClass = tipo === 'success' ? 'bg-success' : tipo === 'error' ? 'bg-danger' : 'bg-info';
 
@@ -700,7 +1150,7 @@
         toast.show();
 
         // Eliminar toast después de que se oculte
-        toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.addEventListener('hidden.bs.toast', function () {
             toastElement.remove();
         });
     }
@@ -713,6 +1163,608 @@
         container.style.zIndex = '1055';
         document.body.appendChild(container);
         return container;
+    }
+
+    // Función para gestionar permisos
+    window.gestionarPermisos = function (roleId, roleName) {
+        document.getElementById('modalGestionarPermisosLabel').textContent = `Gestionar Permisos - ${roleName}`;
+        document.getElementById('formGestionarPermisos').setAttribute('data-role-id', roleId);
+
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalGestionarPermisos'));
+        modal.show();
+
+        // Cargar permisos del rol
+        fetch(`/admin/roles/${roleId}/permisos`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    cargarPermisos(data.todos_permisos, data.permisos_rol);
+                } else {
+                    throw new Error(data.error || 'Error al cargar permisos');
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar permisos:', error);
+                document.getElementById('permisosContainer').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error al cargar permisos del rol: ${error.message}
+                    </div>
+                `;
+            });
+    }
+    window.eliminarPermiso = function (id, displayName) {
+        if (confirm(`¿Está seguro de que desea eliminar el permiso "${displayName}"?\n\nEsta acción no se puede deshacer.`)) {
+
+            // Crear formulario para envío POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/permisos/${id}/eliminar`;
+
+            // Agregar token CSRF si es necesario
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+
+            // Enviar formulario
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Agregar confirmación adicional para permisos críticos
+    const permisosEsenciales = ['admin_access', 'manage_users', 'manage_roles', 'manage_permissions'];
+
+    window.eliminarPermisoSeguro = function (id, name, displayName) {
+        let mensaje = `¿Está seguro de que desea eliminar el permiso "${displayName}"?`;
+
+        if (permisosEsenciales.includes(name)) {
+            mensaje += `\n\n⚠️ ADVERTENCIA: Este es un permiso esencial del sistema.`;
+            mensaje += `\nEliminarlo puede afectar el funcionamiento normal de la aplicación.`;
+        }
+
+        mensaje += `\n\nEsta acción no se puede deshacer.`;
+
+        if (confirm(mensaje)) {
+            eliminarPermiso(id, displayName);
+        }
+    }
+    // Función para cargar permisos con estilos mejorados
+    function cargarPermisos(todosPermisos, permisosRol) {
+        const container = document.getElementById('permisosContainer');
+
+        if (!todosPermisos || todosPermisos.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No hay permisos disponibles en el sistema
+                </div>
+            `;
+            return;
+        }
+
+        // Agrupar permisos por módulo
+        const permisosPorModulo = {};
+        todosPermisos.forEach(permiso => {
+            const modulo = permiso.module || 'general';
+            if (!permisosPorModulo[modulo]) {
+                permisosPorModulo[modulo] = [];
+            }
+            permisosPorModulo[modulo].push(permiso);
+        });
+
+        // Generar HTML
+        let html = '';
+        const modulos = Object.keys(permisosPorModulo).sort();
+
+        modulos.forEach(modulo => {
+            html += `
+                <div class="mb-4 modulo-permisos" data-modulo="${modulo}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-primary mb-0">
+                            <i class="fas fa-folder-open me-1"></i>
+                            ${modulo.charAt(0).toUpperCase() + modulo.slice(1)}
+                        </h6>
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted me-3">${permisosPorModulo[modulo].length} permiso(s)</small>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="seleccionarTodosModulo('${modulo}')" title="Seleccionar todos los permisos de este módulo">
+                                    <i class="fas fa-check-square"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm" onclick="deseleccionarTodosModulo('${modulo}')" title="Deseleccionar todos los permisos de este módulo">
+                                    <i class="fas fa-square"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+            `;
+
+            permisosPorModulo[modulo].forEach(permiso => {
+                const checked = permisosRol.includes(permiso.id) ? 'checked' : '';
+                const selectedClass = permisosRol.includes(permiso.id) ? 'selected' : '';
+
+                html += `
+                    <div class="col-md-6 mb-3 permiso-item" data-permiso-name="${permiso.name.toLowerCase()}" data-permiso-desc="${(permiso.description || '').toLowerCase()}">
+                        <div class="form-check p-3 border rounded ${selectedClass}" data-permiso-id="${permiso.id}">
+                            <input class="form-check-input" type="checkbox" value="${permiso.id}" 
+                                   id="permiso_${permiso.id}" name="permissions" ${checked}>
+                            <label class="form-check-label w-100" for="permiso_${permiso.id}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <strong class="d-block">${permiso.display_name || permiso.name}</strong>
+                                        <small class="text-muted">${permiso.description || 'Sin descripción'}</small>
+                                    </div>
+                                    <small class="text-muted ms-2">#${permiso.id}</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Agregar event listeners para los checkboxes con animaciones
+        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const card = this.closest('.form-check');
+                if (this.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+
+                // Actualizar contador de seleccionados
+                actualizarContadorSeleccionados();
+            });
+        });
+
+        // Actualizar contador inicial
+        actualizarContadorSeleccionados();
+    }
+
+    // Función para seleccionar todos los permisos de un módulo
+    function seleccionarTodosModulo(modulo) {
+        const moduloElement = document.querySelector(`[data-modulo="${modulo}"]`);
+        const checkboxes = moduloElement.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                checkbox.closest('.form-check').classList.add('selected');
+
+                // Trigger change event
+                const event = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(event);
+            }
+        });
+    }
+
+    // Función para deseleccionar todos los permisos de un módulo
+    function deseleccionarTodosModulo(modulo) {
+        const moduloElement = document.querySelector(`[data-modulo="${modulo}"]`);
+        const checkboxes = moduloElement.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                checkbox.closest('.form-check').classList.remove('selected');
+
+                // Trigger change event
+                const event = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(event);
+            }
+        });
+    }
+
+    // Función para actualizar contador de permisos seleccionados
+    function actualizarContadorSeleccionados() {
+        const checkboxes = document.querySelectorAll('#permisosContainer input[type="checkbox"]:checked');
+        const total = document.querySelectorAll('#permisosContainer input[type="checkbox"]').length;
+
+        // Actualizar el título del modal
+        const modalTitle = document.getElementById('modalGestionarPermisosLabel');
+        const baseTitle = modalTitle.textContent.split(' (')[0];
+        modalTitle.textContent = `${baseTitle} (${checkboxes.length}/${total} seleccionados)`;
+    }
+
+    // Función para filtrar permisos
+    function filtrarPermisos(query) {
+        const items = document.querySelectorAll('.permiso-item');
+        const modulos = document.querySelectorAll('.modulo-permisos');
+
+        query = query.toLowerCase();
+
+        if (!query) {
+            // Mostrar todos
+            items.forEach(item => item.style.display = 'block');
+            modulos.forEach(modulo => modulo.style.display = 'block');
+            return;
+        }
+
+        modulos.forEach(modulo => {
+            let tienePermisosVisibles = false;
+            const permisosEnModulo = modulo.querySelectorAll('.permiso-item');
+
+            permisosEnModulo.forEach(item => {
+                const nombre = item.getAttribute('data-permiso-name');
+                const descripcion = item.getAttribute('data-permiso-desc');
+
+                if (nombre.includes(query) || descripcion.includes(query)) {
+                    item.style.display = 'block';
+                    tienePermisosVisibles = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            modulo.style.display = tienePermisosVisibles ? 'block' : 'none';
+        });
+    }
+
+    // Función para guardar permisos del rol
+    function guardarPermisosRol() {
+        const roleId = document.getElementById('formGestionarPermisos').getAttribute('data-role-id');
+        const checkboxes = document.querySelectorAll('#permisosContainer input[type="checkbox"]:checked');
+        const permissionIds = Array.from(checkboxes).map(cb => cb.value);
+
+        // Mostrar indicador de carga
+        const btnGuardar = document.getElementById('btnGuardarPermisos');
+        const originalText = btnGuardar.innerHTML;
+        btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+        btnGuardar.disabled = true;
+
+        // Enviar datos
+        const formData = new FormData();
+        permissionIds.forEach(id => formData.append('permissions', id));
+
+        fetch(`/admin/roles/${roleId}/permisos`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarToast('Permisos actualizados exitosamente', 'success');
+                    setTimeout(() => location.reload(), 1000);
+
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalGestionarPermisos'));
+                    modal?.hide();
+                } else {
+                    mostrarToast('Error al actualizar permisos: ' + (data.error || 'Desconocido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar permisos:', error);
+                mostrarToast('Error al guardar permisos del rol', 'error');
+            })
+            .finally(() => {
+                btnGuardar.innerHTML = originalText;
+                btnGuardar.disabled = false;
+            });
+    }
+
+    // Función para editar rol
+    function editarRol(id, name, displayName, description) {
+        document.getElementById('editRolName').value = name;
+        document.getElementById('editRolDisplayName').value = displayName;
+        document.getElementById('editRolDescription').value = description;
+        document.getElementById('formEditarRol').setAttribute('data-id', id);
+
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarRol'));
+        modal.show();
+    }
+
+    // Función para editar permiso
+    function editarPermiso(id, name, displayName, description, module) {
+        document.getElementById('editPermisoName').value = name;
+        document.getElementById('editPermisoDisplayName').value = displayName;
+        document.getElementById('editPermisoDescription').value = description;
+        document.getElementById('editPermisoModule').value = module || 'general';
+        document.getElementById('formEditarPermiso').setAttribute('data-id', id);
+
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarPermiso'));
+        modal.show();
+    }
+
+    // Función para guardar cambios de permiso
+    function guardarCambiosPermiso() {
+        const id = document.getElementById('formEditarPermiso').getAttribute('data-id');
+        const name = document.getElementById('editPermisoName').value.trim();
+        const displayName = document.getElementById('editPermisoDisplayName').value.trim();
+        const description = document.getElementById('editPermisoDescription').value.trim();
+        const module = document.getElementById('editPermisoModule').value;
+
+        if (!name || !displayName) {
+            return mostrarToast('El nombre y el nombre para mostrar son obligatorios', 'error');
+        }
+
+        // Mostrar indicador de carga
+        const btnGuardar = document.getElementById('btnGuardarPermiso');
+        const originalText = btnGuardar.innerHTML;
+        btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+        btnGuardar.disabled = true;
+
+        // Enviar datos
+        fetch(`/admin/permisos/${id}/actualizar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `name=${encodeURIComponent(name)}&display_name=${encodeURIComponent(displayName)}&description=${encodeURIComponent(description)}&module=${encodeURIComponent(module)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarToast('Permiso actualizado exitosamente', 'success');
+                    setTimeout(() => location.reload(), 1000);
+
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarPermiso'));
+                    modal?.hide();
+                } else {
+                    mostrarToast('Error al actualizar permiso: ' + (data.error || 'Desconocido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar permiso:', error);
+                mostrarToast('Error al actualizar permiso', 'error');
+            })
+            .finally(() => {
+                btnGuardar.innerHTML = originalText;
+                btnGuardar.disabled = false;
+            });
+    }
+
+    // Manejar eliminación de rol
+    window.eliminarRol = function (id, displayName) {
+        if (confirm(`¿Está seguro de que desea eliminar el rol "${displayName}"?`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/roles/${id}/eliminar`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // =============== FUNCIONALIDAD PARA USUARIOS ===============
+
+    // Variables globales para usuarios
+    let usuarioEditandoId = null;
+
+    // Manejar creación de nuevo usuario
+    const btnCrearUsuario = document.getElementById('btnCrearUsuario');
+    if (btnCrearUsuario) {
+        btnCrearUsuario.addEventListener('click', function() {
+            if (validarFormularioNuevoUsuario()) {
+                document.getElementById('formNuevoUsuario').submit();
+            }
+        });
+    }
+
+    // Función para validar formulario de nuevo usuario
+    function validarFormularioNuevoUsuario() {
+        const username = document.getElementById('newUsername').value.trim();
+        const email = document.getElementById('newEmail').value.trim();
+        const firstName = document.getElementById('newFirstName').value.trim();
+        const lastName = document.getElementById('newLastName').value.trim();
+        const roleId = document.getElementById('newRole').value;
+        const password = document.getElementById('newPassword').value;
+        const passwordConfirm = document.getElementById('newPasswordConfirm').value;
+
+        // Validaciones
+        if (!username || !email || !roleId || !password) {
+            mostrarToast('Todos los campos obligatorios deben ser completados', 'error');
+            return false;
+        }
+
+        if (password !== passwordConfirm) {
+            mostrarToast('Las contraseñas no coinciden', 'error');
+            return false;
+        }
+
+        if (password.length < 6) {
+            mostrarToast('La contraseña debe tener al menos 6 caracteres', 'error');
+            return false;
+        }
+
+        // Validar email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            mostrarToast('El formato del email no es válido', 'error');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Función para editar usuario
+    window.editarUsuario = function(id, username, email, firstName, lastName, roleId, isActive) {
+        usuarioEditandoId = id;
+        
+        // Llenar modal de edición
+        document.getElementById('editUsername').value = username;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editFirstName').value = firstName || '';
+        document.getElementById('editLastName').value = lastName || '';
+        document.getElementById('editRole').value = roleId;
+        document.getElementById('editIsActive').checked = isActive;
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
+        modal.show();
+    }
+
+    // Función para eliminar usuario
+    window.eliminarUsuario = function(id, username) {
+        if (confirm(`¿Está seguro de que desea eliminar el usuario "${username}"?\n\nEsta acción no se puede deshacer.`)) {
+            // Crear formulario para envío POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/usuarios/${id}/eliminar`;
+            
+            // Enviar formulario
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Función para cambiar contraseña
+    window.cambiarPassword = function(id, username) {
+        document.getElementById('modalCambiarPasswordLabel').textContent = `Cambiar Contraseña - ${username}`;
+        document.getElementById('formCambiarPassword').setAttribute('data-user-id', id);
+        
+        // Limpiar campos
+        document.getElementById('nuevaPassword').value = '';
+        document.getElementById('confirmarPassword').value = '';
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalCambiarPassword'));
+        modal.show();
+    }
+
+    // Manejar guardado de cambios de usuario
+    const btnGuardarUsuario = document.getElementById('btnGuardarUsuario');
+    if (btnGuardarUsuario) {
+        btnGuardarUsuario.addEventListener('click', function() {
+            if (!usuarioEditandoId) return;
+            
+            const datos = {
+                username: document.getElementById('editUsername').value.trim(),
+                email: document.getElementById('editEmail').value.trim(),
+                first_name: document.getElementById('editFirstName').value.trim(),
+                last_name: document.getElementById('editLastName').value.trim(),
+                role_id: document.getElementById('editRole').value,
+                is_active: document.getElementById('editIsActive').checked ? 'on' : ''
+            };
+            
+            // Validaciones
+            if (!datos.username || !datos.email || !datos.role_id) {
+                return mostrarToast('Username, email y rol son obligatorios', 'error');
+            }
+            
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(datos.email)) {
+                return mostrarToast('El formato del email no es válido', 'error');
+            }
+            
+            // Mostrar indicador de carga
+            const originalText = btnGuardarUsuario.innerHTML;
+            btnGuardarUsuario.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+            btnGuardarUsuario.disabled = true;
+            
+            // Enviar datos por AJAX
+            const formData = new FormData();
+            Object.keys(datos).forEach(key => {
+                formData.append(key, datos[key]);
+            });
+            
+            fetch(`/admin/usuarios/${usuarioEditandoId}/actualizar`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarToast('Usuario actualizado exitosamente', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+                    modal?.hide();
+                } else {
+                    mostrarToast('Error al actualizar usuario: ' + (data.error || 'Desconocido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar usuario:', error);
+                mostrarToast('Error al actualizar usuario', 'error');
+            })
+            .finally(() => {
+                                              btnGuardarUsuario.innerHTML = originalText;
+                btnGuardarUsuario.disabled = false;
+            });
+        });
+    }
+
+    // Manejar cambio de contraseña
+    const btnCambiarPassword = document.getElementById('btnCambiarPassword');
+    if (btnCambiarPassword) {
+        btnCambiarPassword.addEventListener('click', function() {
+            const userId = document.getElementById('formCambiarPassword').getAttribute('data-user-id');
+            const nuevaPassword = document.getElementById('nuevaPassword').value;
+            const confirmarPassword = document.getElementById('confirmarPassword').value;
+            
+            // Validaciones
+            if (!nuevaPassword || nuevaPassword.length < 6) {
+                return mostrarToast('La contraseña debe tener al menos 6 caracteres', 'error');
+            }
+            
+            if (nuevaPassword !== confirmarPassword) {
+                return mostrarToast('Las contraseñas no coinciden', 'error');
+            }
+            
+            // Mostrar indicador de carga
+            const originalText = btnCambiarPassword.innerHTML;
+            btnCambiarPassword.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Cambiando...';
+            btnCambiarPassword.disabled = true;
+            
+            // Enviar datos por AJAX
+            const formData = new FormData();
+            formData.append('nueva_password', nuevaPassword);
+            formData.append('confirmar_password', confirmarPassword);
+            
+            fetch(`/admin/usuarios/${userId}/cambiar-password`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then data => {
+                if (data.success) {
+                    mostrarToast('Contraseña actualizada exitosamente', 'success');
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarPassword'));
+                    modal?.hide();
+                } else {
+                    mostrarToast('Error al cambiar contraseña: ' + (data.error || 'Desconocido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error al cambiar contraseña:', error);
+                mostrarToast('Error al cambiar contraseña', 'error');
+            })
+            .finally(() => {
+                btnCambiarPassword.innerHTML = originalText;
+                btnCambiarPassword.disabled = false;
+            });
+        });
+    }
+
+    // Funcionalidad de búsqueda de usuarios
+    const searchUsers = document.getElementById('searchUsers');
+    if (searchUsers) {
+        searchUsers.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#users tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
     }
 </script>
 {% endblock %}

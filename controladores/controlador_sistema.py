@@ -193,7 +193,15 @@ def obtener_configuracion_por_defecto():
         'aggregation_rounds': '10',
         'min_clients_per_round': '3',
         'model_update_interval': '24',
-        'alert_notification_emails': 'admin@ejemplo.com'
+        'alert_notification_emails': 'admin@ejemplo.com',
+        'session_timeout': '8',
+        'max_login_attempts': '5',
+        'force_ssl': False,
+        'enable_api': True,
+        'api_token_expiration': '2',
+        'enable_email_alerts': True,
+        'alert_severity_threshold': 'medium',
+        'max_alerts_per_hour': '10'
     }
 
 def actualizar_configuracion_sistema(configuracion, usuario_id=None):
@@ -229,6 +237,14 @@ def actualizar_configuracion_sistema(configuracion, usuario_id=None):
                     min_clients_per_round INTEGER DEFAULT 3,
                     model_update_interval INTEGER DEFAULT 24,
                     alert_notification_emails TEXT,
+                    session_timeout INTEGER DEFAULT 8,
+                    max_login_attempts INTEGER DEFAULT 5,
+                    force_ssl BOOLEAN DEFAULT FALSE,
+                    enable_api BOOLEAN DEFAULT TRUE,
+                    api_token_expiration INTEGER DEFAULT 2,
+                    enable_email_alerts BOOLEAN DEFAULT TRUE,
+                    alert_severity_threshold VARCHAR(20) DEFAULT 'medium',
+                    max_alerts_per_hour INTEGER DEFAULT 10,
                     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                     updated_by INTEGER REFERENCES users(id)
                 )
@@ -238,8 +254,11 @@ def actualizar_configuracion_sistema(configuracion, usuario_id=None):
                 cursor.execute("""
                 INSERT INTO system_configuration 
                 (federated_server_host, federated_server_port, aggregation_rounds, 
-                 min_clients_per_round, model_update_interval, alert_notification_emails, updated_by)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                 min_clients_per_round, model_update_interval, alert_notification_emails,
+                 session_timeout, max_login_attempts, force_ssl, enable_api,
+                 api_token_expiration, enable_email_alerts, alert_severity_threshold,
+                 max_alerts_per_hour, updated_by)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
                     configuracion.get('federated_server_host', 'localhost'),
                     configuracion.get('federated_server_port', '8080'),
@@ -247,6 +266,14 @@ def actualizar_configuracion_sistema(configuracion, usuario_id=None):
                     int(configuracion.get('min_clients_per_round', 3)),
                     int(configuracion.get('model_update_interval', 24)),
                     configuracion.get('alert_notification_emails', ''),
+                    int(configuracion.get('session_timeout', 8)),
+                    int(configuracion.get('max_login_attempts', 5)),
+                    configuracion.get('force_ssl') == 'on',
+                    configuracion.get('enable_api') == 'on',
+                    int(configuracion.get('api_token_expiration', 2)),
+                    configuracion.get('enable_email_alerts') == 'on',
+                    configuracion.get('alert_severity_threshold', 'medium'),
+                    int(configuracion.get('max_alerts_per_hour', 10)),
                     usuario_id
                 ))
             else:
@@ -259,6 +286,14 @@ def actualizar_configuracion_sistema(configuracion, usuario_id=None):
                     min_clients_per_round = %s,
                     model_update_interval = %s,
                     alert_notification_emails = %s,
+                    session_timeout = %s,
+                    max_login_attempts = %s,
+                    force_ssl = %s,
+                    enable_api = %s,
+                    api_token_expiration = %s,
+                    enable_email_alerts = %s,
+                    alert_severity_threshold = %s,
+                    max_alerts_per_hour = %s,
                     updated_at = CURRENT_TIMESTAMP,
                     updated_by = %s
                 WHERE id = (SELECT MIN(id) FROM system_configuration)
@@ -269,6 +304,14 @@ def actualizar_configuracion_sistema(configuracion, usuario_id=None):
                     int(configuracion.get('min_clients_per_round', 3)),
                     int(configuracion.get('model_update_interval', 24)),
                     configuracion.get('alert_notification_emails', ''),
+                    int(configuracion.get('session_timeout', 8)),
+                    int(configuracion.get('max_login_attempts', 5)),
+                    configuracion.get('force_ssl') == 'on',
+                    configuracion.get('enable_api') == 'on',
+                    int(configuracion.get('api_token_expiration', 2)),
+                    configuracion.get('enable_email_alerts') == 'on',
+                    configuracion.get('alert_severity_threshold', 'medium'),
+                    int(configuracion.get('max_alerts_per_hour', 10)),
                     usuario_id
                 ))
             

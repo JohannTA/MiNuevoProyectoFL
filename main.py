@@ -27,6 +27,11 @@ from controladores.controlador_reportes import (
 )
 from controladores.controlador_dashboard import obtener_datos_dashboard
 from controladores.controlador_sistema import obtener_logs_sistema, obtener_configuracion_sistema, actualizar_configuracion_sistema
+from controladores.controlador_roles import (
+    obtener_roles, obtener_permisos, obtener_permisos_rol, crear_rol,
+    actualizar_rol, eliminar_rol, asignar_permisos_rol, crear_permiso, eliminar_permiso,
+    verificar_permiso_usuario, inicializar_permisos_sistema
+)
 
 # Configurar logging
 logging.basicConfig(
@@ -580,6 +585,10 @@ def admin():
     # Listar usuarios para la pestaña de usuarios
     usuarios = listar_usuarios()
     
+    # Obtener roles y permisos
+    roles = obtener_roles()
+    permisos = obtener_permisos()
+    
     # Obtener logs del sistema
     logs = obtener_logs_sistema(limit=100)
     
@@ -589,119 +598,366 @@ def admin():
     return render_template('admin.html', 
                            user=user, 
                            usuarios=usuarios, 
+                           roles=roles,
+                           permisos=permisos,
                            logs=logs,
                            configuracion=configuracion)
 
-@app.route('/admin/usuarios/nuevo', methods=['POST'])
+# AGREGAR estas rutas después de exportar_logs() y antes de if __name__ == "__main__":
+
+#---------------------------------------------------------
+# Rutas de gestión de usuarios
+#---------------------------------------------------------
+
+@app.route('/admin/usuarios/crear', methods=['POST'])
 @admin_required
 def crear_usuario_route():
-    datos = {
-        'username': request.form.get('username'),
-        'email': request.form.get('email'),
-        'password': request.form.get('password'),
-        'role_id': request.form.get('role_id', type=int),
-        'first_name': request.form.get('first_name'),
-        'last_name': request.form.get('last_name')
-    }
-    
-    if not datos['username'] or not datos['email'] or not datos['password'] or not datos['role_id']:
-        flash('Todos los campos obligatorios deben ser completados', 'warning')
-        return redirect(url_for('admin'))
-    
-    usuario = crear_usuario(datos, session['user_id'])
-    
-    if usuario:
-        flash('Usuario creado exitosamente', 'success')
-        registrar_actividad_usuario(
-            session['user_id'],
-            'crear_usuario',
-            f'Usuario {datos["username"]} creado',
-            request.remote_addr
-        )
-    else:
-        flash('Error al crear el usuario', 'danger')
-    
-    return redirect(url_for('admin'))
-
-@app.route('/admin/usuarios/<int:usuario_id>/actualizar', methods=['POST'])
-@admin_required
-def actualizar_usuario_route(usuario_id):
-    datos = {
-        'username': request.form.get('username'),
-        'email': request.form.get('email'),
-        'role_id': request.form.get('role_id', type=int),
-        'first_name': request.form.get('first_name'),
-        'last_name': request.form.get('last_name'),
-        'is_active': request.form.get('is_active') == 'on'
-    }
-    
-    # Si se proporciona una nueva contraseña, incluirla
-    password = request.form.get('password')
-    if password:
-        datos['password'] = password
-    
-    exito = actualizar_usuario(usuario_id, datos, session['user_id'])
-    
-    if exito:
-        flash('Usuario actualizado exitosamente', 'success')
-        registrar_actividad_usuario(
-            session['user_id'],
-            'actualizar_usuario',
-            f'Usuario ID {usuario_id} actualizado',
-            request.remote_addr
-        )
-    else:
-        flash('Error al actualizar el usuario', 'danger')
+    try:
+        datos = {
+            'username': request.form.get('username'),
+            'email': request.form.get('email'),
+            'first_name': request.form.get('first_name'),
+            'last_name': request.form.get('last_name'),
+            'password': request.form.get('password'),
+            'role_id': request.form.get('role_id'),
+            'is_active': request.form.get('is_active') == 'on'
+        }
+        
+        # Validaciones
+        if not datos['username'] or not datos['email'] or not datos['password']:
+            flash('Username, email y contraseña son obligatorios', 'danger')
+            return redirect(url_for('admin'))
+        
+        if not datos['role_id']:
+            flash('Debe seleccionar un rol', 'danger')
+            return redirect(url_for('admin'))
+        
+        # Crear usuario
+        nuevo_id = crear_usuario(datos, session['user_id'])
+        
+        if nuevo_id:
+            flash('Usuario creado exitosamente', 'success')
+            registrar_actividad_usuario(
+                session['user_id'],
+                'crear_usuario',
+                f'Usuario {datos["username"]} creado',
+                request.remote_addr
+            )
+        else:
+            flash('Error al crear el usuario', 'danger')
+            
+    except Exception as e:
+        logger.error(f"Error en crear_usuario_route: {e}")
+        flash('Error interno del servidor', 'danger')
     
     return redirect(url_for('admin'))
 
-@app.route('/admin/usuarios/<int:usuario_id>/eliminar', methods=['POST'])
+@app.route('/admin/usuarios/<int:user_id>/actualizar', methods=['POST'])
 @admin_required
-def eliminar_usuario_route(usuario_id):
-    # Evitar que un usuario se elimine a sí mismo
-    if usuario_id == session['user_id']:
-        flash('No puede eliminar su propio usuario', 'warning')
-        return redirect(url_for('admin'))
-    
-    exito = eliminar_usuario(usuario_id)
-    
-    if exito:
-        flash('Usuario eliminado exitosamente', 'success')
-        registrar_actividad_usuario(
-            session['user_id'],
-            'eliminar_usuario',
-            f'Usuario ID {usuario_id} eliminado',
-            request.remote_addr
-        )
-    else:
-        flash('Error al eliminar el usuario', 'danger')
+def actualizar_usuario_route(user_id):
+    try:
+        datos = {
+            'username': request.form.get('username'),
+            'email': request.form.get('email'),
+            'first_name': request.form.get('first_name'),
+            'last_name': request.form.get('last_name'),
+            'role_id': request.form.get('role_id'),
+            'is_active': request.form.get('is_active') == 'on'
+        }
+        
+        exito = actualizar_usuario(user_id, datos, session['user_id'])
+        
+        if exito:
+            return jsonify({'success': True, 'message': 'Usuario actualizado exitosamente'})
+        else:
+            return jsonify({'success': False, 'error': 'Error al actualizar usuario'})
+            
+    except Exception as e:
+        logger.error(f"Error en actualizar_usuario_route: {e}")
+        return jsonify({'success': False, 'error': 'Error interno del servidor'})
+
+@app.route('/admin/usuarios/<int:user_id>/eliminar', methods=['POST'])
+@admin_required
+def eliminar_usuario_route(user_id):
+    try:
+        # No permitir eliminar el propio usuario
+        if user_id == session['user_id']:
+            flash('No puedes eliminar tu propia cuenta', 'danger')
+            return redirect(url_for('admin'))
+        
+        exito = eliminar_usuario(user_id, session['user_id'])
+        
+        if exito:
+            flash('Usuario eliminado exitosamente', 'success')
+            registrar_actividad_usuario(
+                session['user_id'],
+                'eliminar_usuario',
+                f'Usuario ID {user_id} eliminado',
+                request.remote_addr
+            )
+        else:
+            flash('Error al eliminar el usuario', 'danger')
+            
+    except Exception as e:
+        logger.error(f"Error en eliminar_usuario_route: {e}")
+        flash('Error interno del servidor', 'danger')
     
     return redirect(url_for('admin'))
+
+@app.route('/admin/usuarios/<int:user_id>/cambiar-password', methods=['POST'])
+@admin_required
+def cambiar_password_usuario_route(user_id):
+    try:
+        nueva_password = request.form.get('nueva_password')
+        confirmar_password = request.form.get('confirmar_password')
+        
+        if not nueva_password or len(nueva_password) < 6:
+            return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'})
+        
+        if nueva_password != confirmar_password:
+            return jsonify({'success': False, 'error': 'Las contraseñas no coinciden'})
+        
+        # Necesitas implementar esta función en el controlador_usuario
+        from controladores.controlador_usuario import cambiar_password_usuario
+        exito = cambiar_password_usuario(user_id, nueva_password, session['user_id'])
+        
+        if exito:
+            return jsonify({'success': True, 'message': 'Contraseña actualizada exitosamente'})
+        else:
+            return jsonify({'success': False, 'error': 'Error al actualizar contraseña'})
+            
+    except Exception as e:
+        logger.error(f"Error en cambiar_password_usuario_route: {e}")
+        return jsonify({'success': False, 'error': 'Error interno del servidor'})
 
 @app.route('/admin/configuracion/actualizar', methods=['POST'])
 @admin_required
 def actualizar_configuracion_route():
-    configuracion = {
-        'federated_server_host': request.form.get('federated_server_host'),
-        'federated_server_port': request.form.get('federated_server_port'),
-        'aggregation_rounds': request.form.get('aggregation_rounds'),
-        'min_clients_per_round': request.form.get('min_clients_per_round'),
-        'model_update_interval': request.form.get('model_update_interval'),
-        'alert_notification_emails': request.form.get('alert_notification_emails')
+    try:
+        configuracion = {
+            'federated_server_host': request.form.get('federated_server_host'),
+            'federated_server_port': request.form.get('federated_server_port'),
+            'aggregation_rounds': request.form.get('aggregation_rounds'),
+            'min_clients_per_round': request.form.get('min_clients_per_round'),
+            'model_update_interval': request.form.get('model_update_interval'),
+            'alert_notification_emails': request.form.get('alert_notification_emails'),
+            'session_timeout': request.form.get('session_timeout'),
+            'max_login_attempts': request.form.get('max_login_attempts'),
+            'force_ssl': request.form.get('force_ssl'),
+            'enable_api': request.form.get('enable_api'),
+            'api_token_expiration': request.form.get('api_token_expiration'),
+            'enable_email_alerts': request.form.get('enable_email_alerts'),
+            'alert_severity_threshold': request.form.get('alert_severity_threshold'),
+            'max_alerts_per_hour': request.form.get('max_alerts_per_hour')
+        }
+        
+        # Validar campos obligatorios
+        campos_requeridos = [
+            'federated_server_host', 'federated_server_port', 'aggregation_rounds',
+            'min_clients_per_round', 'model_update_interval', 'session_timeout',
+            'max_login_attempts', 'api_token_expiration', 'alert_severity_threshold',
+            'max_alerts_per_hour'
+        ]
+        
+        for campo in campos_requeridos:
+            if not configuracion.get(campo):
+                flash(f'El campo {campo.replace("_", " ").title()} es obligatorio', 'warning')
+                return redirect(url_for('admin'))
+        
+        exito = actualizar_configuracion_sistema(configuracion, session['user_id'])
+        
+        if exito:
+            flash('Configuración actualizada exitosamente', 'success')
+            registrar_actividad_usuario(
+                session['user_id'],
+                'actualizar_configuracion',
+                'Configuración del sistema actualizada',
+                request.remote_addr
+            )
+        else:
+            flash('Error al actualizar la configuración', 'danger')
+        
+    except Exception as e:
+        logger.error(f"Error en actualizar_configuracion_route: {e}")
+        flash('Error al procesar la configuración', 'danger')
+    
+    return redirect(url_for('admin'))
+
+#---------------------------------------------------------
+# Rutas para gestión de roles y permisos
+#---------------------------------------------------------
+
+@app.route('/admin/roles/nuevo', methods=['POST'])
+@admin_required
+def crear_rol_route():
+    datos = {
+        'name': request.form.get('name'),
+        'display_name': request.form.get('display_name'),
+        'description': request.form.get('description')
     }
     
-    exito = actualizar_configuracion_sistema(configuracion, session['user_id'])
+    if not datos['name'] or not datos['display_name']:
+        flash('El nombre y nombre para mostrar son obligatorios', 'warning')
+        return redirect(url_for('admin'))
+    
+    rol = crear_rol(datos['name'], datos['display_name'], datos['description'], session['user_id'])
+    
+    if rol:
+        flash('Rol creado exitosamente', 'success')
+    else:
+        flash('Error al crear el rol', 'danger')
+    
+    return redirect(url_for('admin'))
+
+# Reemplazar la ruta actualizar_rol_route existente por esta versión corregida:
+@app.route('/admin/roles/<int:role_id>/actualizar', methods=['POST'])
+@admin_required
+def actualizar_rol_route(role_id):
+    try:
+        datos = {
+            'name': request.form.get('name'),
+            'display_name': request.form.get('display_name'),
+            'description': request.form.get('description')
+        }
+        
+        if not datos['name'] or not datos['display_name']:
+            return jsonify({'success': False, 'error': 'El nombre y nombre para mostrar son obligatorios'})
+        
+        exito = actualizar_rol(role_id, datos, session['user_id'])
+        
+        if exito:
+            return jsonify({'success': True, 'message': 'Rol actualizado exitosamente'})
+        else:
+            return jsonify({'success': False, 'error': 'Error al actualizar el rol'})
+            
+    except Exception as e:
+        logger.error(f"Error en actualizar_rol_route: {e}")
+        return jsonify({'success': False, 'error': 'Error interno del servidor'})
+@app.route('/admin/roles/<int:role_id>/eliminar', methods=['POST'])
+@admin_required
+def eliminar_rol_route(role_id):
+    exito = eliminar_rol(role_id, session['user_id'])
     
     if exito:
-        flash('Configuración actualizada exitosamente', 'success')
-        registrar_actividad_usuario(
-            session['user_id'],
-            'actualizar_configuracion',
-            'Configuración del sistema actualizada',
-            request.remote_addr
-        )
+        flash('Rol eliminado exitosamente', 'success')
     else:
-        flash('Error al actualizar la configuración', 'danger')
+        flash('Error al eliminar el rol. Verifique que no tenga usuarios asignados.', 'danger')
+    
+    return redirect(url_for('admin'))
+
+@app.route('/admin/permisos/nuevo', methods=['POST'])
+@admin_required
+def crear_permiso_route():
+    datos = {
+        'name': request.form.get('name'),
+        'display_name': request.form.get('display_name'),
+        'description': request.form.get('description'),
+        'module': request.form.get('module')
+    }
+    
+    if not datos['name'] or not datos['display_name']:
+        flash('El nombre y nombre para mostrar son obligatorios', 'warning')
+        return redirect(url_for('admin'))
+    
+    permiso = crear_permiso(
+        datos['name'],
+        datos['display_name'],
+        datos['description'],
+        datos['module'],
+        session['user_id']
+    )
+    
+    if permiso:
+        flash('Permiso creado exitosamente', 'success')
+    else:
+        flash('Error al crear el permiso', 'danger')
+    
+    return redirect(url_for('admin'))
+
+@app.route('/admin/roles/<int:role_id>/permisos', methods=['GET', 'POST'])
+@admin_required
+def gestionar_permisos_rol(role_id):
+    if request.method == 'POST':
+        try:
+            # Obtener permisos seleccionados
+            permission_ids = request.form.getlist('permissions')
+            permission_ids = [int(pid) for pid in permission_ids if pid.isdigit()]
+            
+            exito = asignar_permisos_rol(role_id, permission_ids, session['user_id'])
+            
+            if exito:
+                return jsonify({'success': True, 'message': 'Permisos actualizados exitosamente'})
+            else:
+                return jsonify({'success': False, 'error': 'Error al actualizar permisos'})
+                
+        except Exception as e:
+            logger.error(f"Error al actualizar permisos del rol: {e}")
+            return jsonify({'success': False, 'error': 'Error interno del servidor'})
+    
+    # GET: Devolver permisos del rol
+    try:
+        permisos_rol = obtener_permisos_rol(role_id)
+        todos_permisos = obtener_permisos()
+        
+        return jsonify({
+            'success': True,
+            'permisos_rol': [p['id'] for p in permisos_rol],
+            'todos_permisos': [dict(p) for p in todos_permisos]
+        })
+        
+    except Exception as e:
+        logger.error(f"Error al obtener permisos: {e}")
+        return jsonify({'success': False, 'error': 'Error al cargar permisos'})
+
+@app.route('/admin/permisos/<int:permiso_id>/actualizar', methods=['POST'])
+@admin_required
+def actualizar_permiso_route(permiso_id):
+    try:
+        datos = {
+            'name': request.form.get('name'),
+            'display_name': request.form.get('display_name'),
+            'description': request.form.get('description'),
+            'module': request.form.get('module', 'general')
+        }
+        
+        if not datos['name'] or not datos['display_name']:
+            return jsonify({'success': False, 'error': 'Nombre y nombre para mostrar son obligatorios'})
+        
+        # Actualizar permiso usando el controlador
+        from controladores.controlador_roles import actualizar_permiso
+        exito = actualizar_permiso(permiso_id, datos, session['user_id'])
+        
+        if exito:
+            return jsonify({'success': True, 'message': 'Permiso actualizado exitosamente'})
+        else:
+            return jsonify({'success': False, 'error': 'Error al actualizar el permiso'})
+            
+    except Exception as e:
+        logger.error(f"Error en actualizar_permiso_route: {e}")
+        return jsonify({'success': False, 'error': 'Error interno del servidor'})
+
+
+# Agregar esta ruta después de la ruta actualizar_permiso_route:
+@app.route('/admin/permisos/<int:permiso_id>/eliminar', methods=['POST'])
+@admin_required
+def eliminar_permiso_route(permiso_id):
+    try:
+        exito = eliminar_permiso(permiso_id, session['user_id'])
+        
+        if exito:
+            flash('Permiso eliminado exitosamente', 'success')
+            registrar_actividad_usuario(
+                session['user_id'],
+                'eliminar_permiso',
+                f'Permiso ID {permiso_id} eliminado',
+                request.remote_addr
+            )
+        else:
+            flash('Error al eliminar el permiso. Verifique que no esté asignado a ningún rol.', 'danger')
+        
+    except Exception as e:
+        logger.error(f"Error en eliminar_permiso_route: {e}")
+        flash('Error interno del servidor', 'danger')
     
     return redirect(url_for('admin'))
 
