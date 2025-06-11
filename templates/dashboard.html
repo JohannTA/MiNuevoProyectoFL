@@ -5,7 +5,7 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block page_actions %}
-<div class="btn-group">
+<div class="btn-group me-3">
     <button type="button" class="btn btn-outline-secondary" onclick="actualizarDashboard()">
         <i class="fas fa-sync-alt"></i> Actualizar
     </button>
@@ -19,12 +19,88 @@
         <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('30d')">Últimos 30 días</a></li>
     </ul>
 </div>
+
+<!-- Controles de Detector -->
+<div class="btn-group me-3">
+    <button type="button" id="btn-detector" class="btn btn-success" onclick="toggleDetector()">
+        <i class="fas fa-play" id="icon-detector"></i>
+        <span id="text-detector">Iniciar Detector</span>
+    </button>
+    <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fas fa-cog"></i>
+    </button>
+    <ul class="dropdown-menu">
+        <li><h6 class="dropdown-header">Configuración Detector</h6></li>
+        <li>
+            <div class="dropdown-item-text">
+                <small>Interfaz:</small>
+                <select class="form-select form-select-sm mt-1" id="interface-select">
+                    <option value="Ethernet">Ethernet</option>
+                    <option value="Wi-Fi">Wi-Fi</option>
+                    <option value="Bluetooth">Bluetooth</option>
+                </select>
+            </div>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <div class="dropdown-item-text">
+                <small>Umbral Normal:</small>
+                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" value="0.4" id="umbral-normal">
+                <small class="text-muted">Actual: <span id="valor-umbral-normal">0.4</span></small>
+            </div>
+        </li>
+        <li>
+            <div class="dropdown-item-text">
+                <small>Umbral Sospechoso:</small>
+                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" value="0.7" id="umbral-sospechoso">
+                <small class="text-muted">Actual: <span id="valor-umbral-sospechoso">0.7</span></small>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<!-- Controles de Aprendizaje Federado -->
+<div class="btn-group">
+    <button type="button" id="btn-federado" class="btn btn-primary" onclick="toggleFederado()">
+        <i class="fas fa-network-wired" id="icon-federado"></i>
+        <span id="text-federado">Iniciar Federado</span>
+    </button>
+    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fas fa-cog"></i>
+    </button>
+    <ul class="dropdown-menu">
+        <li><h6 class="dropdown-header">Configuración Federada</h6></li>
+        <li>
+            <div class="dropdown-item-text">
+                <small>Servidor:</small>
+                <input type="text" class="form-control form-control-sm mt-1" id="servidor-url" value="ws://localhost:5000" placeholder="ws://servidor:puerto">
+            </div>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <div class="dropdown-item-text">
+                <small>Modo Aprendizaje:</small>
+                <div class="form-check form-switch mt-1">
+                    <input class="form-check-input" type="checkbox" id="modo-aprendizaje">
+                    <label class="form-check-label" for="modo-aprendizaje">
+                        <small>Activar</small>
+                    </label>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="dropdown-item-text">
+                <small>Duración (seg):</small>
+                <input type="number" class="form-control form-control-sm mt-1" id="duracion-aprendizaje" value="300" min="60" max="3600">
+            </div>
+        </li>
+    </ul>
+</div>
 {% endblock %}
 
 {% block content %}
-<!-- Overview Cards Row -->
+<!-- Overview Cards -->
 <div class="row">
-    <!-- Total Detections Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
@@ -35,7 +111,7 @@
                             {{ datos.resumen.total_detecciones|default(0)|number_format }}
                         </div>
                         <div class="small mt-2 text-success">
-                            <i class="fas fa-chart-line"></i> 
+                            <i class="fas fa-chart-line"></i>
                             {{ datos.resumen.detecciones_24h|default(0) }} en 24h
                         </div>
                     </div>
@@ -47,19 +123,18 @@
         </div>
     </div>
 
-    <!-- Active Alerts Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-muted small mb-1">Alertas Pendientes</div>
-                        <div class="h3 mb-0 font-weight-bold text-warning" id="alertas-pendientes">
-                            {{ datos.resumen.pendientes_revision|default(0) }}
+                        <div class="text-muted small mb-1">Alertas Críticas</div>
+                        <div class="h3 mb-0 font-weight-bold text-danger" id="alertas-criticas">
+                            {{ datos.resumen.alertas_criticas|default(0) }}
                         </div>
-                        <div class="small mt-2 text-danger">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            {{ datos.resumen.alertas_criticas|default(0) }} críticas
+                        <div class="small mt-2 text-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Pendientes revisión
                         </div>
                     </div>
                     <div class="col-auto">
@@ -70,23 +145,18 @@
         </div>
     </div>
 
-    <!-- Connected Clients Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-muted small mb-1">Clientes Federados</div>
-                        <div class="h3 mb-0 font-weight-bold" id="clientes-conectados">
+                        <div class="text-muted small mb-1">Clientes Activos</div>
+                        <div class="h3 mb-0 font-weight-bold" id="clientes-activos">
                             {{ datos.resumen.clientes_activos|default(0) }}/{{ datos.resumen.total_clientes|default(0) }}
                         </div>
                         <div class="small mt-2 text-success">
-                            <i class="fas fa-check"></i> 
-                            {% if datos.resumen.clientes_activos == datos.resumen.total_clientes %}
-                                Todos activos
-                            {% else %}
-                                {{ datos.resumen.clientes_activos }} activos
-                            {% endif %}
+                            <i class="fas fa-check"></i>
+                            Federación activa
                         </div>
                     </div>
                     <div class="col-auto">
@@ -97,22 +167,21 @@
         </div>
     </div>
 
-    <!-- Model Version Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-muted small mb-1">Versión del Modelo</div>
-                        <div class="h3 mb-0 font-weight-bold" id="version-modelo">
-                            {{ datos.resumen.version_modelo|default('v1.0') }}
+                        <div class="text-muted small mb-1">Detecciones 1h</div>
+                        <div class="h3 mb-0 font-weight-bold" id="detecciones-1h">
+                            {{ datos.resumen.detecciones_1h|default(0) }}
                         </div>
                         <div class="small mt-2">
-                            <i class="fas fa-brain"></i> ML Activo
+                            <i class="fas fa-clock"></i> Última hora
                         </div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-brain fa-2x text-success"></i>
+                        <i class="fas fa-clock fa-2x text-success"></i>
                     </div>
                 </div>
             </div>
@@ -120,62 +189,111 @@
     </div>
 </div>
 
-<!-- Charts Row -->
-<div class="row">
-    <!-- Detection Trend Chart -->
-    <div class="col-lg-8 mb-4">
-        <div class="dashboard-card h-100">
-            <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Tendencia de Detecciones</h5>
+<!-- Panel de Estado del Sistema -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="m-0 font-weight-bold">
+                    <i class="fas fa-microchip"></i> Estado del Sistema IDS
+                </h5>
                 <div>
-                    <button class="btn btn-sm btn-outline-secondary period-button active" data-period="24h">24 Horas</button>
-                    <button class="btn btn-sm btn-outline-secondary period-button" data-period="7d">7 Días</button>
+                    <span class="badge bg-secondary me-2" id="connection-status">DESCONECTADO</span>
+                    <small class="text-muted" id="last-update">Nunca actualizado</small>
                 </div>
             </div>
             <div class="card-body">
-                <canvas id="detectionChart" height="300"></canvas>
-            </div>
-        </div>
-    </div>
+                <div class="row">
+                    <!-- Estado del Detector -->
+                    <div class="col-md-6">
+                        <div class="system-status-panel">
+                            <h6 class="text-primary">
+                                <i class="fas fa-shield-alt"></i> Detector de Flujos
+                            </h6>
+                            <div class="status-info">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Estado:</span>
+                                    <span class="badge bg-secondary" id="detector-status">DETENIDO</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Interfaz:</span>
+                                    <code id="detector-interface">-</code>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Paquetes procesados:</span>
+                                    <span id="detector-packets">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Flujos analizados:</span>
+                                    <span id="detector-flows">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Tiempo activo:</span>
+                                    <span id="detector-uptime">00:00:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- Attack Types Chart -->
-    <div class="col-lg-4 mb-4">
-        <div class="dashboard-card h-100">
-            <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Tipos de Ataques</h5>
-                <small class="text-muted">Últimos 30 días</small>
-            </div>
-            <div class="card-body">
-                <canvas id="attackTypesChart" height="300"></canvas>
+                    <!-- Estado del Sistema Federado -->
+                    <div class="col-md-6">
+                        <div class="system-status-panel">
+                            <h6 class="text-primary">
+                                <i class="fas fa-network-wired"></i> Sistema Federado
+                            </h6>
+                            <div class="status-info">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Estado:</span>
+                                    <span class="badge bg-secondary" id="federado-status">DETENIDO</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Servidor:</span>
+                                    <code id="federado-server">-</code>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Clientes conectados:</span>
+                                    <span id="federado-clients">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Última sincronización:</span>
+                                    <span id="federado-last-sync">Nunca</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Log de Actividad -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-list"></i> Log de Actividad del Sistema
+                        </h6>
+                        <div class="system-log" id="system-log">
+                            <div class="log-entry text-muted">
+                                <small>[Sistema] Esperando inicio de componentes...</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Severity Distribution and Recent Detections Row -->
+<!-- Detecciones Recientes -->
 <div class="row">
-    <!-- Severity Distribution -->
-    <div class="col-lg-4 mb-4">
+    <div class="col-12 mb-4">
         <div class="dashboard-card h-100">
-            <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Distribución por Severidad</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="severityChart" height="250"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Detections -->
-    <div class="col-lg-8 mb-4">
-        <div class="dashboard-card h-100">
-            <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Detecciones Recientes</h5>
-                <a href="{{ url_for('detecciones') }}" class="btn btn-sm btn-primary">Ver Todas</a>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="m-0 font-weight-bold">
+                    <i class="fas fa-list-alt"></i> Detecciones Recientes
+                </h5>
+                <span class="badge bg-success pulse-animation">EN VIVO</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" id="tabla-detecciones-recientes">
                         <thead class="bg-light">
                             <tr>
                                 <th scope="col">Cliente</th>
@@ -187,21 +305,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for deteccion in datos.recientes[:5] %}
+                            {% for deteccion in datos.recientes[:10] %}
                             <tr>
-                                <td>{{ deteccion.client_name }}</td>
-                                <td>{{ deteccion.attack_type|default('Desconocido') }}</td>
-                                <td>{{ deteccion.source_ip }}</td>
-                                <td>{{ deteccion.destination_ip }}</td>
+                                <td>{{ deteccion.client_name|default('Local') }}</td>
                                 <td>
-                                    <span class="status-circle 
-                                        {% if deteccion.severity == 'critical' %}status-alert
-                                        {% elif deteccion.severity == 'high' %}status-alert
-                                        {% elif deteccion.severity == 'medium' %}status-warning
-                                        {% else %}status-success{% endif %}"></span>
-                                    {{ deteccion.severity|title }}
+                                    <span class="badge bg-secondary">{{ deteccion.anomaly_type|default('Normal') }}</span>
                                 </td>
-                                <td>{{ deteccion.timestamp.strftime('%H:%M') if deteccion.timestamp else 'N/A' }}</td>
+                                <td><code>{{ deteccion.source_ip }}</code></td>
+                                <td><code>{{ deteccion.destination_ip }}</code></td>
+                                <td>
+                                    {% set severity = deteccion.severity|default('low') %}
+                                    {% if severity == 'critical' %}
+                                        <span class="badge bg-danger">CRÍTICO</span>
+                                    {% elif severity == 'high' %}
+                                        <span class="badge bg-warning">ALTO</span>
+                                    {% elif severity == 'medium' %}
+                                        <span class="badge bg-primary">MEDIO</span>
+                                    {% else %}
+                                        <span class="badge bg-info">BAJO</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ deteccion.timestamp.strftime('%H:%M:%S') if deteccion.timestamp else 'N/A' }}</td>
                             </tr>
                             {% else %}
                             <tr>
@@ -216,392 +340,624 @@
     </div>
 </div>
 
-<!-- Client Status Row -->
+<!-- Gráfico de Actividad -->
 <div class="row">
     <div class="col-12 mb-4">
         <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Estado de Clientes Federados</h5>
-                <a href="{{ url_for('clientes') }}" class="btn btn-sm btn-primary">Gestionar Clientes</a>
+                <h5 class="m-0 font-weight-bold">
+                    <i class="fas fa-chart-line"></i> Actividad en Tiempo Real
+                </h5>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th scope="col">Cliente</th>
-                                <th scope="col">Estado</th>
-                                <th scope="col">IP</th>
-                                <th scope="col">Versión Modelo</th>
-                                <th scope="col">Detecciones 24h</th>
-                                <th scope="col">Total Detecciones</th>
-                                <th scope="col">Última Actividad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for cliente in datos.clientes %}
-                            <tr>
-                                <td>
-                                    <strong>{{ cliente.name }}</strong>
-                                </td>
-                                <td>
-                                    {% if cliente.status == 'active' %}
-                                        <span class="badge bg-success">Activo</span>
-                                    {% elif cliente.status == 'inactive' %}
-                                        <span class="badge bg-secondary">Inactivo</span>
-                                    {% elif cliente.status == 'disconnected' %}
-                                        <span class="badge bg-warning">Desconectado</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">Error</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ cliente.ip_address|default('N/A') }}</td>
-                                <td>{{ cliente.model_version|default('N/A') }}</td>
-                                <td>
-                                    <span class="badge bg-primary">{{ cliente.detecciones_24h|default(0) }}</span>
-                                </td>
-                                <td>{{ cliente.total_detecciones|default(0)|number_format }}</td>
-                                <td>
-                                    {% if cliente.last_seen %}
-                                        {{ cliente.last_seen.strftime('%d/%m %H:%M') }}
-                                    {% else %}
-                                        <span class="text-muted">Nunca</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="7" class="text-center text-muted">No hay clientes registrados</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card-body">
+                <canvas id="activity-chart" height="100"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Statistics Summary -->
-{% if datos.estadisticas_adicionales %}
+<!-- Reportes de Distribución -->
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-6 mb-4">
         <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Estadísticas Adicionales (24h)</h5>
+                <h5 class="m-0 font-weight-bold">Distribución por Severidad</h5>
             </div>
             <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-3">
-                        <div class="h4 text-primary">{{ datos.estadisticas_adicionales.ips_origen_unicas|default(0) }}</div>
-                        <div class="text-muted">IPs Origen Únicas</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="h4 text-info">{{ datos.estadisticas_adicionales.ips_destino_unicas|default(0) }}</div>
-                        <div class="text-muted">IPs Destino Únicas</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="h4 text-warning">{{ datos.estadisticas_adicionales.tipos_ataque_detectados|default(0) }}</div>
-                        <div class="text-muted">Tipos de Ataque</div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="h4 text-success">{{ "%.1f"|format(datos.estadisticas_adicionales.confianza_promedio|default(0) * 100) }}%</div>
-                        <div class="text-muted">Confianza Promedio</div>
-                    </div>
+                <div id="severity-distribution">
+                    <p class="text-muted">Cargando datos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Tipos de Ataque</h5>
+            </div>
+            <div class="card-body">
+                <div id="attack-types">
+                    <p class="text-muted">Cargando datos...</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endif %}
 
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.system-status-panel {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    height: 100%;
+}
+
+.system-status-panel h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.status-info {
+    font-size: 0.9rem;
+}
+
+.system-log {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+}
+
+.log-entry {
+    margin-bottom: 5px;
+    padding: 2px 0;
+    border-bottom: 1px solid #e9ecef;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item-text {
+    padding: 8px 16px;
+}
+
+.btn-group .dropdown-menu {
+    min-width: 300px;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.counter-update {
+    background-color: #28a745 !important;
+    color: white !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+.detection-row-new {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.detection-row-new.fade-in-up {
+    opacity: 1;
+    transform: translateY(0);
+}
+</style>
+
 <script>
+// Estados globales
+let detectorState = {
+    running: false,
+    interface: 'Ethernet',
+    stats: {}
+};
+
+let federadoState = {
+    running: false,
+    server: 'ws://localhost:5000',
+    stats: {}
+};
+
+let realtimeInterval;
+let activityChart;
+
+// Inicialización
 document.addEventListener('DOMContentLoaded', function() {
-    // Variables globales para los gráficos
-    let detectionChart, attackTypesChart, severityChart;
+    initializeActivityChart();
+    startRealtimeUpdates();
+    updateSystemLog('Sistema de dashboard iniciado');
     
-    // Datos del servidor
-    const dashboardData = {{ datos|tojson|safe }};
+    // Configurar sliders
+    document.getElementById('umbral-normal').addEventListener('input', function() {
+        document.getElementById('valor-umbral-normal').textContent = this.value;
+    });
     
-    console.log('Datos del dashboard:', dashboardData);
-    
-    // Inicializar gráficos
-    initializeCharts();
-    
-    // Auto-actualización cada 5 minutos
-    setInterval(actualizarDashboard, 300000);
-    
-    function initializeCharts() {
-        // Gráfico de tendencia de detecciones
-        const detectionCtx = document.getElementById('detectionChart');
-        if (detectionCtx) {
-            detectionChart = new Chart(detectionCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: generateTimeLabels(),
-                    datasets: [
-                        {
-                            label: 'Normal',
-                            data: generateDetectionData('normal'),
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                            borderColor: 'rgba(40, 167, 69, 1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: 'rgba(40, 167, 69, 1)'
-                        },
-                        {
-                            label: 'Sospechoso',
-                            data: generateDetectionData('medium'),
-                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                            borderColor: 'rgba(255, 193, 7, 1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: 'rgba(255, 193, 7, 1)'
-                        },
-                        {
-                            label: 'Crítico',
-                            data: generateDetectionData('critical'),
-                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                            borderColor: 'rgba(220, 53, 69, 1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: 'rgba(220, 53, 69, 1)'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false,
-                                color: 'rgba(0,0,0,0.1)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                        }
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
-                    }
-                }
-            });
-        }
-
-        // Gráfico de tipos de ataque
-        const attackTypesCtx = document.getElementById('attackTypesChart');
-        if (attackTypesCtx) {
-            const attackData = dashboardData.por_tipo || [];
-            const labels = attackData.map(item => item.attack_type || 'Desconocido');
-            const data = attackData.map(item => item.count || 0);
-            
-            attackTypesChart = new Chart(attackTypesCtx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: labels.length ? labels : ['Sin datos'],
-                    datasets: [{
-                        data: data.length ? data : [1],
-                        backgroundColor: [
-                            'rgba(13, 110, 253, 0.8)',
-                            'rgba(220, 53, 69, 0.8)',
-                            'rgba(255, 193, 7, 0.8)',
-                            'rgba(25, 135, 84, 0.8)',
-                            'rgba(102, 16, 242, 0.8)',
-                            'rgba(108, 117, 125, 0.8)'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 12,
-                                padding: 15
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
-                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    },
-                    cutout: '60%'
-                }
-            });
-        }
-
-        // Gráfico de severidad
-        const severityCtx = document.getElementById('severityChart');
-        if (severityCtx) {
-            const severityData = dashboardData.por_severidad || [];
-            const severityLabels = severityData.map(item => item.severity || 'Desconocido');
-            const severityCounts = severityData.map(item => item.count || 0);
-            
-            severityChart = new Chart(severityCtx.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: severityLabels.length ? severityLabels.map(s => s.charAt(0).toUpperCase() + s.slice(1)) : ['Sin datos'],
-                    datasets: [{
-                        label: 'Detecciones',
-                        data: severityCounts.length ? severityCounts : [0],
-                        backgroundColor: [
-                            'rgba(220, 53, 69, 0.8)',   // critical
-                            'rgba(255, 193, 7, 0.8)',   // high
-                            'rgba(13, 110, 253, 0.8)',  // medium
-                            'rgba(25, 135, 84, 0.8)'    // low
-                        ],
-                        borderColor: [
-                            'rgba(220, 53, 69, 1)',
-                            'rgba(255, 193, 7, 1)',
-                            'rgba(13, 110, 253, 1)',
-                            'rgba(25, 135, 84, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-    }
-    
-    function generateTimeLabels() {
-        const labels = [];
-        for (let i = 23; i >= 0; i--) {
-            const hour = new Date();
-            hour.setHours(hour.getHours() - i);
-            labels.push(hour.getHours().toString().padStart(2, '0') + ':00');
-        }
-        return labels;
-    }
-    
-    function generateDetectionData(type) {
-        // Usar datos reales si están disponibles
-        if (dashboardData.por_hora && dashboardData.por_hora.length > 0) {
-            const hourlyData = new Array(24).fill(0);
-            dashboardData.por_hora.forEach(item => {
-                const hour = parseInt(item.hora);
-                switch(type) {
-                    case 'critical':
-                        hourlyData[hour] = item.criticas || 0;
-                        break;
-                    case 'medium':
-                        hourlyData[hour] = item.altas || 0;
-                        break;
-                    case 'normal':
-                        hourlyData[hour] = item.normales || 0;
-                        break;
-                }
-            });
-            return hourlyData;
-        }
-        
-        // Datos mock si no hay datos reales
-        const data = [];
-        for (let i = 0; i < 24; i++) {
-            switch(type) {
-                case 'critical':
-                    data.push(Math.floor(Math.random() * 10));
-                    break;
-                case 'medium':
-                    data.push(Math.floor(Math.random() * 30) + 10);
-                    break;
-                case 'normal':
-                    data.push(Math.floor(Math.random() * 50) + 20);
-                    break;
-            }
-        }
-        return data;
-    }
-    
-    // Botones de período
-    document.querySelectorAll('.period-button').forEach(button => {
-        button.addEventListener('click', function() {
-            document.querySelectorAll('.period-button').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            // Aquí podrías actualizar los gráficos según el período seleccionado
-        });
+    document.getElementById('umbral-sospechoso').addEventListener('input', function() {
+        document.getElementById('valor-umbral-sospechoso').textContent = this.value;
     });
 });
 
-// Función global para actualizar dashboard
+// Control del detector
+async function toggleDetector() {
+    const btn = document.getElementById('btn-detector');
+    const icon = document.getElementById('icon-detector');
+    const text = document.getElementById('text-detector');
+    
+    try {
+        btn.disabled = true;
+        
+        if (detectorState.running) {
+            const response = await fetch('/api/detector/stop', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            if (response.ok) {
+                detectorState.running = false;
+                btn.className = 'btn btn-success';
+                icon.className = 'fas fa-play';
+                text.textContent = 'Iniciar Detector';
+                updateSystemLog('Detector detenido por el usuario');
+                updateDetectorStatus('stopped');
+            } else {
+                throw new Error('Error deteniendo detector');
+            }
+        } else {
+            const config = {
+                interface: document.getElementById('interface-select').value,
+                umbral_normal: parseFloat(document.getElementById('umbral-normal').value),
+                umbral_sospechoso: parseFloat(document.getElementById('umbral-sospechoso').value)
+            };
+            
+            const response = await fetch('/api/detector/start', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(config)
+            });
+            
+            if (response.ok) {
+                detectorState.running = true;
+                btn.className = 'btn btn-danger';
+                icon.className = 'fas fa-stop';
+                text.textContent = 'Detener Detector';
+                updateSystemLog(`Detector iniciado en ${config.interface}`);
+                updateDetectorStatus('running', config.interface);
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Error iniciando detector');
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+        updateSystemLog('Error: ' + error.message);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+// Control del sistema federado
+async function toggleFederado() {
+    const btn = document.getElementById('btn-federado');
+    const icon = document.getElementById('icon-federado');
+    const text = document.getElementById('text-federado');
+    
+    try {
+        btn.disabled = true;
+        
+        if (federadoState.running) {
+            const response = await fetch('/api/federado/stop', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            if (response.ok) {
+                federadoState.running = false;
+                btn.className = 'btn btn-primary';
+                icon.className = 'fas fa-network-wired';
+                text.textContent = 'Iniciar Federado';
+                updateSystemLog('Sistema federado detenido');
+                updateFederadoStatus('stopped');
+            } else {
+                throw new Error('Error deteniendo sistema federado');
+            }
+        } else {
+            const config = {
+                servidor: document.getElementById('servidor-url').value,
+                modo_aprendizaje: document.getElementById('modo-aprendizaje').checked,
+                duracion: parseInt(document.getElementById('duracion-aprendizaje').value)
+            };
+            
+            const response = await fetch('/api/federado/start', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(config)
+            });
+            
+            if (response.ok) {
+                federadoState.running = true;
+                btn.className = 'btn btn-warning';
+                icon.className = 'fas fa-stop';
+                text.textContent = 'Detener Federado';
+                updateSystemLog(`Sistema federado iniciado ${config.modo_aprendizaje ? '(Modo Aprendizaje)' : ''}`);
+                updateFederadoStatus('running', config.servidor);
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Error iniciando sistema federado');
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+        updateSystemLog('Error: ' + error.message);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+// Actualización de estado
+function updateDetectorStatus(status, interface = null) {
+    const statusBadge = document.getElementById('detector-status');
+    const interfaceElement = document.getElementById('detector-interface');
+    
+    if (status === 'running') {
+        statusBadge.className = 'badge bg-success';
+        statusBadge.textContent = 'EJECUTÁNDOSE';
+        if (interface) interfaceElement.textContent = interface;
+    } else {
+        statusBadge.className = 'badge bg-secondary';
+        statusBadge.textContent = 'DETENIDO';
+        interfaceElement.textContent = '-';
+    }
+}
+
+function updateFederadoStatus(status, server = null) {
+    const statusBadge = document.getElementById('federado-status');
+    const serverElement = document.getElementById('federado-server');
+    
+    if (status === 'running') {
+        statusBadge.className = 'badge bg-success';
+        statusBadge.textContent = 'EJECUTÁNDOSE';
+        if (server) serverElement.textContent = server;
+    } else {
+        statusBadge.className = 'badge bg-secondary';
+        statusBadge.textContent = 'DETENIDO';
+        serverElement.textContent = '-';
+    }
+}
+
+// Log del sistema
+function updateSystemLog(message, component = 'Sistema') {
+    const logContainer = document.getElementById('system-log');
+    const timestamp = new Date().toLocaleTimeString();
+    
+    const logEntry = document.createElement('div');
+    logEntry.className = 'log-entry';
+    logEntry.innerHTML = `
+        <small>
+            <span class="text-muted">[${timestamp}]</span>
+            <span class="text-info">[${component}]</span>
+            ${message}
+        </small>
+    `;
+    
+    logContainer.insertBefore(logEntry, logContainer.firstChild);
+    
+    while (logContainer.children.length > 20) {
+        logContainer.removeChild(logContainer.lastChild);
+    }
+    
+    logEntry.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+}
+
+// Tiempo real
+function startRealtimeUpdates() {
+    realtimeInterval = setInterval(updateRealtimeData, 3000);
+    console.log('✅ Actualizaciones en tiempo real iniciadas');
+}
+
+async function updateRealtimeData() {
+    try {
+        const statsResponse = await fetch('/api/realtime/stats');
+        if (!statsResponse.ok) throw new Error('Error en stats');
+        
+        const statsData = await statsResponse.json();
+        updateStatsDisplay(statsData);
+        
+        const detectionsResponse = await fetch('/api/realtime/detections?limit=10');
+        if (detectionsResponse.ok) {
+            const detectionsData = await detectionsResponse.json();
+            updateDetectionsTable(detectionsData.detections);
+        }
+        
+        updateConnectionStatus(true);
+        updateLastUpdateIndicator();
+        
+    } catch (error) {
+        console.error('Error actualizando datos:', error);
+        updateConnectionStatus(false);
+    }
+}
+
+function updateStatsDisplay(data) {
+    const resumen = data.resumen || {};
+    
+    updateCounterWithAnimation('total-detecciones', resumen.total_detecciones || 0);
+    updateCounterWithAnimation('alertas-criticas', resumen.alertas_criticas || 0);
+    updateCounterWithAnimation('clientes-activos', `${resumen.clientes_activos || 0}/${resumen.total_clientes || 0}`);
+    updateCounterWithAnimation('detecciones-1h', resumen.detecciones_1h || 0);
+    
+    if (data.actividad_minuto && data.actividad_minuto.length > 0) {
+        updateActivityChart(data.actividad_minuto);
+    }
+    
+    updateSeverityDistribution(data.severidad_1h || {});
+    updateAttackTypes(data.tipos_ataque_1h || []);
+}
+
+function updateCounterWithAnimation(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const currentValue = element.textContent.trim();
+    const newValueStr = String(newValue);
+    
+    if (currentValue !== newValueStr) {
+        element.classList.add('counter-update');
+        element.textContent = newValueStr;
+        
+        setTimeout(() => {
+            element.classList.remove('counter-update');
+        }, 1000);
+    }
+}
+
+function updateDetectionsTable(detections) {
+    const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (!detections || detections.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay detecciones recientes</td></tr>';
+        return;
+    }
+    
+    detections.slice(0, 10).forEach((detection, index) => {
+        const row = document.createElement('tr');
+        row.className = 'detection-row-new';
+        
+        let severityClass = 'badge bg-info';
+        let severityText = detection.severity || 'low';
+        
+        switch(severityText) {
+            case 'critical':
+                severityClass = 'badge bg-danger';
+                break;
+            case 'high':
+                severityClass = 'badge bg-warning';
+                break;
+            case 'medium':
+                severityClass = 'badge bg-primary';
+                break;
+            default:
+                severityClass = 'badge bg-info';
+        }
+        
+        const timestamp = detection.timestamp ? 
+            new Date(detection.timestamp).toLocaleTimeString() : 
+            'N/A';
+        
+        const anomalyType = detection.anomaly_type || 'Normal';
+        
+        row.innerHTML = `
+            <td>${detection.client_name || 'Local'}</td>
+            <td><span class="badge bg-secondary">${anomalyType}</span></td>
+            <td><code>${detection.source_ip}</code></td>
+            <td><code>${detection.destination_ip}</code></td>
+            <td><span class="${severityClass}">${severityText.toUpperCase()}</span></td>
+            <td>${timestamp}</td>
+        `;
+        
+        tbody.appendChild(row);
+        
+        setTimeout(() => {
+            row.classList.add('fade-in-up');
+        }, index * 100);
+    });
+}
+
+function updateConnectionStatus(isConnected) {
+    const statusIndicator = document.getElementById('connection-status');
+    if (!statusIndicator) return;
+    
+    if (isConnected) {
+        statusIndicator.className = 'badge bg-success';
+        statusIndicator.textContent = 'CONECTADO';
+    } else {
+        statusIndicator.className = 'badge bg-danger';
+        statusIndicator.textContent = 'DESCONECTADO';
+    }
+}
+
+function updateLastUpdateIndicator() {
+    const indicator = document.getElementById('last-update');
+    if (!indicator) return;
+    
+    const now = new Date();
+    indicator.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
+}
+
+function initializeActivityChart() {
+    const ctx = document.getElementById('activity-chart');
+    if (ctx) {
+        activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Detecciones',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }, {
+                    label: 'Críticas',
+                    data: [],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+    }
+}
+
+function updateActivityChart(activityData) {
+    if (!activityChart || !activityData.length) return;
+    
+    const labels = activityData.map(item => {
+        const date = new Date(item.timestamp);
+        return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    });
+    
+    const detectionCounts = activityData.map(item => item.count || 0);
+    const criticalCounts = activityData.map(item => item.critical_count || 0);
+    
+    activityChart.data.labels = labels;
+    activityChart.data.datasets[0].data = detectionCounts;
+    
+    if (activityChart.data.datasets[1]) {
+        activityChart.data.datasets[1].data = criticalCounts;
+    }
+    
+    activityChart.update('none');
+}
+
+function updateSeverityDistribution(severityData) {
+    const severityContainer = document.getElementById('severity-distribution');
+    if (!severityContainer) return;
+    
+    const total = Object.values(severityData).reduce((sum, count) => sum + count, 0);
+    
+    if (total === 0) {
+        severityContainer.innerHTML = '<p class="text-muted">No hay datos de severidad</p>';
+        return;
+    }
+    
+    const severityColors = {
+        'low': 'success',
+        'medium': 'primary', 
+        'high': 'warning',
+        'critical': 'danger'
+    };
+    
+    let html = '';
+    Object.entries(severityData).forEach(([severity, count]) => {
+        const percentage = ((count / total) * 100).toFixed(1);
+        const colorClass = severityColors[severity] || 'secondary';
+        
+        html += `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-${colorClass}">${severity.toUpperCase()}</span>
+                <span>${count} (${percentage}%)</span>
+            </div>
+        `;
+    });
+    
+    severityContainer.innerHTML = html;
+}
+
+function updateAttackTypes(attackTypes) {
+    const attackContainer = document.getElementById('attack-types');
+    if (!attackContainer) return;
+    
+    if (!attackTypes.length) {
+        attackContainer.innerHTML = '<p class="text-muted">No hay ataques detectados</p>';
+        return;
+    }
+    
+    let html = '';
+    attackTypes.slice(0, 5).forEach(attack => {
+        const isNormal = attack.tipo === 'Normal';
+        const badgeClass = isNormal ? 'bg-success' : 'bg-danger';
+        
+        html += `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge ${badgeClass}">${attack.tipo}</span>
+                <span class="fw-bold">${attack.count}</span>
+            </div>
+        `;
+    });
+    
+    attackContainer.innerHTML = html;
+}
+
+// Funciones globales adicionales
 function actualizarDashboard() {
     console.log('Actualizando dashboard...');
     
-    // Mostrar indicador de carga
     const buttons = document.querySelectorAll('[onclick="actualizarDashboard()"]');
     buttons.forEach(btn => {
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
         btn.disabled = true;
         
-        // Restaurar después de 3 segundos
         setTimeout(() => {
             btn.innerHTML = originalText;
             btn.disabled = false;
         }, 3000);
     });
     
-    // En una implementación real, aquí harías una llamada AJAX
-    // fetch('/api/dashboard/stats')
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         // Actualizar los datos en la página
-    //         actualizarElementosDashboard(data);
-    //     });
-    
-    // Por ahora, simplemente recargamos la página
     setTimeout(() => {
         location.reload();
     }, 1000);
@@ -609,202 +965,13 @@ function actualizarDashboard() {
 
 function cambiarPeriodo(periodo) {
     console.log('Cambiando período a:', periodo);
-    // Implementar lógica para cambiar el período de visualización
 }
 
-// Función para formatear números
-function numberFormat(num) {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-}
-
-// Actualización en tiempo real
-let realtimeInterval;
-
-function iniciarActualizacionTiempoReal() {
-    // Actualizar cada 5 segundos
-    realtimeInterval = setInterval(actualizarDatosTiempoReal, 5000);
-    console.log('✅ Actualización tiempo real iniciada');
-}
-
-function detenerActualizacionTiempoReal() {
+// Detener actualizaciones al cerrar página
+window.addEventListener('beforeunload', function() {
     if (realtimeInterval) {
         clearInterval(realtimeInterval);
-        console.log('🛑 Actualización tiempo real detenida');
     }
-}
-
-async function actualizarDatosTiempoReal() {
-    try {
-        // Obtener estadísticas en tiempo real
-        const response = await fetch('/api/realtime/stats');
-        if (!response.ok) throw new Error('Error en respuesta');
-        
-        const data = await response.json();
-        
-        // Actualizar elementos del dashboard
-        actualizarElementosTiempoReal(data);
-        
-        // Obtener últimas detecciones
-        const detectionsResponse = await fetch('/api/realtime/detections?limit=5');
-        if (detectionsResponse.ok) {
-            const detectionsData = await detectionsResponse.json();
-            actualizarTablaDetecciones(detectionsData.detections);
-        }
-        
-    } catch (error) {
-        console.error('Error actualizando datos tiempo real:', error);
-    }
-}
-
-function actualizarElementosTiempoReal(data) {
-    const resumen = data.resumen || {};
-    
-    // Actualizar contadores principales
-    const totalElement = document.getElementById('total-detecciones');
-    if (totalElement) {
-        totalElement.textContent = numberFormat(resumen.total_detecciones || 0);
-        
-        // Efecto visual de actualización
-        totalElement.classList.add('highlight-update');
-        setTimeout(() => totalElement.classList.remove('highlight-update'), 1000);
-    }
-    
-    const alertasElement = document.getElementById('alertas-pendientes');
-    if (alertasElement) {
-        alertasElement.textContent = resumen.alertas_criticas || 0;
-        if (resumen.alertas_criticas > 0) {
-            alertasElement.classList.add('text-danger');
-        }
-    }
-    
-    const clientesElement = document.getElementById('clientes-conectados');
-    if (clientesElement) {
-        clientesElement.textContent = `${resumen.clientes_detectando || 0}/4`;
-    }
-    
-    // Actualizar gráfico de actividad si existe
-    if (typeof detectionChart !== 'undefined' && data.actividad_minuto) {
-        actualizarGraficoActividad(data.actividad_minuto);
-    }
-}
-
-function actualizarTablaDetecciones(detections) {
-    const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
-    if (!tbody || !detections) return;
-    
-    // Limpiar tabla existente
-    tbody.innerHTML = '';
-    
-    detections.slice(0, 5).forEach(detection => {
-        const row = document.createElement('tr');
-        row.className = 'tabla-deteccion-row';
-        
-        // Determinar clase de severidad
-        let severityClass = 'badge bg-info';
-        if (detection.severity === 'critical') severityClass = 'badge bg-danger';
-        else if (detection.severity === 'high') severityClass = 'badge bg-warning';
-        else if (detection.severity === 'medium') severityClass = 'badge bg-primary';
-        
-        const timestamp = new Date(detection.timestamp).toLocaleTimeString();
-        
-        row.innerHTML = `
-            <td>${detection.client_name || 'Desconocido'}</td>
-            <td>${detection.anomaly_type || 'Normal'}</td>
-            <td>${detection.source_ip}</td>
-            <td>${detection.destination_ip}</td>
-            <td><span class="${severityClass}">${detection.severity}</span></td>
-            <td>${timestamp}</td>
-        `;
-        
-        tbody.appendChild(row);
-        
-        // Efecto de aparición
-        setTimeout(() => row.classList.add('fade-in'), 10);
-    });
-}
-
-function actualizarGraficoActividad(actividadMinuto) {
-    if (!detectionChart || !actividadMinuto.length) return;
-    
-    // Convertir timestamps a labels
-    const labels = actividadMinuto.map(item => {
-        const date = new Date(item.minute_timestamp * 1000);
-        return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    });
-    
-    const data = actividadMinuto.map(item => item.count);
-    const criticalData = actividadMinuto.map(item => item.critical_count || 0);
-    
-    // Actualizar datos del gráfico
-    detectionChart.data.labels = labels;
-    detectionChart.data.datasets[0].data = data;
-    if (detectionChart.data.datasets[1]) {
-        detectionChart.data.datasets[1].data = criticalData;
-    }
-    
-    detectionChart.update('none'); // Sin animación para tiempo real
-}
-
-// CSS para efectos visuales
-const realtimeStyles = `
-<style>
-.highlight-update {
-    background-color: #28a745 !important;
-    color: white !important;
-    transition: all 0.5s ease;
-    border-radius: 4px;
-    padding: 2px 4px;
-}
-
-.tabla-deteccion-row {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-}
-
-.tabla-deteccion-row.fade-in {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.realtime-indicator {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background-color: #28a745;
-    border-radius: 50%;
-    margin-left: 5px;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-</style>
-`;
-
-// Agregar estilos al head
-document.head.insertAdjacentHTML('beforeend', realtimeStyles);
-
-// Iniciar actualización cuando la página esté lista
-document.addEventListener('DOMContentLoaded', function() {
-    // ... código existente ...
-    
-    // Iniciar actualización tiempo real
-    iniciarActualizacionTiempoReal();
-    
-    // Agregar indicador de tiempo real
-    const pageTitle = document.querySelector('.page-header h1');
-    if (pageTitle) {
-        pageTitle.innerHTML += ' <span class="realtime-indicator" title="Datos en tiempo real"></span>';
-    }
-});
-
-// Detener actualización al cerrar página
-window.addEventListener('beforeunload', function() {
-    detenerActualizacionTiempoReal();
 });
 </script>
 {% endblock %}

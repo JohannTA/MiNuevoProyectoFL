@@ -1611,3 +1611,79 @@ INFO - 192.168.18.14 - - [11/Jun/2025 00:23:31] "GET /api/realtime/stats HTTP/1.
 INFO - 192.168.18.14 - - [11/Jun/2025 00:23:32] "GET /api/realtime/detections?limit=5 HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 00:23:33] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 00:23:34] "GET /api/realtime/detections?limit=5 HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.14:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Datos del dashboard obtenidos exitosamente
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:28] "GET / HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:32] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:33] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:35] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:36] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:38] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:39] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:41] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:42] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:44] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:45] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:47] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:48] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:50] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:51] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:53] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:54] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:56] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:57] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:00:59] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:00] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:02] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:03] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:05] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:06] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:08] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:09] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:11] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:12] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:14] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:15] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:17] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:17] "[35m[1mPOST /api/detector/start HTTP/1.1[0m" 500 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:18] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:21] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:22] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:23] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:24] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:26] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:27] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:29] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:30] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:32] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:33] "[35m[1mPOST /api/detector/start HTTP/1.1[0m" 500 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:33] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:35] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:36] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:38] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:39] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:41] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:42] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:44] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:45] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:47] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:48] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:50] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:51] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:53] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:54] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:56] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:57] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:01:59] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:02:00] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:02:02] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:02:03] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:02:05] "GET /api/realtime/stats HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [11/Jun/2025 01:02:06] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
