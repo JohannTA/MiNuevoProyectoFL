@@ -24,7 +24,7 @@ import sys
 import os
 
 # Importar el detector original (corregir nombre del archivo)
-from detectorv9v1 import NetworkMonitor, CONFIG, logger as detector_logger
+from detector import NetworkMonitor, CONFIG, logger as detector_logger
 
 # Configuración de logging
 logging.basicConfig(

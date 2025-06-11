@@ -6,9 +6,18 @@
 
 {% block page_actions %}
 <div class="btn-group">
-    <button type="button" class="btn btn-outline-secondary">
+    <button type="button" class="btn btn-outline-secondary" onclick="actualizarDashboard()">
+        <i class="fas fa-sync-alt"></i> Actualizar
+    </button>
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
         <i class="fas fa-calendar"></i> Últimas 24 horas
     </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('1h')">Última hora</a></li>
+        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('24h')">Últimas 24 horas</a></li>
+        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('7d')">Últimos 7 días</a></li>
+        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('30d')">Últimos 30 días</a></li>
+    </ul>
 </div>
 {% endblock %}
 
@@ -22,9 +31,12 @@
                 <div class="row align-items-center">
                     <div class="col mr-2">
                         <div class="text-muted small mb-1">Total Detecciones</div>
-                        <div class="h3 mb-0 font-weight-bold">2,453</div>
+                        <div class="h3 mb-0 font-weight-bold" id="total-detecciones">
+                            {{ datos.resumen.total_detecciones|default(0)|number_format }}
+                        </div>
                         <div class="small mt-2 text-success">
-                            <i class="fas fa-arrow-up"></i> 12% desde ayer
+                            <i class="fas fa-chart-line"></i> 
+                            {{ datos.resumen.detecciones_24h|default(0) }} en 24h
                         </div>
                     </div>
                     <div class="col-auto">
@@ -35,16 +47,19 @@
         </div>
     </div>
 
-    <!-- Alerts Card -->
+    <!-- Active Alerts Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-muted small mb-1">Alertas Activas</div>
-                        <div class="h3 mb-0 font-weight-bold">64</div>
+                        <div class="text-muted small mb-1">Alertas Pendientes</div>
+                        <div class="h3 mb-0 font-weight-bold text-warning" id="alertas-pendientes">
+                            {{ datos.resumen.pendientes_revision|default(0) }}
+                        </div>
                         <div class="small mt-2 text-danger">
-                            <i class="fas fa-arrow-up"></i> 8% desde ayer
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            {{ datos.resumen.alertas_criticas|default(0) }} críticas
                         </div>
                     </div>
                     <div class="col-auto">
@@ -61,10 +76,17 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-muted small mb-1">Clientes Conectados</div>
-                        <div class="h3 mb-0 font-weight-bold">8</div>
+                        <div class="text-muted small mb-1">Clientes Federados</div>
+                        <div class="h3 mb-0 font-weight-bold" id="clientes-conectados">
+                            {{ datos.resumen.clientes_activos|default(0) }}/{{ datos.resumen.total_clientes|default(0) }}
+                        </div>
                         <div class="small mt-2 text-success">
-                            <i class="fas fa-check"></i> Todos activos
+                            <i class="fas fa-check"></i> 
+                            {% if datos.resumen.clientes_activos == datos.resumen.total_clientes %}
+                                Todos activos
+                            {% else %}
+                                {{ datos.resumen.clientes_activos }} activos
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-auto">
@@ -82,9 +104,11 @@
                 <div class="row align-items-center">
                     <div class="col mr-2">
                         <div class="text-muted small mb-1">Versión del Modelo</div>
-                        <div class="h3 mb-0 font-weight-bold">v3.2</div>
+                        <div class="h3 mb-0 font-weight-bold" id="version-modelo">
+                            {{ datos.resumen.version_modelo|default('v1.0') }}
+                        </div>
                         <div class="small mt-2">
-                            <i class="fas fa-clock"></i> Actualizado hace 2 días
+                            <i class="fas fa-brain"></i> ML Activo
                         </div>
                     </div>
                     <div class="col-auto">
@@ -98,14 +122,14 @@
 
 <!-- Charts Row -->
 <div class="row">
-    <!-- Detection Chart -->
+    <!-- Detection Trend Chart -->
     <div class="col-lg-8 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Detecciones por Tiempo</h5>
+                <h5 class="m-0 font-weight-bold">Tendencia de Detecciones</h5>
                 <div>
-                    <button class="btn btn-sm btn-outline-secondary period-button" data-period="daily">Diario</button>
-                    <button class="btn btn-sm btn-outline-secondary period-button" data-period="weekly">Semanal</button>
+                    <button class="btn btn-sm btn-outline-secondary period-button active" data-period="24h">24 Horas</button>
+                    <button class="btn btn-sm btn-outline-secondary period-button" data-period="7d">7 Días</button>
                 </div>
             </div>
             <div class="card-body">
@@ -114,11 +138,12 @@
         </div>
     </div>
 
-    <!-- Detection Types -->
+    <!-- Attack Types Chart -->
     <div class="col-lg-4 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-header">
                 <h5 class="m-0 font-weight-bold">Tipos de Ataques</h5>
+                <small class="text-muted">Últimos 30 días</small>
             </div>
             <div class="card-body">
                 <canvas id="attackTypesChart" height="300"></canvas>
@@ -127,8 +152,20 @@
     </div>
 </div>
 
-<!-- Recent Detections and Clients Row -->
+<!-- Severity Distribution and Recent Detections Row -->
 <div class="row">
+    <!-- Severity Distribution -->
+    <div class="col-lg-4 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Distribución por Severidad</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="severityChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
     <!-- Recent Detections -->
     <div class="col-lg-8 mb-4">
         <div class="dashboard-card h-100">
@@ -150,59 +187,42 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for deteccion in datos.recientes[:5] %}
                             <tr>
-                                <td>Cliente Norte</td>
-                                <td>Port Scan</td>
-                                <td>192.168.1.45</td>
-                                <td>10.0.0.5</td>
-                                <td><span class="status-circle status-warning"></span> Sospechoso</td>
-                                <td>10:23 AM</td>
+                                <td>{{ deteccion.client_name }}</td>
+                                <td>{{ deteccion.attack_type|default('Desconocido') }}</td>
+                                <td>{{ deteccion.source_ip }}</td>
+                                <td>{{ deteccion.destination_ip }}</td>
+                                <td>
+                                    <span class="status-circle 
+                                        {% if deteccion.severity == 'critical' %}status-alert
+                                        {% elif deteccion.severity == 'high' %}status-alert
+                                        {% elif deteccion.severity == 'medium' %}status-warning
+                                        {% else %}status-success{% endif %}"></span>
+                                    {{ deteccion.severity|title }}
+                                </td>
+                                <td>{{ deteccion.timestamp.strftime('%H:%M') if deteccion.timestamp else 'N/A' }}</td>
                             </tr>
+                            {% else %}
                             <tr>
-                                <td>Cliente Sur</td>
-                                <td>Brute Force</td>
-                                <td>203.45.67.89</td>
-                                <td>10.0.0.12</td>
-                                <td><span class="status-circle status-alert"></span> Crítico</td>
-                                <td>10:15 AM</td>
+                                <td colspan="6" class="text-center text-muted">No hay detecciones recientes</td>
                             </tr>
-                            <tr>
-                                <td>Cliente Este</td>
-                                <td>Data Exfiltration</td>
-                                <td>192.168.5.22</td>
-                                <td>45.67.89.100</td>
-                                <td><span class="status-circle status-alert"></span> Crítico</td>
-                                <td>09:58 AM</td>
-                            </tr>
-                            <tr>
-                                <td>Cliente Oeste</td>
-                                <td>SQL Injection</td>
-                                <td>192.168.3.78</td>
-                                <td>10.0.0.8</td>
-                                <td><span class="status-circle status-warning"></span> Sospechoso</td>
-                                <td>09:45 AM</td>
-                            </tr>
-                            <tr>
-                                <td>Cliente Norte</td>
-                                <td>Malware Communication</td>
-                                <td>192.168.1.90</td>
-                                <td>23.45.67.89</td>
-                                <td><span class="status-circle status-alert"></span> Crítico</td>
-                                <td>09:37 AM</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Client Status -->
-    <div class="col-lg-4 mb-4">
-        <div class="dashboard-card h-100">
+<!-- Client Status Row -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Estado de Clientes</h5>
-                <a href="{{ url_for('clientes') }}" class="btn btn-sm btn-primary">Ver Todos</a>
+                <h5 class="m-0 font-weight-bold">Estado de Clientes Federados</h5>
+                <a href="{{ url_for('clientes') }}" class="btn btn-sm btn-primary">Gestionar Clientes</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -211,35 +231,49 @@
                             <tr>
                                 <th scope="col">Cliente</th>
                                 <th scope="col">Estado</th>
-                                <th scope="col">Alertas</th>
+                                <th scope="col">IP</th>
+                                <th scope="col">Versión Modelo</th>
+                                <th scope="col">Detecciones 24h</th>
+                                <th scope="col">Total Detecciones</th>
+                                <th scope="col">Última Actividad</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for cliente in datos.clientes %}
                             <tr>
-                                <td>Cliente Norte</td>
-                                <td><span class="badge bg-success">En línea</span></td>
-                                <td>24</td>
+                                <td>
+                                    <strong>{{ cliente.name }}</strong>
+                                </td>
+                                <td>
+                                    {% if cliente.status == 'active' %}
+                                        <span class="badge bg-success">Activo</span>
+                                    {% elif cliente.status == 'inactive' %}
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    {% elif cliente.status == 'disconnected' %}
+                                        <span class="badge bg-warning">Desconectado</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Error</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ cliente.ip_address|default('N/A') }}</td>
+                                <td>{{ cliente.model_version|default('N/A') }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ cliente.detecciones_24h|default(0) }}</span>
+                                </td>
+                                <td>{{ cliente.total_detecciones|default(0)|number_format }}</td>
+                                <td>
+                                    {% if cliente.last_seen %}
+                                        {{ cliente.last_seen.strftime('%d/%m %H:%M') }}
+                                    {% else %}
+                                        <span class="text-muted">Nunca</span>
+                                    {% endif %}
+                                </td>
                             </tr>
+                            {% else %}
                             <tr>
-                                <td>Cliente Sur</td>
-                                <td><span class="badge bg-success">En línea</span></td>
-                                <td>17</td>
+                                <td colspan="7" class="text-center text-muted">No hay clientes registrados</td>
                             </tr>
-                            <tr>
-                                <td>Cliente Este</td>
-                                <td><span class="badge bg-success">En línea</span></td>
-                                <td>12</td>
-                            </tr>
-                            <tr>
-                                <td>Cliente Oeste</td>
-                                <td><span class="badge bg-success">En línea</span></td>
-                                <td>9</td>
-                            </tr>
-                            <tr>
-                                <td>Cliente Central</td>
-                                <td><span class="badge bg-danger">Desconectado</span></td>
-                                <td>0</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -247,104 +281,530 @@
         </div>
     </div>
 </div>
+
+<!-- Statistics Summary -->
+{% if datos.estadisticas_adicionales %}
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold">Estadísticas Adicionales (24h)</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="h4 text-primary">{{ datos.estadisticas_adicionales.ips_origen_unicas|default(0) }}</div>
+                        <div class="text-muted">IPs Origen Únicas</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4 text-info">{{ datos.estadisticas_adicionales.ips_destino_unicas|default(0) }}</div>
+                        <div class="text-muted">IPs Destino Únicas</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4 text-warning">{{ datos.estadisticas_adicionales.tipos_ataque_detectados|default(0) }}</div>
+                        <div class="text-muted">Tipos de Ataque</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4 text-success">{{ "%.1f"|format(datos.estadisticas_adicionales.confianza_promedio|default(0) * 100) }}%</div>
+                        <div class="text-muted">Confianza Promedio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Detection Chart
-        var detectionCtx = document.getElementById('detectionChart').getContext('2d');
-        var detectionChart = new Chart(detectionCtx, {
-            type: 'line',
-            data: {
-                labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
-                datasets: [
-                    {
-                        label: 'Normal',
-                        data: [65, 59, 80, 81, 56, 55, 40, 70, 75, 85, 90, 100],
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        borderColor: 'rgba(40, 167, 69, 1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Sospechoso',
-                        data: [28, 48, 40, 19, 86, 27, 90, 60, 30, 40, 50, 70],
-                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                        borderColor: 'rgba(255, 193, 7, 1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'Crítico',
-                        data: [5, 15, 10, 8, 25, 17, 40, 30, 20, 15, 10, 5],
-                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                        borderColor: 'rgba(220, 53, 69, 1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointRadius: 0
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            drawBorder: false
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables globales para los gráficos
+    let detectionChart, attackTypesChart, severityChart;
+    
+    // Datos del servidor
+    const dashboardData = {{ datos|tojson|safe }};
+    
+    console.log('Datos del dashboard:', dashboardData);
+    
+    // Inicializar gráficos
+    initializeCharts();
+    
+    // Auto-actualización cada 5 minutos
+    setInterval(actualizarDashboard, 300000);
+    
+    function initializeCharts() {
+        // Gráfico de tendencia de detecciones
+        const detectionCtx = document.getElementById('detectionChart');
+        if (detectionCtx) {
+            detectionChart = new Chart(detectionCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: generateTimeLabels(),
+                    datasets: [
+                        {
+                            label: 'Normal',
+                            data: generateDetectionData('normal'),
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'rgba(40, 167, 69, 1)'
+                        },
+                        {
+                            label: 'Sospechoso',
+                            data: generateDetectionData('medium'),
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'rgba(255, 193, 7, 1)'
+                        },
+                        {
+                            label: 'Crítico',
+                            data: generateDetectionData('critical'),
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'rgba(220, 53, 69, 1)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
                         }
                     },
-                    x: {
-                        grid: {
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Gráfico de tipos de ataque
+        const attackTypesCtx = document.getElementById('attackTypesChart');
+        if (attackTypesCtx) {
+            const attackData = dashboardData.por_tipo || [];
+            const labels = attackData.map(item => item.attack_type || 'Desconocido');
+            const data = attackData.map(item => item.count || 0);
+            
+            attackTypesChart = new Chart(attackTypesCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length ? labels : ['Sin datos'],
+                    datasets: [{
+                        data: data.length ? data : [1],
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.8)',
+                            'rgba(220, 53, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(25, 135, 84, 0.8)',
+                            'rgba(102, 16, 242, 0.8)',
+                            'rgba(108, 117, 125, 0.8)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // Gráfico de severidad
+        const severityCtx = document.getElementById('severityChart');
+        if (severityCtx) {
+            const severityData = dashboardData.por_severidad || [];
+            const severityLabels = severityData.map(item => item.severity || 'Desconocido');
+            const severityCounts = severityData.map(item => item.count || 0);
+            
+            severityChart = new Chart(severityCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: severityLabels.length ? severityLabels.map(s => s.charAt(0).toUpperCase() + s.slice(1)) : ['Sin datos'],
+                    datasets: [{
+                        label: 'Detecciones',
+                        data: severityCounts.length ? severityCounts : [0],
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',   // critical
+                            'rgba(255, 193, 7, 0.8)',   // high
+                            'rgba(13, 110, 253, 0.8)',  // medium
+                            'rgba(25, 135, 84, 0.8)'    // low
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(13, 110, 253, 1)',
+                            'rgba(25, 135, 84, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
                             display: false
                         }
                     }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
                 }
+            });
+        }
+    }
+    
+    function generateTimeLabels() {
+        const labels = [];
+        for (let i = 23; i >= 0; i--) {
+            const hour = new Date();
+            hour.setHours(hour.getHours() - i);
+            labels.push(hour.getHours().toString().padStart(2, '0') + ':00');
+        }
+        return labels;
+    }
+    
+    function generateDetectionData(type) {
+        // Usar datos reales si están disponibles
+        if (dashboardData.por_hora && dashboardData.por_hora.length > 0) {
+            const hourlyData = new Array(24).fill(0);
+            dashboardData.por_hora.forEach(item => {
+                const hour = parseInt(item.hora);
+                switch(type) {
+                    case 'critical':
+                        hourlyData[hour] = item.criticas || 0;
+                        break;
+                    case 'medium':
+                        hourlyData[hour] = item.altas || 0;
+                        break;
+                    case 'normal':
+                        hourlyData[hour] = item.normales || 0;
+                        break;
+                }
+            });
+            return hourlyData;
+        }
+        
+        // Datos mock si no hay datos reales
+        const data = [];
+        for (let i = 0; i < 24; i++) {
+            switch(type) {
+                case 'critical':
+                    data.push(Math.floor(Math.random() * 10));
+                    break;
+                case 'medium':
+                    data.push(Math.floor(Math.random() * 30) + 10);
+                    break;
+                case 'normal':
+                    data.push(Math.floor(Math.random() * 50) + 20);
+                    break;
             }
-        });
-
-        // Attack Types Chart
-        var attackTypesCtx = document.getElementById('attackTypesChart').getContext('2d');
-        var attackTypesChart = new Chart(attackTypesCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Port Scan', 'Brute Force', 'SQL Injection', 'DDoS', 'Malware', 'Otros'],
-                datasets: [{
-                    data: [35, 25, 15, 10, 10, 5],
-                    backgroundColor: [
-                        'rgba(13, 110, 253, 0.8)',
-                        'rgba(220, 53, 69, 0.8)',
-                        'rgba(255, 193, 7, 0.8)',
-                        'rgba(25, 135, 84, 0.8)',
-                        'rgba(102, 16, 242, 0.8)',
-                        'rgba(108, 117, 125, 0.8)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            boxWidth: 12
-                        }
-                    }
-                },
-                cutout: '60%'
-            }
+        }
+        return data;
+    }
+    
+    // Botones de período
+    document.querySelectorAll('.period-button').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.period-button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            // Aquí podrías actualizar los gráficos según el período seleccionado
         });
     });
+});
+
+// Función global para actualizar dashboard
+function actualizarDashboard() {
+    console.log('Actualizando dashboard...');
+    
+    // Mostrar indicador de carga
+    const buttons = document.querySelectorAll('[onclick="actualizarDashboard()"]');
+    buttons.forEach(btn => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+        btn.disabled = true;
+        
+        // Restaurar después de 3 segundos
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 3000);
+    });
+    
+    // En una implementación real, aquí harías una llamada AJAX
+    // fetch('/api/dashboard/stats')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         // Actualizar los datos en la página
+    //         actualizarElementosDashboard(data);
+    //     });
+    
+    // Por ahora, simplemente recargamos la página
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+function cambiarPeriodo(periodo) {
+    console.log('Cambiando período a:', periodo);
+    // Implementar lógica para cambiar el período de visualización
+}
+
+// Función para formatear números
+function numberFormat(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
+
+// Actualización en tiempo real
+let realtimeInterval;
+
+function iniciarActualizacionTiempoReal() {
+    // Actualizar cada 5 segundos
+    realtimeInterval = setInterval(actualizarDatosTiempoReal, 5000);
+    console.log('✅ Actualización tiempo real iniciada');
+}
+
+function detenerActualizacionTiempoReal() {
+    if (realtimeInterval) {
+        clearInterval(realtimeInterval);
+        console.log('🛑 Actualización tiempo real detenida');
+    }
+}
+
+async function actualizarDatosTiempoReal() {
+    try {
+        // Obtener estadísticas en tiempo real
+        const response = await fetch('/api/realtime/stats');
+        if (!response.ok) throw new Error('Error en respuesta');
+        
+        const data = await response.json();
+        
+        // Actualizar elementos del dashboard
+        actualizarElementosTiempoReal(data);
+        
+        // Obtener últimas detecciones
+        const detectionsResponse = await fetch('/api/realtime/detections?limit=5');
+        if (detectionsResponse.ok) {
+            const detectionsData = await detectionsResponse.json();
+            actualizarTablaDetecciones(detectionsData.detections);
+        }
+        
+    } catch (error) {
+        console.error('Error actualizando datos tiempo real:', error);
+    }
+}
+
+function actualizarElementosTiempoReal(data) {
+    const resumen = data.resumen || {};
+    
+    // Actualizar contadores principales
+    const totalElement = document.getElementById('total-detecciones');
+    if (totalElement) {
+        totalElement.textContent = numberFormat(resumen.total_detecciones || 0);
+        
+        // Efecto visual de actualización
+        totalElement.classList.add('highlight-update');
+        setTimeout(() => totalElement.classList.remove('highlight-update'), 1000);
+    }
+    
+    const alertasElement = document.getElementById('alertas-pendientes');
+    if (alertasElement) {
+        alertasElement.textContent = resumen.alertas_criticas || 0;
+        if (resumen.alertas_criticas > 0) {
+            alertasElement.classList.add('text-danger');
+        }
+    }
+    
+    const clientesElement = document.getElementById('clientes-conectados');
+    if (clientesElement) {
+        clientesElement.textContent = `${resumen.clientes_detectando || 0}/4`;
+    }
+    
+    // Actualizar gráfico de actividad si existe
+    if (typeof detectionChart !== 'undefined' && data.actividad_minuto) {
+        actualizarGraficoActividad(data.actividad_minuto);
+    }
+}
+
+function actualizarTablaDetecciones(detections) {
+    const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
+    if (!tbody || !detections) return;
+    
+    // Limpiar tabla existente
+    tbody.innerHTML = '';
+    
+    detections.slice(0, 5).forEach(detection => {
+        const row = document.createElement('tr');
+        row.className = 'tabla-deteccion-row';
+        
+        // Determinar clase de severidad
+        let severityClass = 'badge bg-info';
+        if (detection.severity === 'critical') severityClass = 'badge bg-danger';
+        else if (detection.severity === 'high') severityClass = 'badge bg-warning';
+        else if (detection.severity === 'medium') severityClass = 'badge bg-primary';
+        
+        const timestamp = new Date(detection.timestamp).toLocaleTimeString();
+        
+        row.innerHTML = `
+            <td>${detection.client_name || 'Desconocido'}</td>
+            <td>${detection.anomaly_type || 'Normal'}</td>
+            <td>${detection.source_ip}</td>
+            <td>${detection.destination_ip}</td>
+            <td><span class="${severityClass}">${detection.severity}</span></td>
+            <td>${timestamp}</td>
+        `;
+        
+        tbody.appendChild(row);
+        
+        // Efecto de aparición
+        setTimeout(() => row.classList.add('fade-in'), 10);
+    });
+}
+
+function actualizarGraficoActividad(actividadMinuto) {
+    if (!detectionChart || !actividadMinuto.length) return;
+    
+    // Convertir timestamps a labels
+    const labels = actividadMinuto.map(item => {
+        const date = new Date(item.minute_timestamp * 1000);
+        return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    });
+    
+    const data = actividadMinuto.map(item => item.count);
+    const criticalData = actividadMinuto.map(item => item.critical_count || 0);
+    
+    // Actualizar datos del gráfico
+    detectionChart.data.labels = labels;
+    detectionChart.data.datasets[0].data = data;
+    if (detectionChart.data.datasets[1]) {
+        detectionChart.data.datasets[1].data = criticalData;
+    }
+    
+    detectionChart.update('none'); // Sin animación para tiempo real
+}
+
+// CSS para efectos visuales
+const realtimeStyles = `
+<style>
+.highlight-update {
+    background-color: #28a745 !important;
+    color: white !important;
+    transition: all 0.5s ease;
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+.tabla-deteccion-row {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.tabla-deteccion-row.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.realtime-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+    margin-left: 5px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+</style>
+`;
+
+// Agregar estilos al head
+document.head.insertAdjacentHTML('beforeend', realtimeStyles);
+
+// Iniciar actualización cuando la página esté lista
+document.addEventListener('DOMContentLoaded', function() {
+    // ... código existente ...
+    
+    // Iniciar actualización tiempo real
+    iniciarActualizacionTiempoReal();
+    
+    // Agregar indicador de tiempo real
+    const pageTitle = document.querySelector('.page-header h1');
+    if (pageTitle) {
+        pageTitle.innerHTML += ' <span class="realtime-indicator" title="Datos en tiempo real"></span>';
+    }
+});
+
+// Detener actualización al cerrar página
+window.addEventListener('beforeunload', function() {
+    detenerActualizacionTiempoReal();
+});
 </script>
 {% endblock %}

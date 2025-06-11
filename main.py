@@ -1,11 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify, send_from_directory
+from functools import wraps
+from db.db import obtener_conexion
+from psycopg2.extras import RealDictCursor  # AÑADIR ESTA LÍNEA
 import os
 import jwt
 import datetime
 import hashlib
 import logging
-from functools import wraps
-from db.db import obtener_conexion
 
 # Importaciones de controladores
 from controladores.controlador_usuario import (
@@ -264,11 +265,34 @@ def cambiar_contrasena():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Obtener datos necesarios para el dashboard
-    user = obtener_usuario_por_id(session['user_id'])
-    datos_dashboard = obtener_datos_dashboard()
-    
-    return render_template('dashboard.html', user=user, datos=datos_dashboard)
+    try:
+        # Obtener datos del usuario
+        user = obtener_usuario_por_id(session['user_id'])
+        if not user:
+            flash('Error al obtener información del usuario', 'danger')
+            return redirect(url_for('login'))
+        
+        # Obtener datos del dashboard
+        datos_dashboard = obtener_datos_dashboard()
+        
+        # Registrar actividad
+        registrar_actividad_usuario(
+            session['user_id'],
+            'access_dashboard',
+            'Acceso al dashboard principal',
+            request.remote_addr
+        )
+        
+        return render_template('dashboard.html', 
+                             user=user, 
+                             datos=datos_dashboard)
+        
+    except Exception as e:
+        logger.error(f"Error en dashboard: {e}")
+        flash('Error al cargar el dashboard', 'danger')
+        return render_template('dashboard.html', 
+                             user={'username': session.get('username', 'Usuario')}, 
+                             datos={})
 
 #---------------------------------------------------------
 # Rutas para detecciones
@@ -1038,9 +1062,53 @@ def get_token():
 @app.route('/api/dashboard/stats', methods=['GET'])
 @token_required
 def get_dashboard_stats(current_user):
-    # Obtener estadísticas reales del dashboard
-    datos_dashboard = obtener_datos_dashboard()
-    return jsonify(datos_dashboard)
+    try:
+        # Obtener estadísticas actualizadas del dashboard
+        datos_dashboard = obtener_datos_dashboard()
+        
+        # Formatear respuesta para API
+        response = {
+            'success': True,
+            'data': datos_dashboard,
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+        
+        return jsonify(response)
+        
+    except Exception as e:
+        logger.error(f"Error en API dashboard stats: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error al obtener estadísticas del dashboard'
+        }), 500
+
+@app.route('/api/dashboard/stats/simple', methods=['GET'])
+@login_required  # Para requests desde la web app
+def get_dashboard_stats_simple():
+    try:
+        datos_dashboard = obtener_datos_dashboard()
+        
+        # Simplificar datos para actualización rápida
+        stats_simple = {
+            'total_detecciones': datos_dashboard.get('resumen', {}).get('total_detecciones', 0),
+            'detecciones_24h': datos_dashboard.get('resumen', {}).get('detecciones_24h', 0),
+            'pendientes_revision': datos_dashboard.get('resumen', {}).get('pendientes_revision', 0),
+            'clientes_activos': datos_dashboard.get('resumen', {}).get('clientes_activos', 0),
+            'alertas_criticas': datos_dashboard.get('resumen', {}).get('alertas_criticas', 0)
+        }
+        
+        return jsonify({
+            'success': True,
+            'stats': stats_simple,
+            'timestamp': datetime.datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error en API dashboard stats simple: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Error al obtener estadísticas'
+        }), 500
 
 @app.route('/api/detecciones', methods=['GET'])
 @token_required
@@ -1252,6 +1320,96 @@ def exportar_logs():
         logger.error(f"Error al exportar logs: {e}")
         flash('Error al exportar logs del sistema', 'danger')
         return redirect(url_for('admin'))
+
+# Filtros personalizados para Jinja2
+@app.template_filter('number_format')
+def number_format_filter(value):
+    """Formatea números con separadores de miles"""
+    try:
+        return f"{value:,}"
+    except (ValueError, TypeError):
+        return value
+
+@app.template_filter('percentage')
+def percentage_filter(value, decimals=1):
+    """Convierte a porcentaje"""
+    try:
+        return f"{value * 100:.{decimals}f}%"
+    except (ValueError, TypeError):
+        return "0%"
+
+@app.template_filter('time_ago')
+def time_ago_filter(datetime_obj):
+    """Muestra tiempo transcurrido desde una fecha"""
+    if not datetime_obj:
+        return "Nunca"
+    
+    try:
+        from datetime import datetime
+        now = datetime.now()
+        diff = now - datetime_obj
+        
+        if diff.days > 0:
+            return f"Hace {diff.days} día{'s' if diff.days > 1 else ''}"
+        elif diff.seconds > 3600:
+            hours = diff.seconds // 3600
+            return f"Hace {hours} hora{'s' if hours > 1 else ''}"
+        elif diff.seconds > 60:
+            minutes = diff.seconds // 60
+            return f"Hace {minutes} minuto{'s' if minutes > 1 else ''}"
+        else:
+            return "Hace unos segundos"
+    except:
+        return "Tiempo desconocido"
+
+# Agregar después de las otras rutas API:
+
+from actualizador_tiempo_real import actualizador_tiempo_real
+
+@app.route('/api/realtime/stats')
+@login_required
+def get_realtime_stats():
+    """Obtiene estadísticas en tiempo real para el dashboard"""
+    try:
+        stats = actualizador_tiempo_real.get_real_time_stats()
+        return jsonify(stats)
+    except Exception as e:
+        logger.error(f"Error en stats tiempo real: {e}")
+        return jsonify({'error': 'Error obteniendo estadísticas'}), 500
+
+@app.route('/api/realtime/detections')
+@login_required
+def get_realtime_detections():
+    """Obtiene últimas detecciones en tiempo real"""
+    try:
+        limit = request.args.get('limit', 10, type=int)
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'error': 'Sin conexión BD'}), 500
+        
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT d.*, fc.name as client_name
+                FROM detections d
+                LEFT JOIN federated_clients fc ON d.client_id = fc.id
+                ORDER BY d.timestamp DESC
+                LIMIT %s
+            """, (limit,))
+            
+            detections = [dict(row) for row in cursor.fetchall()]
+            
+            # Formatear timestamps
+            for detection in detections:
+                if detection['timestamp']:
+                    detection['timestamp'] = detection['timestamp'].isoformat()
+            
+        conn.close()
+        return jsonify({'detections': detections})
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo detecciones tiempo real: {e}")
+        return jsonify({'error': 'Error interno'}), 500
 
 if __name__ == "__main__":
     # Verificar existencia de directorios necesarios

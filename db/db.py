@@ -7,11 +7,11 @@ def obtener_conexion():
     try:
         # Configura aquí tus credenciales de base de datos
         conn = psycopg2.connect(
-            host="pg-22d24983-johannaguinaga20-3d3c.j.aivencloud.com",
+            host="gondola.proxy.rlwy.net",
             database="db_tesis",
-            user="avnadmin",
-            password="AVNS_I1jdawtNztL0mWzlO5_",
-            port="11410"
+            user="postgres",
+            password="SkpzaNfrqZsvqqIpCvJmktLsvdUotNPt",
+            port="24833"
         )
         return conn
     except psycopg2.Error as e:
