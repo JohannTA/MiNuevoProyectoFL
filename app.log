@@ -1,72 +1,72 @@
 2025-06-09 09:15:57,740 - __main__ - INFO - Directorio creado: c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\static/css
 2025-06-09 09:15:57,741 - __main__ - INFO - Directorio creado: c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\static/js
 2025-06-09 09:15:57,742 - __main__ - INFO - Directorio creado: c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\static/img
-2025-06-09 09:15:57,742 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:15:57,742 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:15:59,413 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:15:59,414 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:15:59,427 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:15:59,912 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:15:59,912 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:15:59,941 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:15:59,967 - werkzeug - INFO -  * Debugger PIN: 992-068-034
-2025-06-09 09:16:58,605 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:16:58,605 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:16:59,519 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:16:59,519 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:16:59,525 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:17:00,038 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:17:00,038 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:17:00,075 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:17:00,080 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 09:21:12,453 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:21:12] "[32mGET / HTTP/1.1[0m" 302 -
 2025-06-09 09:21:12,497 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:21:12] "GET /login?next=http://localhost:5000/ HTTP/1.1" 200 -
 2025-06-09 09:21:14,138 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:21:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-2025-06-09 09:21:27,057 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:21:27,057 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:21:27,058 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:21:27] "POST /login HTTP/1.1" 200 -
 2025-06-09 09:21:33,807 - controladores.controlador_usuario - ERROR - Error al autenticar usuario: column "last_activity" of relation "users" does not exist
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-2025-06-09 09:21:34,168 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:21:34,168 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:21:34,169 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:21:34] "POST /login HTTP/1.1" 200 -
 2025-06-09 09:21:43,624 - controladores.controlador_usuario - ERROR - Error al autenticar usuario: column "last_activity" of relation "users" does not exist
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-2025-06-09 09:21:43,843 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:21:43,843 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:21:43,844 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:21:43] "POST /login HTTP/1.1" 200 -
-2025-06-09 09:22:17,402 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:22:17,402 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:22:17,403 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:22:17] "POST /login HTTP/1.1" 200 -
 2025-06-09 09:22:29,127 - controladores.controlador_usuario - ERROR - Error al autenticar usuario: column "last_activity" of relation "users" does not exist
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-2025-06-09 09:22:29,393 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:22:29,393 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:22:29,393 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:22:29] "POST /login HTTP/1.1" 200 -
-2025-06-09 09:23:58,489 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:23:58,489 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:23:59,513 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:23:59,513 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:23:59,516 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:24:00,220 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:24:00,220 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:24:00,258 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:24:00,264 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 09:26:37,924 - werkzeug - INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 2025-06-09 09:26:37,977 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:26:43,041 - __main__ - INFO - Iniciando aplicación IDS Federado...
-2025-06-09 09:27:16,145 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:26:43,041 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
+2025-06-09 09:27:16,145 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:27:17,111 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:27:17,111 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:27:17,113 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:27:17,602 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:27:17,602 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:27:17,651 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:27:17,657 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 09:27:24,456 - werkzeug - INFO - 26.127.52.20 - - [09/Jun/2025 09:27:24] "[32mGET / HTTP/1.1[0m" 302 -
@@ -76,7 +76,7 @@ LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-2025-06-09 09:27:42,401 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:27:42,401 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:27:42,401 - werkzeug - INFO - 26.127.52.20 - - [09/Jun/2025 09:27:42] "POST /login HTTP/1.1" 200 -
 2025-06-09 09:29:06,689 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -90,57 +90,57 @@ LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-2025-06-09 09:29:44,647 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:29:44,647 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:29:44,664 - werkzeug - INFO - 26.127.52.20 - - [09/Jun/2025 09:29:44] "POST /login HTTP/1.1" 200 -
-2025-06-09 09:35:38,948 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:35:38,948 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:35:40,380 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:35:40,381 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:35:40,382 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:35:40,894 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:35:40,894 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:35:40,928 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:35:40,933 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 09:38:22,634 - controladores.controlador_usuario - ERROR - Error al autenticar usuario: column "last_activity" of relation "users" does not exist
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-2025-06-09 09:38:22,791 - __main__ - WARNING - Intento de inicio de sesión fallido para el usuario: admin
+2025-06-09 09:38:22,791 - __main__ - WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 2025-06-09 09:38:22,798 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 09:38:22] "POST /login HTTP/1.1" 200 -
-2025-06-09 09:48:49,656 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:48:49,656 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:48:50,562 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:48:50,563 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:48:50,566 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:48:51,019 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:48:51,019 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:48:51,047 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:48:51,052 - werkzeug - INFO -  * Debugger PIN: 992-068-034
-2025-06-09 09:50:17,302 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:50:17,302 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:50:18,279 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:8000
  * Running on http://192.168.149.241:8000
 2025-06-09 09:50:18,279 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:50:18,282 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:50:18,778 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:50:18,778 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:50:18,812 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:50:18,818 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 09:50:26,297 - werkzeug - INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 2025-06-09 09:50:26,377 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:50:26,956 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:50:26,956 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:50:26,984 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:50:26,989 - werkzeug - INFO -  * Debugger PIN: 992-068-034
-2025-06-09 09:50:56,032 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:50:56,032 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:50:56,948 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 09:50:56,949 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 09:50:56,956 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 09:50:57,485 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 09:50:57,485 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 09:50:57,521 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:50:57,528 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 09:56:02,630 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
@@ -159,39 +159,39 @@ LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
 2025-06-09 09:58:33,230 - werkzeug - INFO -  * Restarting with stat
 2025-06-09 09:58:33,772 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 09:58:33,777 - werkzeug - INFO -  * Debugger PIN: 992-068-034
-2025-06-09 10:14:07,311 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 10:14:07,311 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 10:14:08,217 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 10:14:08,217 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 10:14:08,219 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 10:14:08,697 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 10:14:08,697 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 10:14:08,733 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 10:14:08,738 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 10:14:59,138 - werkzeug - INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 2025-06-09 10:14:59,204 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 10:16:58,376 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 10:16:58,376 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 10:16:59,290 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 2025-06-09 10:16:59,290 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-06-09 10:16:59,292 - werkzeug - INFO -  * Restarting with stat
-2025-06-09 10:16:59,789 - __main__ - INFO - Iniciando aplicación IDS Federado...
+2025-06-09 10:16:59,789 - __main__ - INFO - Iniciando aplicaciï¿½n IDS Federado...
 2025-06-09 10:16:59,836 - werkzeug - WARNING -  * Debugger is active!
 2025-06-09 10:16:59,846 - werkzeug - INFO -  * Debugger PIN: 992-068-034
 2025-06-09 10:17:06,493 - werkzeug - INFO - 192.168.149.241 - - [09/Jun/2025 10:17:06] "[32mGET / HTTP/1.1[0m" 302 -
 2025-06-09 10:17:06,562 - werkzeug - INFO - 192.168.149.241 - - [09/Jun/2025 10:17:06] "GET /login?next=http://192.168.149.241:5000/ HTTP/1.1" 200 -
 2025-06-09 10:17:08,012 - werkzeug - INFO - 192.168.149.241 - - [09/Jun/2025 10:17:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 10:18:41] "[32mGET / HTTP/1.1[0m" 302 -
@@ -200,16 +200,16 @@ ERROR - Error al autenticar usuario: column "last_activity" of relation "users" 
 LINE 3:                 SET last_login = NOW(), last_activity = NOW(...
                                                 ^
 
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 192.168.149.241 - - [09/Jun/2025 10:18:46] "POST /login HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 10:24:41] "[32mGET / HTTP/1.1[0m" 302 -
@@ -300,7 +300,7 @@ LINE 2:             INSERT INTO user_activity (user_id, action, deta...
 
 INFO - 192.168.149.241 - - [09/Jun/2025 10:34:08] "[32mGET /logout HTTP/1.1[0m" 302 -
 INFO - 192.168.149.241 - - [09/Jun/2025 10:34:08] "GET /login HTTP/1.1" 200 -
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 192.168.149.241 - - [09/Jun/2025 10:34:15] "POST /login HTTP/1.1" 200 -
 ERROR - Error al registrar actividad de usuario: relation "user_activity" does not exist
 LINE 2:             INSERT INTO user_activity (user_id, action, deta...
@@ -324,12 +324,12 @@ LINE 3: ...         u.is_active, u.last_login, u.created_at, u.last_act...
 INFO - 192.168.149.241 - - [09/Jun/2025 10:37:51] "GET /dashboard HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 10:40:28] "GET /dashboard HTTP/1.1" 200 -
@@ -344,7 +344,7 @@ LINE 2:         SELECT sl.id, sl.timestamp, sl.level, sl.module, sl....
 INFO - 192.168.149.241 - - [09/Jun/2025 10:40:46] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 ERROR - Error al obtener logs del sistema: column sl.level does not exist
@@ -354,12 +354,12 @@ LINE 2:         SELECT sl.id, sl.timestamp, sl.level, sl.module, sl....
 INFO - 192.168.149.241 - - [09/Jun/2025 10:54:55] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_sistema.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_sistema.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 ERROR - Error al obtener logs del sistema: relation "user_activity" does not exist
@@ -367,14 +367,14 @@ LINE 9:         FROM user_activity ua
                      ^
 
 INFO - 192.168.149.241 - - [09/Jun/2025 11:07:19] "GET /admin HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 11:15:27] "GET / HTTP/1.1" 200 -
@@ -396,12 +396,12 @@ INFO - 192.168.149.241 - - [09/Jun/2025 11:26:08] "GET /admin HTTP/1.1" 200 -
 INFO - 192.168.149.241 - - [09/Jun/2025 11:28:02] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_reportes.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_reportes.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 11:38:35] "GET /admin HTTP/1.1" 200 -
@@ -423,12 +423,12 @@ INFO - 192.168.149.241 - - [09/Jun/2025 11:54:01] "[32mGET /admin/logs/exportar
 INFO - 192.168.149.241 - - [09/Jun/2025 11:54:07] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 12:30:29] "GET /admin HTTP/1.1" 200 -
@@ -437,7 +437,7 @@ INFO - 192.168.149.241 - - [09/Jun/2025 12:30:34] "[32mGET /admin/logs/exportar
 INFO - 192.168.149.241 - - [09/Jun/2025 12:30:40] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 12:39:47] "GET /admin HTTP/1.1" 200 -
@@ -457,19 +457,19 @@ INFO - 192.168.149.241 - - [09/Jun/2025 12:42:09] "GET /admin HTTP/1.1" 200 -
 INFO - 192.168.149.241 - - [09/Jun/2025 12:42:52] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_sistema.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.149.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.149.241 - - [09/Jun/2025 14:19:12] "GET /admin HTTP/1.1" 200 -
@@ -482,14 +482,14 @@ INFO - 192.168.149.241 - - [09/Jun/2025 14:51:05] "[32mPOST /admin/configuracio
 INFO - 192.168.149.241 - - [09/Jun/2025 14:51:11] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://10.40.43.62:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 127.0.0.1 - - [09/Jun/2025 17:23:57] "[32mGET / HTTP/1.1[0m" 302 -
@@ -515,14 +515,14 @@ INFO - 127.0.0.1 - - [09/Jun/2025 17:31:15] "[35m[1mGET /admin HTTP/1.1[0m" 5
 INFO - 127.0.0.1 - - [09/Jun/2025 17:31:17] "[36mGET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
 INFO - 127.0.0.1 - - [09/Jun/2025 17:31:17] "[36mGET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
 INFO - 127.0.0.1 - - [09/Jun/2025 17:31:17] "[36mGET /admin?__debugger__=yes&cmd=resource&f=console.png&s=pIlgFrbWobHwAtTsdNDV HTTP/1.1[0m" 304 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://10.40.43.62:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 10.40.43.62 - - [09/Jun/2025 17:31:47] "[32mGET / HTTP/1.1[0m" 302 -
@@ -541,34 +541,34 @@ INFO - 10.40.43.62 - - [09/Jun/2025 17:32:25] "GET /admin?__debugger__=yes&cmd=r
 INFO - 10.40.43.62 - - [09/Jun/2025 17:32:25] "GET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://26.127.52.20:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 26.127.52.20 - - [10/Jun/2025 07:10:06] "[32mGET / HTTP/1.1[0m" 302 -
 INFO - 26.127.52.20 - - [10/Jun/2025 07:10:06] "GET /login?next=http://26.127.52.20:5000/ HTTP/1.1" 200 -
-ERROR - No se pudo establecer conexión con la base de datos
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 26.127.52.20 - - [10/Jun/2025 07:10:22] "POST /login HTTP/1.1" 200 -
-ERROR - No se pudo establecer conexión con la base de datos
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 26.127.52.20 - - [10/Jun/2025 07:10:25] "POST /login HTTP/1.1" 200 -
-ERROR - No se pudo establecer conexión con la base de datos
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 26.127.52.20 - - [10/Jun/2025 07:10:54] "POST /login HTTP/1.1" 200 -
 INFO - 26.127.52.20 - - [10/Jun/2025 07:12:45] "GET /login HTTP/1.1" 200 -
 INFO - 26.127.52.20 - - [10/Jun/2025 07:13:10] "[32mPOST /login HTTP/1.1[0m" 302 -
@@ -576,31 +576,31 @@ INFO - 26.127.52.20 - - [10/Jun/2025 07:13:42] "GET /dashboard HTTP/1.1" 200 -
 INFO - 26.127.52.20 - - [10/Jun/2025 07:14:02] "GET /dashboard HTTP/1.1" 200 -
 INFO - 26.127.52.20 - - [10/Jun/2025 07:14:04] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
 INFO - Se obtuvieron 3 roles
-ERROR - No se pudo establecer conexión con la base de datos
-ERROR - No se pudo establecer conexión con la base de datos
-ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:03] "GET /admin HTTP/1.1" 200 -
-ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:08] "[32mGET /admin HTTP/1.1[0m" 302 -
-ERROR - No se pudo establecer conexión con la base de datos
-ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:08] "GET /dashboard HTTP/1.1" 200 -
-ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:10] "[32mGET /admin HTTP/1.1[0m" 302 -
-ERROR - No se pudo establecer conexión con la base de datos
-ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:10] "GET /dashboard HTTP/1.1" 200 -
-ERROR - No se pudo establecer conexión con la base de datos
+ERROR - No se pudo establecer conexiï¿½n con la base de datos
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:12] "[32mGET /logout HTTP/1.1[0m" 302 -
 INFO - 26.127.52.20 - - [10/Jun/2025 07:17:12] "GET /login HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.137.61:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 26.127.52.20 - - [10/Jun/2025 07:20:50] "GET /login HTTP/1.1" 200 -
@@ -650,14 +650,14 @@ INFO - Se obtuvieron 9 permisos
 INFO - 192.168.137.61 - - [10/Jun/2025 07:33:59] "GET /admin/roles/1/permisos HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.137.61:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.137.61 - - [10/Jun/2025 07:43:43] "GET / HTTP/1.1" 200 -
@@ -666,7 +666,7 @@ INFO - Se obtuvieron 9 permisos
 INFO - 192.168.137.61 - - [10/Jun/2025 07:45:54] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 3 roles
@@ -697,7 +697,7 @@ INFO - Se obtuvieron 9 permisos
 INFO - 192.168.137.61 - - [10/Jun/2025 07:50:10] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 3 roles
@@ -719,32 +719,32 @@ INFO - Se obtuvieron 9 permisos
 INFO - 192.168.137.61 - - [10/Jun/2025 07:57:03] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.137.61:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 3 roles
@@ -757,14 +757,14 @@ INFO - Se obtuvieron 9 permisos
 INFO - 192.168.137.61 - - [10/Jun/2025 08:02:49] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.137.61:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.137.61 - - [10/Jun/2025 08:10:48] "GET / HTTP/1.1" 200 -
@@ -774,14 +774,14 @@ INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "[35m[1mGET /admin HTTP/1.1[
 INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "GET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
 INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "GET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
 INFO - 192.168.137.61 - - [10/Jun/2025 08:10:57] "GET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.137.61:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 4 roles
@@ -840,22 +840,22 @@ INFO - Se obtuvieron 9 permisos
 INFO - 192.168.137.61 - - [10/Jun/2025 08:21:51] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 4 roles
@@ -864,14 +864,14 @@ INFO - 192.168.137.61 - - [10/Jun/2025 08:50:28] "[35m[1mGET /admin HTTP/1.1[
 INFO - 192.168.137.61 - - [10/Jun/2025 08:50:29] "[36mGET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
 INFO - 192.168.137.61 - - [10/Jun/2025 08:50:29] "[36mGET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
 INFO - 192.168.137.61 - - [10/Jun/2025 08:50:29] "[36mGET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.137.61:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 4 roles
@@ -880,14 +880,14 @@ INFO - 192.168.137.61 - - [10/Jun/2025 08:50:59] "[35m[1mGET /admin HTTP/1.1[
 INFO - 192.168.137.61 - - [10/Jun/2025 08:50:59] "[36mGET /admin?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
 INFO - 192.168.137.61 - - [10/Jun/2025 08:51:00] "[36mGET /admin?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
 INFO - 192.168.137.61 - - [10/Jun/2025 08:51:00] "[36mGET /admin?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://10.40.9.37:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 10.40.9.37 - - [10/Jun/2025 09:04:02] "[32mGET / HTTP/1.1[0m" 302 -
@@ -930,29 +930,29 @@ INFO - Se obtuvieron 10 permisos
 INFO - 10.40.9.37 - - [10/Jun/2025 09:07:48] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://10.40.9.37:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 4 roles
@@ -965,12 +965,12 @@ INFO - Se obtuvieron 10 permisos
 INFO - 10.40.9.37 - - [10/Jun/2025 09:22:01] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 4 roles
@@ -988,14 +988,14 @@ INFO - 10.40.9.37 - - [10/Jun/2025 09:40:15] "[32mPOST /admin/roles/6/eliminar 
 INFO - Se obtuvieron 3 roles
 INFO - Se obtuvieron 10 permisos
 INFO - 10.40.9.37 - - [10/Jun/2025 09:40:23] "GET /admin HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.178.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.178.241 - - [10/Jun/2025 09:58:25] "[32mGET / HTTP/1.1[0m" 302 -
@@ -1011,12 +1011,12 @@ INFO - Se obtuvieron 10 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 10:00:22] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 3 roles
@@ -1024,22 +1024,22 @@ INFO - Se obtuvieron 10 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 10:07:16] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\controladores\\controlador_roles.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://10.40.28.166:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 10.40.28.166 - - [10/Jun/2025 10:20:32] "[32mGET / HTTP/1.1[0m" 302 -
@@ -1075,7 +1075,7 @@ INFO - 10.40.28.166 - - [10/Jun/2025 10:28:48] "GET /admin HTTP/1.1" 200 -
 INFO - Se obtuvieron 3 roles
 INFO - Se obtuvieron 11 permisos
 INFO - 10.40.28.166 - - [10/Jun/2025 10:29:15] "GET /admin HTTP/1.1" 200 -
-WARNING - No se puede eliminar el permiso ID 10: está asignado a 1 rol(es)
+WARNING - No se puede eliminar el permiso ID 10: estï¿½ asignado a 1 rol(es)
 INFO - 10.40.28.166 - - [10/Jun/2025 10:29:35] "[32mPOST /admin/permisos/10/eliminar HTTP/1.1[0m" 302 -
 INFO - Se obtuvieron 3 roles
 INFO - Se obtuvieron 11 permisos
@@ -1105,36 +1105,36 @@ INFO - Se obtuvieron 10 permisos
 INFO - 10.40.28.166 - - [10/Jun/2025 10:31:40] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Permisos del sistema inicializados
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.178.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Permisos del sistema inicializados
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.178.241 - - [10/Jun/2025 13:56:39] "GET / HTTP/1.1" 200 -
 INFO - Se obtuvieron 4 roles
 INFO - Se obtuvieron 25 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 13:56:50] "GET /admin HTTP/1.1" 200 -
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Permisos del sistema inicializados
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.178.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Permisos del sistema inicializados
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.178.241 - - [10/Jun/2025 13:58:32] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
@@ -1143,14 +1143,14 @@ INFO - Se obtuvieron 25 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 13:58:41] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.178.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 127.0.0.1 - - [10/Jun/2025 13:59:39] "[32mGET / HTTP/1.1[0m" 302 -
@@ -1165,14 +1165,14 @@ INFO - 127.0.0.1 - - [10/Jun/2025 14:00:15] "[32mPOST /admin/configuracion/actu
 INFO - Se obtuvieron 4 roles
 INFO - Se obtuvieron 25 permisos
 INFO - 127.0.0.1 - - [10/Jun/2025 14:00:25] "GET /admin HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.178.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - Se obtuvieron 4 roles
@@ -1180,22 +1180,22 @@ INFO - Se obtuvieron 25 permisos
 INFO - 127.0.0.1 - - [10/Jun/2025 15:12:56] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.178.241:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
 INFO - 192.168.178.241 - - [10/Jun/2025 15:14:24] "GET / HTTP/1.1" 200 -
@@ -1215,34 +1215,13 @@ INFO - 192.168.178.241 - - [10/Jun/2025 15:37:26] "GET /detecciones HTTP/1.1" 20
 INFO - Se obtuvieron 4 roles
 INFO - Se obtuvieron 26 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 15:37:44] "GET /admin HTTP/1.1" 200 -
-INFO - Directorio creado: c:\Users\johan\OneDrive\Documentos\NUEVOFL\MiNuevoProyectoFL\static/img
-INFO - Iniciando aplicación IDS Federado...
-INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:5000
- * Running on http://192.168.18.14:5000
-INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\db\\db.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
-INFO -  * Debugger PIN: 932-902-915
-INFO - Iniciando aplicación IDS Federado...
-INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:5000
- * Running on http://192.168.18.14:5000
-INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\db\\db.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
-INFO -  * Debugger PIN: 932-902-915
-INFO - 192.168.18.14 - - [10/Jun/2025 21:25:24] "[32mGET / HTTP/1.1[0m" 302 -
-INFO - 192.168.18.14 - - [10/Jun/2025 21:25:25] "GET /login?next=http://192.168.18.14:5000/ HTTP/1.1" 200 -
-INFO - 192.168.18.14 - - [10/Jun/2025 21:25:26] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-INFO - 192.168.18.14 - - [10/Jun/2025 21:25:30] "[32mPOST /login HTTP/1.1[0m" 302 -
-INFO - 192.168.18.14 - - [10/Jun/2025 21:25:33] "GET /dashboard HTTP/1.1" 200 -
-INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\db\\db.py', reloading
-INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
-WARNING -  * Debugger is active!
-INFO -  * Debugger PIN: 932-902-915
+INFO -  * Debugger PIN: 992-068-034

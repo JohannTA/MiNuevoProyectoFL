@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+#postgresql://postgres:SkpzaNfrqZsvqqIpCvJmktLsvdUotNPt@gondola.proxy.rlwy.net:24833/railway
 def obtener_conexion():
     """Obtiene una conexión a la base de datos PostgreSQL."""
     try:
