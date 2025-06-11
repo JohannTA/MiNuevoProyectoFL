@@ -1241,3 +1241,8 @@ INFO - 192.168.18.14 - - [10/Jun/2025 21:25:25] "GET /login?next=http://192.168.
 INFO - 192.168.18.14 - - [10/Jun/2025 21:25:26] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
 INFO - 192.168.18.14 - - [10/Jun/2025 21:25:30] "[32mPOST /login HTTP/1.1[0m" 302 -
 INFO - 192.168.18.14 - - [10/Jun/2025 21:25:33] "GET /dashboard HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\db\\db.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 932-902-915
