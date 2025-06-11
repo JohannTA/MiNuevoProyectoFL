@@ -1215,3 +1215,29 @@ INFO - 192.168.178.241 - - [10/Jun/2025 15:37:26] "GET /detecciones HTTP/1.1" 20
 INFO - Se obtuvieron 4 roles
 INFO - Se obtuvieron 26 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 15:37:44] "GET /admin HTTP/1.1" 200 -
+INFO - Directorio creado: c:\Users\johan\OneDrive\Documentos\NUEVOFL\MiNuevoProyectoFL\static/img
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.14:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 932-902-915
+INFO - Iniciando aplicación IDS Federado...
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.14:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 932-902-915
+INFO - 192.168.18.14 - - [10/Jun/2025 21:25:24] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 192.168.18.14 - - [10/Jun/2025 21:25:25] "GET /login?next=http://192.168.18.14:5000/ HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [10/Jun/2025 21:25:26] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - 192.168.18.14 - - [10/Jun/2025 21:25:30] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - 192.168.18.14 - - [10/Jun/2025 21:25:33] "GET /dashboard HTTP/1.1" 200 -
