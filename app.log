@@ -1215,3 +1215,10 @@ INFO - 192.168.178.241 - - [10/Jun/2025 15:37:26] "GET /detecciones HTTP/1.1" 20
 INFO - Se obtuvieron 4 roles
 INFO - Se obtuvieron 26 permisos
 INFO - 192.168.178.241 - - [10/Jun/2025 15:37:44] "GET /admin HTTP/1.1" 200 -
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\db\\db.py', reloading
+INFO -  * Restarting with stat
+INFO - Iniciando aplicación IDS Federado...
+WARNING -  * Debugger is active!
+INFO -  * Debugger PIN: 992-068-034
+INFO -  * Detected change in 'c:\\Users\\JOHANN\\OneDrive\\Documentos\\PRYFL\\MiNuevoProyectoFL\\db\\db.py', reloading
+INFO -  * Restarting with stat
