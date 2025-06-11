@@ -73204,3 +73204,7 @@ task: <Task pending name='Task-3' coro=<Capture._handle_process_stderr_forever()
 2025-06-11 00:30:36,760 - INFO - [NORMAL] 192.168.18.14:25144 <-> 31.200.249.162:31886 (UDP) - Prob: 0.0170
 2025-06-11 00:30:36,777 - INFO - [NORMAL] 192.168.18.14:25144 <-> 31.200.249.162:31886 (UDP) - Prob: 0.0280
 2025-06-11 00:30:36,794 - INFO - [NORMAL] 192.168.18.14:25144 <-> 31.200.249.162:31886 (UDP) - Prob: 0.0599
+2025-06-11 01:06:48,935 - INFO - Cargando modelo desde model/modelo_rf.pkl
+2025-06-11 01:06:49,610 - INFO - Modelo cargado exitosamente
+2025-06-11 01:06:50,658 - INFO - Cliente 1 actualizado en BD
+2025-06-11 01:06:50,763 - ERROR - Error ejecutando detector integrado: 'charmap' codec can't encode characters in position 0-1: character maps to <undefined>

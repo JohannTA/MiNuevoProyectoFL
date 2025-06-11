@@ -470,19 +470,31 @@ def start_detector():
         interface = data.get('interface', 'Ethernet')
         umbral_normal = data.get('umbral_normal', 0.4)
         umbral_sospechoso = data.get('umbral_sospechoso', 0.7)
+        client_id = data.get('client_id', 1)  # Cliente por defecto
         
         if detector_process and detector_process.poll() is None:
             return jsonify({'error': 'El detector ya está ejecutándose'}), 400
         
-        # Verificar que el archivo detector_integrado_bd.py existe
-        if not os.path.exists('detector_integrado_bd.py'):
-            return jsonify({'error': 'Archivo detector_integrado_bd.py no encontrado'}), 500
+        # Verificar que el archivo detector_integrado_bd.py existe (nombre corregido)
+        if not os.path.exists('detector_integrado.py'):
+            return jsonify({'error': 'Archivo detector_integrado.py no encontrado'}), 500
         
+        # Verificar que el modelo existe
+        model_path = 'model/modelo_rf.pkl'
+        if not os.path.exists(model_path):
+            return jsonify({'error': f'Modelo {model_path} no encontrado'}), 500
+        
+        # Comando corregido (eliminar duplicado de --interface)
         cmd = [
-            sys.executable, 'detector_integrado_bd.py',
+            sys.executable, 'detector_integrado.py',  # Archivo corregido
+            '--model', model_path,
             '--interface', interface,
-            '--client-id', '1'
+            '--client-id', str(client_id),
+            '--normal-threshold', str(umbral_normal),
+            '--suspicious-threshold', str(umbral_sospechoso)
         ]
+        
+        logger.info(f"Ejecutando comando: {' '.join(cmd)}")
         
         detector_process = subprocess.Popen(
             cmd,
@@ -492,15 +504,17 @@ def start_detector():
             bufsize=1
         )
         
+        # Actualizar stats
         detector_stats['status'] = 'running'
         detector_stats['interface'] = interface
+        detector_stats['client_id'] = client_id
         detector_stats['start_time'] = time.time()
         
-        logger.info(f"Detector iniciado en interfaz {interface}")
+        logger.info(f"Detector iniciado en interfaz {interface} con cliente ID {client_id}")
         
         return jsonify({
             'success': True,
-            'message': f'Detector iniciado en {interface}',
+            'message': f'Detector iniciado en {interface} (Cliente {client_id})',
             'pid': detector_process.pid,
             'stats': detector_stats
         })
