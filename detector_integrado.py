@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Detector Integrado con Base de Datos
------------------------------------
-Toma el detector.py existente e integra con BD PostgreSQL
+Detector Integrado - CLIENTE FEDERADO (CORREGIDO)
+-----------------------------------------------
+Cliente que usa detector.py completamente y solo añade funcionalidad BD/federada
 """
 
 import sys
@@ -13,79 +13,121 @@ import json
 import uuid
 import threading
 import time
+import asyncio
+import websockets
+import pickle
+import numpy as np
+import psutil
 from datetime import datetime
+from typing import Optional, Dict, Any
+import logging
 
-# Importar el detector original
-from detector import NetworkMonitor, CONFIG, logger, run_system
+# Importar el detector original COMPLETO
+from detector import NetworkMonitor, CONFIG, logger
 
-# Importar conexión BD
-from db.db import obtener_conexion
-from psycopg2.extras import RealDictCursor
+# Importar conexión BD local
+try:
+    from db.db import obtener_conexion
+    from psycopg2.extras import RealDictCursor
+    DB_AVAILABLE = True
+except ImportError:
+    logger.warning("⚠️ Base de datos no disponible - continuando sin BD")
+    DB_AVAILABLE = False
+    def obtener_conexion():
+        return None
 
-class DetectorIntegradoBD(NetworkMonitor):
-    """Extiende NetworkMonitor para integrar con base de datos"""
+class ClienteFederadoDetector(NetworkMonitor):
+    """Cliente federado que hereda TODO de NetworkMonitor y añade funcionalidad BD/federada"""
     
-    def __init__(self, model_path, interface='Ethernet', client_id=1):
-        super().__init__(model_path, interface)
-        self.client_id = client_id
+    def __init__(self, model_path, interface='Ethernet', client_id=1, 
+                 servidor_federado="ws://192.168.1.100:8765"):
         
-        # Cola para detecciones a guardar en BD
+        # Inicializar la clase padre NetworkMonitor COMPLETA
+        super().__init__(model_path, interface)
+        
+        # Configuración del cliente federado
+        self.client_id = client_id
+        self.servidor_federado = servidor_federado
+        
+        # Estado del cliente federado
+        self.connected_to_server = False
+        self.server_assigned_id = None
+        self.last_model_update = None
+        self.rounds_participated = 0
+        
+        # Cola para detecciones BD
         self.detection_queue = []
         self.queue_lock = threading.Lock()
         
-        # Hilo para guardar en BD
+        # Hilos adicionales del cliente federado
         self.db_thread = None
-        self.db_stop_event = threading.Event()
+        self.federated_thread = None
+        self.stop_events = {
+            'db': threading.Event(),
+            'federated': threading.Event()
+        }
         
-        # Configurar cliente en BD
-        self.setup_client_in_db()
+        # Contadores específicos del cliente federado
+        self.total_detections = 0
+        self.federated_stats = {
+            'messages_sent': 0,
+            'messages_received': 0,
+            'model_updates_received': 0,
+            'connection_attempts': 0,
+            'last_heartbeat': None
+        }
+        
+        # Configurar cliente en BD local si está disponible
+        if DB_AVAILABLE:
+            self.setup_client_in_db()
     
     def setup_client_in_db(self):
-        """Configura o actualiza el cliente en la base de datos"""
+        """Configura este cliente en la BD local"""
         try:
             conn = obtener_conexion()
             if not conn:
-                logger.warning("No se pudo conectar a BD para configurar cliente")
+                logger.warning("No se pudo conectar a BD local")
                 return
             
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                # Verificar si el cliente existe
+                # Crear tabla de clientes federados con estructura correcta
                 cursor.execute("""
-                    SELECT id FROM federated_clients WHERE id = %s
-                """, (self.client_id,))
+                    CREATE TABLE IF NOT EXISTS federated_clients (
+                        id INTEGER PRIMARY KEY,
+                        name VARCHAR(255),
+                        description TEXT,
+                        ip_address VARCHAR(45),
+                        status VARCHAR(50) DEFAULT 'active',
+                        api_key VARCHAR(255),
+                        model_version VARCHAR(50),
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
                 
-                if cursor.fetchone():
-                    # Actualizar cliente existente
-                    cursor.execute("""
-                        UPDATE federated_clients 
-                        SET status = 'active', 
-                            last_seen = CURRENT_TIMESTAMP,
-                            description = 'Detector local integrado'
-                        WHERE id = %s
-                    """, (self.client_id,))
-                    logger.info(f"Cliente {self.client_id} actualizado en BD")
-                else:
-                    # Crear nuevo cliente
-                    cursor.execute("""
-                        INSERT INTO federated_clients 
-                        (id, name, description, ip_address, location, status, 
-                         api_key, model_version, created_at, last_seen)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (
-                        self.client_id,
-                        f'Detector-Local-{self.client_id}',
-                        'Detector local integrado con BD',
-                        '192.168.18.14',  # Tu IP local
-                        'PC Principal - Detector Local',
-                        'active',
-                        f'local_key_{self.client_id}_{int(time.time())}',
-                        'v1.0',
-                        datetime.now(),
-                        datetime.now()
-                    ))
-                    logger.info(f"Cliente {self.client_id} creado en BD")
-                
+                # Insertar o actualizar cliente
+                cursor.execute("""
+                    INSERT INTO federated_clients 
+                    (id, name, description, ip_address, status, 
+                     api_key, model_version, created_at, last_seen)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (id) DO UPDATE SET
+                        status = 'active',
+                        last_seen = CURRENT_TIMESTAMP,
+                        description = EXCLUDED.description
+                """, (
+                    self.client_id,
+                    f'Cliente-Detector-{self.client_id}',
+                    f'Cliente federado detector local - Servidor: {self.servidor_federado}',
+                    '192.168.18.14',
+                    'active',
+                    f'cliente_key_{self.client_id}_{int(time.time())}',
+                    'v1.0',
+                    datetime.now(),
+                    datetime.now()
+                ))
                 conn.commit()
+                logger.info(f"Cliente {self.client_id} configurado en BD local")
                 
         except Exception as e:
             logger.error(f"Error configurando cliente en BD: {e}")
@@ -94,97 +136,74 @@ class DetectorIntegradoBD(NetworkMonitor):
                 conn.close()
     
     def start_capture(self):
-        """Inicia captura y también el hilo de BD"""
-        # Iniciar hilo de base de datos
-        self.db_stop_event.clear()
-        self.db_thread = threading.Thread(target=self._db_worker, daemon=True)
-        self.db_thread.start()
+        """Inicia todos los componentes del cliente federado"""
+        logger.info("=== INICIANDO CLIENTE FEDERADO DETECTOR ===")
         
-        # Llamar al método padre
-        super().start_capture()
+        # Registrar tiempo de inicio
+        self.start_time = time.time()
+        
+        # Limpiar eventos de parada
+        for event in self.stop_events.values():
+            event.clear()
+        
+        # Iniciar hilo BD solo si está disponible
+        if DB_AVAILABLE:
+            self.db_thread = threading.Thread(target=self._db_worker, daemon=True)
+            self.db_thread.start()
+            logger.info("✅ Hilo BD iniciado")
+        else:
+            logger.warning("⚠️ BD no disponible, omitiendo hilo BD")
+        
+        # Iniciar hilo federado
+        self.federated_thread = threading.Thread(target=self._federated_worker, daemon=True)
+        self.federated_thread.start()
+        logger.info("✅ Hilo federado iniciado")
+        
+        # Iniciar captura de red usando TODA la lógica del detector padre
+        try:
+            logger.info("✅ Iniciando detector de red completo...")
+            super().start_capture()  # Esto inicia TODA la lógica de detector.py
+        except Exception as e:
+            logger.error(f"❌ Error iniciando captura: {e}")
+            raise
     
     def stop_capture_threads(self):
-        """Detiene todos los hilos incluyendo BD"""
-        # Detener hilo de BD
-        self.db_stop_event.set()
-        if self.db_thread:
-            self.db_thread.join(timeout=2.0)
+        """Detiene todos los hilos incluyendo los del cliente federado"""
+        logger.info("=== DETENIENDO CLIENTE FEDERADO ===")
         
-        # Guardar detecciones pendientes
-        self._flush_detection_queue()
+        # Detener hilos específicos del cliente federado
+        for event in self.stop_events.values():
+            event.set()
         
-        # Llamar al método padre
+        # Guardar detecciones pendientes en BD
+        if DB_AVAILABLE:
+            self._flush_detection_queue()
+        
+        # Detener hilos del detector padre
         super().stop_capture_threads()
+        
+        # Esperar hilos específicos
+        if self.db_thread and self.db_thread.is_alive():
+            self.db_thread.join(timeout=3.0)
+        
+        if self.federated_thread and self.federated_thread.is_alive():
+            self.federated_thread.join(timeout=3.0)
+        
+        logger.info("✅ Cliente federado detenido completamente")
     
-    def _evaluate_flow(self, flow_id):
-        """Sobrescribe la evaluación para guardar en BD"""
-        try:
-            start_time = time.time()
-            flow = self.flows[flow_id]
+    def _print_detection(self, status, flow, probability, attack_type=None, pattern_scores=None):
+        """
+        Sobrescribe solo el método de impresión para añadir registro BD
+        MANTIENE toda la lógica original del detector.py
+        """
+        # Llamar al método original del detector padre
+        super()._print_detection(status, flow, probability, attack_type, pattern_scores)
+        
+        # Añadir SOLO la funcionalidad BD sin alterar la lógica de detección
+        if status != 'normal' and DB_AVAILABLE:
+            self.total_detections += 1
             
-            # Extraer características para el modelo
-            features = flow.get_features()
-            
-            # Verificar si tenemos todas las características necesarias
-            if not self.selected_features:
-                feature_keys = sorted(features.keys())
-                X = [features[f] for f in feature_keys]
-                X = np.array([X])
-                
-                if self.scaler:
-                    X_scaled = self.scaler.transform(X)
-                else:
-                    X_scaled = X
-            else:
-                missing_features = [f for f in self.selected_features if f not in features]
-                if missing_features:
-                    logger.debug(f"Características faltantes: {missing_features}")
-                    return
-                    
-                X = [features[f] for f in self.selected_features]
-                X = np.array([X])
-                
-                if self.scaler:
-                    X_scaled = self.scaler.transform(X)
-                else:
-                    X_scaled = X
-            
-            # Evaluación híbrida de amenazas
-            threat_result = self.threat_evaluator.evaluate_threat(flow, features, X_scaled)
-            
-            # Extraer resultados
-            final_score = threat_result['score']
-            ml_score = threat_result['ml_score']
-            pattern_scores = threat_result['pattern_scores']
-            primary_attack_type = threat_result['primary_attack_type']
-            primary_attack_score = threat_result['primary_attack_score']
-            status = threat_result['classification']
-            
-            # Actualizar contadores
-            self.alert_counts[status] += 1
-            self.performance_metrics['flows_analyzed'] += 1
-            
-            # Determinar tipo de ataque y severidad
-            if status == 'attack':
-                attack_type = primary_attack_type
-                if final_score >= 0.9:
-                    severity = 'critical'
-                elif final_score >= 0.8:
-                    severity = 'high'
-                else:
-                    severity = 'medium'
-                    
-                if attack_type not in self.attack_types:
-                    attack_type = 'other'
-                self.attack_types[attack_type] += 1
-            elif status == 'suspicious':
-                attack_type = None
-                severity = 'medium'
-            else:
-                attack_type = None
-                severity = 'low'
-            
-            # Crear registro de detección para BD
+            # Crear registro para BD
             detection_record = {
                 'detection_id': str(uuid.uuid4()),
                 'client_id': self.client_id,
@@ -194,110 +213,97 @@ class DetectorIntegradoBD(NetworkMonitor):
                 'source_port': str(flow.src_port),
                 'destination_port': str(flow.dst_port),
                 'protocol': flow.protocol,
-                'anomaly_type': attack_type,
-                'severity': severity,
-                'confidence_score': final_score,
+                'anomaly_type': attack_type or 'unknown',
+                'severity': 'high' if status == 'attack' else 'medium' if status == 'suspicious' else 'low',
+                'confidence_score': float(probability),
                 'raw_data': json.dumps({
-                    'ml_score': ml_score,
-                    'pattern_scores': dict(pattern_scores),
-                    'features': {k: float(v) if isinstance(v, (int, float)) else v 
-                               for k, v in features.items()},
+                    'status': status,
+                    'ml_probability': float(probability),
+                    'attack_type': attack_type or 'none',
+                    'pattern_scores': dict(pattern_scores) if pattern_scores else {},
                     'flow_stats': {
                         'packets': len(flow.packets),
-                        'duration': flow.flow_duration,
-                        'bytes': sum(flow.packet_lengths) if flow.packet_lengths else 0
+                        'duration': getattr(flow, 'flow_duration', 0),
+                        'bytes': sum(getattr(flow, 'packet_lengths', []))
+                    },
+                    'client_info': {
+                        'client_id': self.client_id,
+                        'server_connected': self.connected_to_server,
+                        'timestamp': time.time()
                     }
                 }),
                 'is_confirmed': None,
                 'false_positive': False
             }
             
-            # Agregar a cola para BD
+            # Agregar a cola BD
             with self.queue_lock:
                 self.detection_queue.append(detection_record)
-            
-            # Log y print (código original)
-            if status == 'normal':
-                level = 'info'
-            elif status == 'suspicious':
-                level = 'warning'
-            else:
-                level = 'error'
-            
-            msg = f"[{status.upper()}] {flow.src_ip}:{flow.src_port} <-> {flow.dst_ip}:{flow.dst_port} ({flow.protocol}) - Prob: {final_score:.4f}"
-            
-            if status == 'attack':
-                msg += f" - Tipo: {attack_type.upper()}"
-            
-            getattr(logger, level)(msg)
-            
-            if status != 'normal' or CONFIG['SHOW_NORMAL_TRAFFIC']:
-                self._print_detection(status, flow, final_score, attack_type, pattern_scores)
-            
-            # Guardar detección para visualización
-            detection_display = {
-                'timestamp': datetime.now(),
-                'flow_id': flow_id,
-                'src_ip': flow.src_ip,
-                'dst_ip': flow.dst_ip,
-                'protocol': flow.protocol,
-                'status': status,
-                'score': final_score,
-                'ml_score': ml_score,
-                'attack_type': attack_type,
-                'pattern_scores': pattern_scores,
-                'packet_count': len(flow.packets),
-                'duration': flow.flow_duration
-            }
-            
-            self.recent_detections.append(detection_display)
-            
-            # Si es un ataque de alta confianza, eliminar flujo
-            if status == 'attack' and final_score > 0.9:
-                del self.flows[flow_id]
-            
-            # Registrar tiempo de detección
-            detection_time = time.time() - start_time
-            self.performance_metrics['detection_times'].append(detection_time)
-            
-        except Exception as e:
-            logger.error(f"Error evaluando flujo {flow_id}: {str(e)}")
+    
+    # === MÉTODOS DE BASE DE DATOS ===
     
     def _db_worker(self):
-        """Hilo trabajador para guardar detecciones en BD"""
-        while not self.db_stop_event.is_set():
+        """Hilo para guardar detecciones en BD local"""
+        logger.info("🗄️ Trabajador BD iniciado")
+        
+        while not self.stop_events['db'].is_set():
             try:
-                # Recopilar detecciones a procesar
+                # Recoger detecciones pendientes
                 detections_to_save = []
                 with self.queue_lock:
                     if self.detection_queue:
-                        # Tomar hasta 10 detecciones por lote
-                        detections_to_save = self.detection_queue[:10]
-                        self.detection_queue = self.detection_queue[10:]
+                        # Procesar en lotes pequeños
+                        detections_to_save = self.detection_queue[:5]
+                        self.detection_queue = self.detection_queue[5:]
                 
-                # Guardar en BD si hay detecciones
+                # Guardar en BD
                 if detections_to_save:
                     self._save_detections_to_db(detections_to_save)
                 
                 # Esperar antes del siguiente ciclo
-                time.sleep(2)
+                time.sleep(5)
                 
             except Exception as e:
-                logger.error(f"Error en hilo de BD: {e}")
-                time.sleep(5)
+                logger.error(f"❌ Error en trabajador BD: {e}")
+                time.sleep(10)
     
     def _save_detections_to_db(self, detections):
-        """Guarda un lote de detecciones en la base de datos"""
+        """Guarda detecciones en BD local"""
+        if not DB_AVAILABLE:
+            return
+            
         conn = None
         try:
             conn = obtener_conexion()
             if not conn:
-                # Si no hay conexión, devolver detecciones a la cola
+                # Devolver a cola si no hay conexión
                 with self.queue_lock:
                     self.detection_queue = detections + self.detection_queue
                 return
             
             with conn.cursor() as cursor:
+                # Crear tabla de detecciones con PRIMARY KEY
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS detections (
+                        detection_id VARCHAR(255) PRIMARY KEY,
+                        client_id INTEGER,
+                        timestamp TIMESTAMP,
+                        source_ip VARCHAR(45),
+                        destination_ip VARCHAR(45),
+                        source_port VARCHAR(10),
+                        destination_port VARCHAR(10),
+                        protocol VARCHAR(10),
+                        anomaly_type VARCHAR(100),
+                        severity VARCHAR(20),
+                        confidence_score REAL,
+                        raw_data TEXT,
+                        is_confirmed BOOLEAN,
+                        false_positive BOOLEAN DEFAULT FALSE,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                # Insertar detecciones usando INSERT ... ON CONFLICT
                 for detection in detections:
                     cursor.execute("""
                         INSERT INTO detections (
@@ -305,29 +311,23 @@ class DetectorIntegradoBD(NetworkMonitor):
                             source_port, destination_port, protocol, anomaly_type,
                             severity, confidence_score, raw_data, is_confirmed, false_positive
                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (detection_id) DO NOTHING
                     """, (
-                        detection['detection_id'],
-                        detection['client_id'],
-                        detection['timestamp'],
-                        detection['source_ip'],
-                        detection['destination_ip'],
-                        detection['source_port'],
-                        detection['destination_port'],
-                        detection['protocol'],
-                        detection['anomaly_type'],
-                        detection['severity'],
-                        detection['confidence_score'],
-                        detection['raw_data'],
-                        detection['is_confirmed'],
-                        detection['false_positive']
+                        detection['detection_id'], detection['client_id'],
+                        detection['timestamp'], detection['source_ip'],
+                        detection['destination_ip'], detection['source_port'],
+                        detection['destination_port'], detection['protocol'],
+                        detection['anomaly_type'], detection['severity'],
+                        detection['confidence_score'], detection['raw_data'],
+                        detection['is_confirmed'], detection['false_positive']
                     ))
                 
                 conn.commit()
                 logger.debug(f"💾 Guardadas {len(detections)} detecciones en BD")
                 
         except Exception as e:
-            logger.error(f"Error guardando detecciones en BD: {e}")
-            # Devolver detecciones a la cola para reintento
+            logger.error(f"❌ Error guardando en BD: {e}")
+            # Devolver a cola para reintento
             with self.queue_lock:
                 self.detection_queue = detections + self.detection_queue
         finally:
@@ -335,61 +335,394 @@ class DetectorIntegradoBD(NetworkMonitor):
                 conn.close()
     
     def _flush_detection_queue(self):
-        """Guarda todas las detecciones pendientes antes de cerrar"""
+        """Guarda todas las detecciones pendientes"""
+        if not DB_AVAILABLE:
+            return
+            
         with self.queue_lock:
             if self.detection_queue:
                 logger.info(f"💾 Guardando {len(self.detection_queue)} detecciones pendientes...")
                 self._save_detections_to_db(self.detection_queue)
                 self.detection_queue.clear()
-
-def run_detector_integrado(model_path, interface, client_id=1, duration=0):
-    """Ejecuta el detector integrado con BD"""
-    try:
-        # Importar numpy aquí para evitar conflictos
-        import numpy as np
-        globals()['np'] = np
+    
+    # === MÉTODOS DE APRENDIZAJE FEDERADO ===
+    
+    def _federated_worker(self):
+        """Hilo para comunicación con servidor federado"""
+        logger.info("🌐 Trabajador federado iniciado")
         
-        # Crear detector integrado
-        detector = DetectorIntegradoBD(model_path, interface, client_id)
-        
-        # Mostrar información inicial
-        print(f"🛡️  DETECTOR INTEGRADO CON BASE DE DATOS")
-        print(f"📊 Cliente ID: {client_id}")
-        print(f"🌐 Interfaz: {interface}")
-        print(f"🤖 Modelo: {model_path}")
-        print(f"🔗 Enviando detecciones a BD en tiempo real")
-        print("-" * 60)
-        
-        # Iniciar captura
-        detector.start_capture()
-        
-        # Ejecutar por duración especificada o hasta interrupción
-        if duration > 0:
-            time.sleep(duration)
-            detector.stop_capture_threads()
-        else:
+        while not self.stop_events['federated'].is_set():
             try:
-                while True:
+                self.federated_stats['connection_attempts'] += 1
+                
+                # Intentar conectar y mantener conexión
+                asyncio.run(self._federated_connection())
+                
+            except Exception as e:
+                logger.error(f"❌ Error en conexión federada: {e}")
+                
+                # Esperar antes de reintentar (backoff exponencial)
+                retry_delay = min(30, self.federated_stats['connection_attempts'] * 5)
+                logger.info(f"🔄 Reintentando conexión federada en {retry_delay}s...")
+                
+                for _ in range(retry_delay):
+                    if self.stop_events['federated'].is_set():
+                        break
                     time.sleep(1)
-            except KeyboardInterrupt:
-                print("\n🛑 Deteniendo detector...")
-                detector.stop_capture_threads()
+    
+    async def _federated_connection(self):
+        """Mantiene conexión WebSocket con servidor federado"""
+        try:
+            logger.info(f"🌐 Conectando a servidor federado: {self.servidor_federado}")
+            
+            async with websockets.connect(
+                self.servidor_federado,
+                ping_interval=30,
+                ping_timeout=10,
+                close_timeout=10,
+                open_timeout=15
+            ) as websocket:
+                
+                # Registrar cliente
+                if not await self.register_client(websocket):
+                    logger.error("❌ No se pudo registrar en el servidor")
+                    return
+                
+                self.connected_to_server = True
+                self.federated_stats['connection_attempts'] = 0
+                logger.info("✅ Conectado al servidor federado")
+                
+                # Iniciar tareas asíncronas
+                heartbeat_task = asyncio.create_task(self._heartbeat_worker(websocket))
+                stats_task = asyncio.create_task(self._stats_sender(websocket))
+                
+                try:
+                    # Bucle principal de comunicación
+                    async for message in websocket:
+                        if self.stop_events['federated'].is_set():
+                            break
+                        
+                        try:
+                            data = json.loads(message)
+                            self.federated_stats['messages_received'] += 1
+                            await self._handle_federated_message(data, websocket)
+                        except json.JSONDecodeError:
+                            logger.error("❌ Mensaje federado con formato JSON inválido")
+                        except Exception as e:
+                            logger.error(f"❌ Error procesando mensaje federado: {e}")
+                            
+                finally:
+                    # Cancelar tareas
+                    heartbeat_task.cancel()
+                    stats_task.cancel()
+                    
+                    try:
+                        await heartbeat_task
+                        await stats_task
+                    except asyncio.CancelledError:
+                        pass
+                    
+        except websockets.exceptions.ConnectionClosedError:
+            logger.warning("⚠️ Conexión federada cerrada por el servidor")
+        except (OSError, ConnectionRefusedError) as e:
+            logger.warning(f"⚠️ No se pudo conectar al servidor federado: {e}")
+        except asyncio.TimeoutError:
+            logger.warning("⚠️ Timeout conectando al servidor federado")
+        except Exception as e:
+            logger.error(f"❌ Error en conexión federada: {e}")
+        finally:
+            self.connected_to_server = False
+    
+    async def register_client(self, websocket):
+        """Registra el cliente con el servidor federado"""
+        try:
+            registration_message = {
+                'type': 'register',
+                'client_info': {
+                    'id': self.client_id,
+                    'name': f'Cliente-Detector-{self.client_id}',
+                    'location': 'PC Windows - Cliente Federado',
+                    'interface': self.interface,
+                    'capabilities': ['detection', 'learning', 'real_time'],
+                    'version': '2.0',
+                    'os': 'Windows',
+                    'python_version': sys.version.split()[0],
+                    'model_info': {
+                        'type': type(self.model).__name__,
+                        'features': len(self.selected_features) if self.selected_features else 'auto'
+                    }
+                }
+            }
+            
+            await websocket.send(json.dumps(registration_message))
+            self.federated_stats['messages_sent'] += 1
+            logger.info("📤 Mensaje de registro enviado")
+            
+            # Esperar confirmación
+            response = await asyncio.wait_for(websocket.recv(), timeout=30)
+            data = json.loads(response)
+            
+            if data.get('type') == 'registration_confirmed':
+                self.server_assigned_id = data.get('client_id')
+                server_info = data.get('server_info', {})
+                
+                logger.info(f"✅ Registro confirmado - ID: {self.server_assigned_id}")
+                logger.info(f"🛡️ Servidor - Ronda: {server_info.get('current_round', 0)}, "
+                           f"Clientes: {server_info.get('total_clients', 0)}")
+                
+                return True
+            else:
+                logger.error(f"❌ Registro rechazado: {data.get('message', 'Razón desconocida')}")
+                return False
+                
+        except asyncio.TimeoutError:
+            logger.error("⏰ Timeout esperando confirmación de registro")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Error en registro: {e}")
+            return False
+    
+    async def _heartbeat_worker(self, websocket):
+        """Envía heartbeats periódicos al servidor"""
+        try:
+            while not self.stop_events['federated'].is_set():
+                heartbeat_msg = {
+                    'type': 'heartbeat',
+                    'client_id': self.server_assigned_id,
+                    'status': 'active',
+                    'timestamp': time.time(),
+                    'stats': {
+                        'uptime': time.time() - getattr(self, 'start_time', time.time()),
+                        'packets_processed': getattr(self, 'performance_metrics', {}).get('packets_processed', 0),
+                        'flows_analyzed': getattr(self, 'performance_metrics', {}).get('flows_analyzed', 0),
+                        'detections_total': self.total_detections,
+                        'detections_queue': len(self.detection_queue),
+                        'alert_counts': getattr(self, 'alert_counts', {}),
+                        'connected_to_db': DB_AVAILABLE
+                    }
+                }
+                
+                await websocket.send(json.dumps(heartbeat_msg))
+                self.federated_stats['messages_sent'] += 1
+                self.federated_stats['last_heartbeat'] = time.time()
+                
+                await asyncio.sleep(30)  # Heartbeat cada 30 segundos
+                
+        except asyncio.CancelledError:
+            logger.debug("🔄 Heartbeat worker cancelado")
+        except Exception as e:
+            logger.error(f"❌ Error en heartbeat: {e}")
+    
+    async def _stats_sender(self, websocket):
+        """Envía estadísticas detalladas periódicamente"""
+        try:
+            while not self.stop_events['federated'].is_set():
+                await asyncio.sleep(300)  # Estadísticas cada 5 minutos
+                
+                # Usar estadísticas del detector padre
+                perf_metrics = getattr(self, 'performance_metrics', {})
+                current_stats = {
+                    'packets_processed': perf_metrics.get('packets_processed', 0),
+                    'flows_analyzed': perf_metrics.get('flows_analyzed', 0),
+                    'total_detections': self.total_detections,
+                    'alert_distribution': getattr(self, 'alert_counts', {}),
+                    'attack_types': getattr(self, 'attack_types', {}),
+                    'uptime': time.time() - getattr(self, 'start_time', time.time()),
+                    'active_flows': len(getattr(self, 'flows', {})),
+                    'performance': {
+                        'cpu_percent': psutil.cpu_percent(),
+                        'memory_percent': psutil.virtual_memory().percent,
+                        'interface': self.interface
+                    },
+                    'federated_stats': self.federated_stats.copy()
+                }
+                
+                stats_msg = {
+                    'type': 'stats_update',
+                    'client_id': self.server_assigned_id,
+                    'stats': current_stats,
+                    'timestamp': time.time()
+                }
+                
+                await websocket.send(json.dumps(stats_msg))
+                self.federated_stats['messages_sent'] += 1
+                logger.debug("📊 Estadísticas enviadas al servidor")
+                
+        except asyncio.CancelledError:
+            logger.debug("📊 Stats sender cancelado")
+        except Exception as e:
+            logger.error(f"❌ Error enviando estadísticas: {e}")
+    
+    async def _handle_federated_message(self, data: Dict[str, Any], websocket):
+        """Maneja mensajes del servidor federado"""
+        msg_type = data.get('type')
         
-        print("✅ Detector detenido")
+        if msg_type == 'heartbeat_ack':
+            logger.debug("💓 Heartbeat confirmado")
+            
+        elif msg_type == 'global_model_update':
+            logger.info("🤖 Recibiendo actualización de modelo global")
+            self.federated_stats['model_updates_received'] += 1
+            
+        elif msg_type == 'client_joined':
+            client_info = data.get('client_info', {})
+            logger.info(f"👋 Nuevo cliente: {client_info.get('name', 'Unknown')}")
+            
+        elif msg_type == 'client_left':
+            client_name = data.get('client_name', 'Unknown')
+            logger.info(f"👋 Cliente desconectado: {client_name}")
+            
+        elif msg_type == 'critical_alert':
+            alert = data.get('alert', {})
+            logger.warning(f"🚨 [ALERTA CRÍTICA] {alert.get('src_ip')} -> {alert.get('dst_ip')}")
+            
+        elif msg_type == 'aggregation_request':
+            logger.info("🔄 Servidor solicita participación en agregación")
+            self.rounds_participated += 1
+            
+        elif msg_type == 'server_message':
+            message = data.get('message', '')
+            logger.info(f"📢 Mensaje del servidor: {message}")
+            
+        else:
+            logger.debug(f"❓ Mensaje federado desconocido: {msg_type}")
+    
+    def get_status(self):
+        """Retorna estado completo del cliente federado"""
+        return {
+            'client_id': self.client_id,
+            'server_assigned_id': self.server_assigned_id,
+            'connected_to_server': self.connected_to_server,
+            'servidor_federado': self.servidor_federado,
+            'last_model_update': self.last_model_update,
+            'rounds_participated': self.rounds_participated,
+            'detections_pending': len(self.detection_queue),
+            'total_detections': self.total_detections,
+            'db_available': DB_AVAILABLE,
+            'federated_stats': self.federated_stats.copy(),
+            'detection_counts': getattr(self, 'alert_counts', {'normal': 0, 'suspicious': 0, 'attack': 0}),
+            'performance_metrics': getattr(self, 'performance_metrics', {}),
+            'uptime': time.time() - getattr(self, 'start_time', time.time())
+        }
+
+
+def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="ws://192.168.1.100:8765"):
+    """Ejecuta el cliente federado detector"""
+    try:
+        print("=" * 70)
+        print("🛡️ CLIENTE FEDERADO DETECTOR DE INTRUSIONES")
+        print("=" * 70)
+        
+        # Verificar modelo
+        if not os.path.exists(model_path):
+            print(f"❌ ERROR: Modelo no encontrado: {model_path}")
+            print("Verifique que el archivo modelo_rf.pkl existe")
+            return
+        
+        # Verificar conectividad BD
+        if DB_AVAILABLE:
+            try:
+                conn = obtener_conexion()
+                if conn:
+                    conn.close()
+                    print("🗄️ Base de datos: CONECTADA")
+                else:
+                    print("⚠️ Base de datos: NO DISPONIBLE (continuará sin BD)")
+            except:
+                print("❌ Base de datos: ERROR DE CONEXIÓN (continuará sin BD)")
+        else:
+            print("⚠️ Base de datos: MÓDULO NO DISPONIBLE")
+        
+        # Crear cliente
+        cliente = ClienteFederadoDetector(
+            model_path=model_path,
+            interface=interface, 
+            client_id=client_id,
+            servidor_federado=servidor_federado
+        )
+        
+        # Mostrar información
+        print(f"🆔 Cliente ID: {client_id}")
+        print(f"🌐 Interfaz de red: {interface}")
+        print(f"🤖 Modelo ML: {model_path}")
+        print(f"🛡️ Servidor Federado: {servidor_federado}")
+        print("-" * 70)
+        print("🚀 Iniciando cliente... (Ctrl+C para detener)")
+        print("-" * 70)
+        
+        # Iniciar
+        cliente.start_capture()
+        
+        # Ejecutar hasta interrupción
+        try:
+            start_time = time.time()
+            update_interval = 30  # Actualizar estado cada 30 segundos
+            
+            while True:
+                time.sleep(update_interval)
+                
+                # Obtener y mostrar estado
+                status = cliente.get_status()
+                uptime = int(time.time() - start_time)
+                
+                # Indicador de conexión
+                if status['connected_to_server']:
+                    connection_status = f"CONECTADO (ID: {status['server_assigned_id']})"
+                else:
+                    connection_status = "DESCONECTADO"
+                
+                # Mostrar estado
+                print(f"\n[{datetime.now().strftime('%H:%M:%S')}] 📊 Estado del Cliente:")
+                print(f"  ⏱️ Tiempo activo: {uptime}s")
+                print(f"  🌐 Servidor federado: {connection_status}")
+                print(f"  🔄 Rondas FL participadas: {status['rounds_participated']}")
+                print(f"  🎯 Detecciones totales: {status['total_detections']}")
+                print(f"  📋 Cola BD: {status['detections_pending']} pendientes")
+                print(f"  📊 Distribución alertas: {status['detection_counts']}")
+                
+                # Estadísticas federadas
+                fed_stats = status['federated_stats']
+                print(f"  📤📥 Msgs enviados/recibidos: {fed_stats['messages_sent']}/{fed_stats['messages_received']}")
+                print(f"  🤖 Actualizaciones modelo: {fed_stats['model_updates_received']}")
+                
+        except KeyboardInterrupt:
+            print("\n" + "=" * 70)
+            print("🛑 DETENIENDO CLIENTE FEDERADO...")
+            print("=" * 70)
+            
+            # Obtener estadísticas finales
+            final_status = cliente.get_status()
+            
+            print("📋 ESTADÍSTICAS FINALES:")
+            print(f"  ⏱️ Tiempo total activo: {int(final_status['uptime'])}s")
+            print(f"  🎯 Detecciones procesadas: {final_status['total_detections']}")
+            print(f"  🔄 Rondas FL participadas: {final_status['rounds_participated']}")
+            print(f"  📤 Mensajes federados enviados: {final_status['federated_stats']['messages_sent']}")
+            
+            # Detener cliente
+            cliente.stop_capture_threads()
+        
+        print("✅ Cliente federado detenido correctamente")
         
     except Exception as e:
-        logger.error(f"Error ejecutando detector integrado: {e}")
-        raise
+        print(f"❌ ERROR ejecutando cliente federado: {e}")
+        import traceback
+        traceback.print_exc()
+
 
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Detector Integrado con Base de Datos")
-    parser.add_argument("--model", default="model/modelo_rf.pkl", help="Ruta del modelo ML")
-    parser.add_argument("--interface", default="Ethernet", help="Interfaz de red")
-    parser.add_argument("--client-id", type=int, default=1, help="ID del cliente en BD")
-    parser.add_argument("--duration", type=int, default=0, help="Duración en segundos (0=indefinido)")
+    parser = argparse.ArgumentParser(description="🛡️ Cliente Federado Detector de Intrusiones")
+    parser.add_argument("--model", default="model/modelo_rf.pkl", 
+                       help="Ruta del modelo ML")
+    parser.add_argument("--interface", default="Ethernet", 
+                       help="Interfaz de red")
+    parser.add_argument("--client-id", type=int, default=1, 
+                       help="ID único del cliente")
+    parser.add_argument("--server", default="ws://192.168.1.100:8765", 
+                       help="URL del servidor federado")
     
     args = parser.parse_args()
     
-    run_detector_integrado(args.model, args.interface, args.client_id, args.duration)
+    run_cliente_federado(args.model, args.interface, args.client_id, args.server)

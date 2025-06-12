@@ -81,3 +81,7 @@ TypeError: FederatedIDSServer.register_client() missing 1 required positional ar
 task: <Task pending name='Task-7' coro=<Server._close() done, defined at C:\Users\johan\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\websockets\asyncio\server.py:431> wait_for=<Future pending cb=[Task.task_wakeup()]>>
 2025-06-07 14:44:13,337 - ERROR - Task was destroyed but it is pending!
 task: <Task cancelling name='Task-1' coro=<FederatedIDSServer.start_server() done, defined at c:\Users\johan\OneDrive\Documentos\NUEVOFL\MiNuevoProyectoFL\servidor_federado.py:956> wait_for=<Future pending cb=[shield.<locals>._outer_done_callback() at C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\asyncio\tasks.py:922, Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\asyncio\tasks.py:767]>
+2025-06-11 18:19:29,144 - INFO - server listening on 10.40.42.44:5000
+2025-06-11 18:20:15,167 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-11 18:20:15,168 - INFO - server closing
+2025-06-11 18:20:15,168 - INFO - server closed

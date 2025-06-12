@@ -1,0 +1,145 @@
+# ========================================
+# SISTEMA IDS FEDERADO - DEPENDENCIAS
+# ========================================
+
+# Actualizar herramientas base
+pip>=21.0.0
+setuptools>=60.0.0
+wheel>=0.37.0
+
+# ========================================
+# CORE FLASK Y WEB
+# ========================================
+Flask>=2.3.0
+Flask-Login>=0.6.2
+Flask-Session>=0.5.0
+Flask-WTF>=1.1.1
+WTForms>=3.0.1
+Werkzeug>=2.3.0
+Jinja2>=3.1.2
+MarkupSafe>=2.1.3
+itsdangerous>=2.1.2
+blinker>=1.6.0
+click>=8.1.0
+
+# ========================================
+# BASE DE DATOS
+# ========================================
+psycopg2-binary>=2.9.0
+SQLAlchemy>=2.0.0
+Flask-SQLAlchemy>=3.0.0
+alembic>=1.11.0
+
+# ========================================
+# MACHINE LEARNING Y ANÁLISIS
+# ========================================
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+joblib>=1.3.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# ========================================
+# CAPTURA DE RED Y MONITOREO
+# ========================================
+scapy>=2.5.0
+psutil>=5.9.0
+netifaces>=0.11.0
+pypcap>=1.2.3
+
+# ========================================
+# COMUNICACIÓN FEDERADA
+# ========================================
+websockets>=11.0.0
+asyncio-mqtt>=0.11.0
+aiohttp>=3.8.0
+requests>=2.31.0
+
+# ========================================
+# UTILIDADES Y HELPERS
+# ========================================
+python-dateutil>=2.8.0
+pytz>=2023.3
+colorama>=0.4.6
+tqdm>=4.65.0
+rich>=13.4.0
+tabulate>=0.9.0
+
+# ========================================
+# LOGGING Y MONITORING
+# ========================================
+loguru>=0.7.0
+structlog>=23.1.0
+
+# ========================================
+# SEGURIDAD Y AUTENTICACIÓN
+# ========================================
+bcrypt>=4.0.0
+PyJWT>=2.8.0
+cryptography>=41.0.0
+passlib>=1.7.4
+
+# ========================================
+# SERIALIZACIÓN Y FORMATOS
+# ========================================
+pickle-mixin>=1.0.2
+jsonschema>=4.18.0
+PyYAML>=6.0
+toml>=0.10.2
+
+# ========================================
+# DESARROLLO Y TESTING (OPCIONAL)
+# ========================================
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-flask>=1.2.0
+coverage>=7.2.0
+black>=23.7.0
+flake8>=6.0.0
+
+# ========================================
+# SISTEMA Y ARCHIVOS
+# ========================================
+pathlib2>=2.3.7
+configparser>=5.3.0
+argparse>=1.4.0
+uuid>=1.30
+threading2>=0.1.2
+
+# ========================================
+# INTERFAZ Y VISUALIZACIÓN
+# ========================================
+plotly>=5.15.0
+dash>=2.11.0
+bokeh>=3.2.0
+
+# ========================================
+# REDES Y PROTOCOLOS
+# ========================================
+socket.io>=5.8.0
+python-socketio>=5.8.0
+eventlet>=0.33.0
+gevent>=23.7.0
+
+# ========================================
+# ANÁLISIS DE TRÁFICO ESPECÍFICO
+# ========================================
+dpkt>=1.9.8
+pyshark>=0.6
+netfilterqueue>=1.1.0
+
+# ========================================
+# OPTIMIZACIÓN Y PERFORMANCE
+# ========================================
+numba>=0.57.0
+cython>=3.0.0
+multiprocessing-logging>=0.3.4
+
+# ========================================
+# ADMINISTRACIÓN SISTEMA
+# ========================================
+supervisor>=4.2.0
+systemd-python>=234
+#hlaaaaaa

@@ -996,8 +996,8 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="🛡️  Servidor Federado para IDS")
-    parser.add_argument("--host", default="192.168.18.14", help="Host del servidor")
-    parser.add_argument("--port", type=int, default=5000, help="Puerto del servidor")
+    parser.add_argument("--host", default="0.0.0.0", help="Host del servidor")
+    parser.add_argument("--port", type=int, default=8765, help="Puerto del servidor")
     parser.add_argument("--model", default="model/modelo_rf.pkl", help="Ruta del modelo inicial")
     parser.add_argument("--min-clients", type=int, default=1, help="Mínimo clientes para agregación")
     parser.add_argument("--aggregation-interval", type=int, default=300, help="Intervalo de agregación (segundos)")
