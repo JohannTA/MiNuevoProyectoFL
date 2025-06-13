@@ -9,15 +9,6 @@
     <button type="button" class="btn btn-outline-secondary" onclick="actualizarDashboard()">
         <i class="fas fa-sync-alt"></i> Actualizar
     </button>
-    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="fas fa-calendar"></i> Últimas 24 horas
-    </button>
-    <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('1h')">Última hora</a></li>
-        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('24h')">Últimas 24 horas</a></li>
-        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('7d')">Últimos 7 días</a></li>
-        <li><a class="dropdown-item" href="#" onclick="cambiarPeriodo('30d')">Últimos 30 días</a></li>
-    </ul>
 </div>
 
 <!-- Controles de Detector -->
@@ -27,34 +18,35 @@
         <span id="text-detector">Iniciar Detector</span>
     </button>
     <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="fas fa-cog"></i>
+        <i class="fas fa-cog"></i> Configuración
     </button>
-    <ul class="dropdown-menu">
-        <li><h6 class="dropdown-header">Configuración Detector</h6></li>
+    <ul class="dropdown-menu p-3" style="min-width: 350px;">
+        <li><h6 class="dropdown-header">Configuración del Detector</h6></li>
         <li>
-            <div class="dropdown-item-text">
-                <small>Interfaz:</small>
-                <select class="form-select form-select-sm mt-1" id="interface-select">
-                    <option value="Ethernet">Ethernet</option>
-                    <option value="Wi-Fi">Wi-Fi</option>
-                    <option value="Bluetooth">Bluetooth</option>
+            <div class="mb-3">
+                <label class="form-label">Interfaz de Red</label>
+                <select id="interface-select" class="form-select">
+                    <option value="">Detectando interfaces...</option>
                 </select>
+            </div>
+        </li>
+        <li>
+            <div class="mb-3">
+                <label class="form-label">Cliente ID</label>
+                <input type="number" id="client-id" class="form-control" value="1" min="1">
+            </div>
+        </li>
+        <li>
+            <div class="mb-3">
+                <label class="form-label">Servidor Federado</label>
+                <input type="text" id="servidor-federado" class="form-control" value="ws://192.168.18.88:8765">
             </div>
         </li>
         <li><hr class="dropdown-divider"></li>
         <li>
-            <div class="dropdown-item-text">
-                <small>Umbral Normal:</small>
-                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" value="0.4" id="umbral-normal">
-                <small class="text-muted">Actual: <span id="valor-umbral-normal">0.4</span></small>
-            </div>
-        </li>
-        <li>
-            <div class="dropdown-item-text">
-                <small>Umbral Sospechoso:</small>
-                <input type="range" class="form-range" min="0.1" max="0.9" step="0.1" value="0.7" id="umbral-sospechoso">
-                <small class="text-muted">Actual: <span id="valor-umbral-sospechoso">0.7</span></small>
-            </div>
+            <button type="button" class="btn btn-primary btn-sm w-100" onclick="cargarInterfaces()">
+                <i class="fas fa-search"></i> Detectar Interfaces
+            </button>
         </li>
     </ul>
 </div>
@@ -66,57 +58,79 @@
         <span id="text-federado">Iniciar Federado</span>
     </button>
     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="fas fa-cog"></i>
+        <i class="fas fa-cog"></i> Configuración
     </button>
-    <ul class="dropdown-menu">
-        <li><h6 class="dropdown-header">Configuración Federada</h6></li>
+    <ul class="dropdown-menu p-3" style="min-width: 350px;">
+        <li><h6 class="dropdown-header">Configuración del Servidor Federado</h6></li>
         <li>
-            <div class="dropdown-item-text">
-                <small>Servidor:</small>
-                <input type="text" class="form-control form-control-sm mt-1" id="servidor-url" value="ws://localhost:5000" placeholder="ws://servidor:puerto">
+            <div class="mb-3">
+                <label class="form-label">Host</label>
+                <input type="text" id="federado-host" class="form-control" value="0.0.0.0">
+            </div>
+        </li>
+        <li>
+            <div class="mb-3">
+                <label class="form-label">Puerto</label>
+                <input type="number" id="federado-puerto" class="form-control" value="8765" min="1024" max="65535">
+            </div>
+        </li>
+        <li>
+            <div class="mb-3">
+                <label class="form-label">Mínimo Clientes</label>
+                <input type="number" id="min-clientes" class="form-control" value="1" min="1">
             </div>
         </li>
         <li><hr class="dropdown-divider"></li>
         <li>
-            <div class="dropdown-item-text">
-                <small>Modo Aprendizaje:</small>
-                <div class="form-check form-switch mt-1">
-                    <input class="form-check-input" type="checkbox" id="modo-aprendizaje">
-                    <label class="form-check-label" for="modo-aprendizaje">
-                        <small>Activar</small>
-                    </label>
-                </div>
-            </div>
+            <button type="button" class="btn btn-warning btn-sm w-100" onclick="verificarConexion()">
+                <i class="fas fa-network-wired"></i> Verificar Conexión
+            </button>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <button type="button" class="btn btn-info btn-sm w-100 mb-2" onclick="verificarRendimiento()">
+                <i class="fas fa-tachometer-alt"></i> Verificar Rendimiento
+            </button>
         </li>
         <li>
-            <div class="dropdown-item-text">
-                <small>Duración (seg):</small>
-                <input type="number" class="form-control form-control-sm mt-1" id="duracion-aprendizaje" value="300" min="60" max="3600">
-            </div>
+            <button type="button" class="btn btn-secondary btn-sm w-100 mb-2" onclick="ejecutarDiagnosticos()">
+                <i class="fas fa-stethoscope"></i> Ejecutar Diagnósticos
+            </button>
+        </li>
+        <li>
+            <button type="button" class="btn btn-outline-success btn-sm w-100 mb-2" onclick="exportarConfiguracion()">
+                <i class="fas fa-download"></i> Exportar Configuración
+            </button>
+        </li>
+        <li>
+            <input type="file" id="import-config" accept=".json" onchange="importarConfiguracion(event)" style="display: none;">
+            <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="document.getElementById('import-config').click()">
+                <i class="fas fa-upload"></i> Importar Configuración
+            </button>
         </li>
     </ul>
 </div>
 {% endblock %}
 
 {% block content %}
+<!-- Indicador de conexión -->
+<div id="connection-status"></div>
+<div id="last-update"></div>
+
 <!-- Overview Cards -->
 <div class="row">
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-muted small mb-1">Total Detecciones</div>
-                        <div class="h3 mb-0 font-weight-bold" id="total-detecciones">
-                            {{ datos.resumen.total_detecciones|default(0)|number_format }}
-                        </div>
-                        <div class="small mt-2 text-success">
-                            <i class="fas fa-chart-line"></i>
-                            {{ datos.resumen.detecciones_24h|default(0) }} en 24h
-                        </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-shield-alt text-primary fa-2x"></i>
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                    <div>
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Detecciones
+                        </div>
+                        <div class="h3 font-weight-bold" id="total-detecciones">0</div>
                     </div>
                 </div>
             </div>
@@ -126,19 +140,15 @@
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-muted small mb-1">Alertas Críticas</div>
-                        <div class="h3 mb-0 font-weight-bold text-danger" id="alertas-criticas">
-                            {{ datos.resumen.alertas_criticas|default(0) }}
-                        </div>
-                        <div class="small mt-2 text-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Pendientes revisión
-                        </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-clock text-warning fa-2x"></i>
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                    <div>
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Últimas 24h
+                        </div>
+                        <div class="h3 font-weight-bold" id="detecciones-24h">0</div>
                     </div>
                 </div>
             </div>
@@ -148,19 +158,15 @@
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-muted small mb-1">Clientes Activos</div>
-                        <div class="h3 mb-0 font-weight-bold" id="clientes-activos">
-                            {{ datos.resumen.clientes_activos|default(0) }}/{{ datos.resumen.total_clientes|default(0) }}
-                        </div>
-                        <div class="small mt-2 text-success">
-                            <i class="fas fa-check"></i>
-                            Federación activa
-                        </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-laptop fa-2x text-info"></i>
+                    <div>
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Alertas Críticas
+                        </div>
+                        <div class="h3 font-weight-bold" id="alertas-criticas">0</div>
                     </div>
                 </div>
             </div>
@@ -170,18 +176,15 @@
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-muted small mb-1">Detecciones 1h</div>
-                        <div class="h3 mb-0 font-weight-bold" id="detecciones-1h">
-                            {{ datos.resumen.detecciones_1h|default(0) }}
-                        </div>
-                        <div class="small mt-2">
-                            <i class="fas fa-clock"></i> Última hora
-                        </div>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-users text-success fa-2x"></i>
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-clock fa-2x text-success"></i>
+                    <div>
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Clientes Activos
+                        </div>
+                        <div class="h3 font-weight-bold" id="clientes-activos">0/0</div>
                     </div>
                 </div>
             </div>
@@ -194,86 +197,65 @@
     <div class="col-12">
         <div class="dashboard-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="m-0 font-weight-bold">
-                    <i class="fas fa-microchip"></i> Estado del Sistema IDS
-                </h5>
-                <div>
-                    <span class="badge bg-secondary me-2" id="connection-status">DESCONECTADO</span>
-                    <small class="text-muted" id="last-update">Nunca actualizado</small>
-                </div>
+                <h6 class="m-0 font-weight-bold">Estado del Sistema</h6>
+                <button class="btn btn-sm btn-outline-light" onclick="updateServiceStatus()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <!-- Estado del Detector -->
                     <div class="col-md-6">
                         <div class="system-status-panel">
-                            <h6 class="text-primary">
-                                <i class="fas fa-shield-alt"></i> Detector de Flujos
-                            </h6>
+                            <h6><i class="fas fa-search me-2"></i>Detector</h6>
                             <div class="status-info">
-                                <div class="d-flex justify-content-between mb-2">
+                                <div class="d-flex justify-content-between">
                                     <span>Estado:</span>
-                                    <span class="badge bg-secondary" id="detector-status">DETENIDO</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Interfaz:</span>
-                                    <code id="detector-interface">-</code>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Paquetes procesados:</span>
-                                    <span id="detector-packets">0</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Flujos analizados:</span>
-                                    <span id="detector-flows">0</span>
+                                    <span id="detector-status">
+                                        <span class="badge bg-secondary">DETENIDO</span>
+                                    </span>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span>Tiempo activo:</span>
-                                    <span id="detector-uptime">00:00:00</span>
+                                    <span>Interfaz:</span>
+                                    <span class="text-muted">Wi-Fi</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Estado del Sistema Federado -->
                     <div class="col-md-6">
                         <div class="system-status-panel">
-                            <h6 class="text-primary">
-                                <i class="fas fa-network-wired"></i> Sistema Federado
-                            </h6>
+                            <h6><i class="fas fa-network-wired me-2"></i>Servidor Federado</h6>
                             <div class="status-info">
-                                <div class="d-flex justify-content-between mb-2">
+                                <div class="d-flex justify-content-between">
                                     <span>Estado:</span>
-                                    <span class="badge bg-secondary" id="federado-status">DETENIDO</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Servidor:</span>
-                                    <code id="federado-server">-</code>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Clientes conectados:</span>
-                                    <span id="federado-clients">0</span>
+                                    <span id="federado-status">
+                                        <span class="badge bg-secondary">DETENIDO</span>
+                                    </span>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span>Última sincronización:</span>
-                                    <span id="federado-last-sync">Nunca</span>
+                                    <span>Puerto:</span>
+                                    <span class="text-muted">8765</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <!-- Log de Actividad -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <h6 class="text-primary mb-3">
-                            <i class="fas fa-list"></i> Log de Actividad del Sistema
-                        </h6>
-                        <div class="system-log" id="system-log">
-                            <div class="log-entry text-muted">
-                                <small>[Sistema] Esperando inicio de componentes...</small>
-                            </div>
-                        </div>
+<!-- Log del Sistema -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-terminal me-2"></i>Log del Sistema</h6>
+            </div>
+            <div class="card-body">
+                <div id="system-log" class="system-log">
+                    <div class="log-entry">
+                        <small class="text-muted">[Inicializando...]</small>
+                        <span class="text-info">Sistema IDS Federado iniciando...</span>
                     </div>
                 </div>
             </div>
@@ -286,52 +268,31 @@
     <div class="col-12 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="m-0 font-weight-bold">
-                    <i class="fas fa-list-alt"></i> Detecciones Recientes
-                </h5>
-                <span class="badge bg-success pulse-animation">EN VIVO</span>
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-list me-2"></i>Detecciones Recientes</h6>
+                <button class="btn btn-sm btn-outline-light" onclick="updateRecentDetections()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="tabla-detecciones-recientes">
-                        <thead class="bg-light">
+                    <table class="table table-hover" id="tabla-detecciones-recientes">
+                        <thead>
                             <tr>
-                                <th scope="col">Cliente</th>
-                                <th scope="col">Tipo</th>
-                                <th scope="col">IP Origen</th>
-                                <th scope="col">IP Destino</th>
-                                <th scope="col">Severidad</th>
-                                <th scope="col">Hora</th>
+                                <th>Cliente</th>
+                                <th>Severidad</th>
+                                <th>IP Origen</th>
+                                <th>IP Destino</th>
+                                <th>Tipo</th>
+                                <th>Hora</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for deteccion in datos.recientes[:10] %}
                             <tr>
-                                <td>{{ deteccion.client_name|default('Local') }}</td>
-                                <td>
-                                    <span class="badge bg-secondary">{{ deteccion.anomaly_type|default('Normal') }}</span>
+                                <td colspan="6" class="text-center text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Cargando detecciones...
                                 </td>
-                                <td><code>{{ deteccion.source_ip }}</code></td>
-                                <td><code>{{ deteccion.destination_ip }}</code></td>
-                                <td>
-                                    {% set severity = deteccion.severity|default('low') %}
-                                    {% if severity == 'critical' %}
-                                        <span class="badge bg-danger">CRÍTICO</span>
-                                    {% elif severity == 'high' %}
-                                        <span class="badge bg-warning">ALTO</span>
-                                    {% elif severity == 'medium' %}
-                                        <span class="badge bg-primary">MEDIO</span>
-                                    {% else %}
-                                        <span class="badge bg-info">BAJO</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ deteccion.timestamp.strftime('%H:%M:%S') if deteccion.timestamp else 'N/A' }}</td>
                             </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">No hay detecciones recientes</td>
-                            </tr>
-                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -345,12 +306,12 @@
     <div class="col-12 mb-4">
         <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">
-                    <i class="fas fa-chart-line"></i> Actividad en Tiempo Real
-                </h5>
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-chart-line me-2"></i>Actividad en Tiempo Real</h6>
             </div>
             <div class="card-body">
-                <canvas id="activity-chart" height="100"></canvas>
+                <div class="chart-container">
+                    <canvas id="activity-chart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -361,11 +322,11 @@
     <div class="col-md-6 mb-4">
         <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Distribución por Severidad</h5>
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-chart-pie me-2"></i>Distribución por Severidad</h6>
             </div>
             <div class="card-body">
                 <div id="severity-distribution">
-                    <p class="text-muted">Cargando datos...</p>
+                    <p class="text-muted text-center">Cargando datos...</p>
                 </div>
             </div>
         </div>
@@ -374,149 +335,450 @@
     <div class="col-md-6 mb-4">
         <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="m-0 font-weight-bold">Tipos de Ataque</h5>
+                <h6 class="m-0 font-weight-bold"><i class="fas fa-bug me-2"></i>Tipos de Ataque</h6>
             </div>
             <div class="card-body">
                 <div id="attack-types">
-                    <p class="text-muted">Cargando datos...</p>
+                    <p class="text-muted text-center">Cargando datos...</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_css %}
+<style>
+.dashboard-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.dashboard-card .card-header {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 15px 15px 0 0;
+    backdrop-filter: blur(10px);
+}
+
+.dashboard-card .card-body {
+    background: rgba(255,255,255,0.05);
+    border-radius: 0 0 15px 15px;
+    backdrop-filter: blur(5px);
+}
+
+.system-status-panel {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.system-log {
+    background: #1e1e1e;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+}
+
+.log-entry {
+    margin-bottom: 3px;
+    animation: logFadeIn 0.5s ease-in;
+}
+
+@keyframes logFadeIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.counter-updating {
+    animation: counterPulse 0.6s ease-in-out;
+}
+
+@keyframes counterPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); color: #ffc107; }
+    100% { transform: scale(1); }
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.detection-row-new {
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+#connection-status, #last-update {
+    position: fixed;
+    right: 20px;
+    z-index: 1050;
+}
+
+#connection-status { top: 20px; }
+#last-update { 
+    bottom: 20px; 
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+.dropdown-menu {
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-menu .form-control,
+.dropdown-menu .form-select {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+
+.dropdown-menu .form-control:focus,
+.dropdown-menu .form-select:focus {
+    background: rgba(255,255,255,0.15);
+    border-color: #0d6efd;
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-.system-status-panel {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    height: 100%;
-}
-
-.system-status-panel h6 {
-    color: #495057;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.status-info {
-    font-size: 0.9rem;
-}
-
-.system-log {
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 10px;
-    font-family: 'Courier New', monospace;
-}
-
-.log-entry {
-    margin-bottom: 5px;
-    padding: 2px 0;
-    border-bottom: 1px solid #e9ecef;
-    animation: fadeIn 0.3s ease-in;
-}
-
-.log-entry:last-child {
-    border-bottom: none;
-}
-
-.dropdown-item-text {
-    padding: 8px 16px;
-}
-
-.btn-group .dropdown-menu {
-    min-width: 300px;
-}
-
-.pulse-animation {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.counter-update {
-    background-color: #28a745 !important;
-    color: white !important;
-    transform: scale(1.05);
-    transition: all 0.3s ease;
-    border-radius: 4px;
-    padding: 2px 6px;
-}
-
-.detection-row-new {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-}
-
-.detection-row-new.fade-in-up {
-    opacity: 1;
-    transform: translateY(0);
-}
-</style>
-
 <script>
-// Estados globales
-let detectorState = {
-    running: false,
-    interface: 'Ethernet',
-    stats: {}
-};
+// Variables globales
+let detectorState = { running: false, interface: 'Wi-Fi', stats: {} };
+let federadoState = { running: false, server: 'ws://localhost:8765', stats: {} };
+let realtimeInterval = null;
+let activityChart = null;
 
-let federadoState = {
-    running: false,
-    server: 'ws://localhost:5000',
-    stats: {}
-};
+// Sistema de log
+function updateSystemLog(message, level = 'info') {
+    try {
+        const logContainer = document.getElementById('system-log');
+        if (!logContainer) return;
+        
+        const timestamp = new Date().toLocaleTimeString();
+        const levelClass = {
+            'info': 'text-info', 'success': 'text-success', 
+            'warning': 'text-warning', 'error': 'text-danger'
+        }[level] || 'text-info';
+        
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry mb-1';
+        logEntry.innerHTML = `
+            <small class="text-muted">[${timestamp}]</small>
+            <span class="${levelClass}">${message}</span>
+        `;
+        
+        logContainer.insertBefore(logEntry, logContainer.firstChild);
+        
+        const entries = logContainer.querySelectorAll('.log-entry');
+        if (entries.length > 50) {
+            for (let i = 50; i < entries.length; i++) {
+                entries[i].remove();
+            }
+        }
+    } catch (error) {
+        console.error('Error actualizando log:', error);
+    }
+}
 
-let realtimeInterval;
-let activityChart;
+// Notificaciones
+function showNotification(type, message, duration = 5000) {
+    try {
+        const alertClass = {
+            'success': 'alert-success', 'error': 'alert-danger', 
+            'warning': 'alert-warning', 'info': 'alert-info'
+        }[type] || 'alert-info';
+        
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), duration);
+    } catch (error) {
+        console.error('Error mostrando notificación:', error);
+    }
+}
 
-// Inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    initializeActivityChart();
-    startRealtimeUpdates();
-    updateSystemLog('Sistema de dashboard iniciado');
-    
-    // Configurar sliders
-    document.getElementById('umbral-normal').addEventListener('input', function() {
-        document.getElementById('valor-umbral-normal').textContent = this.value;
-    });
-    
-    document.getElementById('umbral-sospechoso').addEventListener('input', function() {
-        document.getElementById('valor-umbral-sospechoso').textContent = this.value;
-    });
-});
+// Verificar conexión
+async function verificarConexion() {
+    try {
+        updateSystemLog('Verificando conectividad del sistema...', 'info');
+        showNotification('info', 'Verificando conectividad...', 2000);
+        
+        const response = await fetch('/api/dashboard/verify-connection', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const results = data.results;
+            
+            let message = 'Verificación completada:\\n';
+            message += `• Base de datos: ${results.database ? 'OK' : 'ERROR'}\\n`;
+            message += `• Detector: ${results.detector ? 'ACTIVO' : 'INACTIVO'}\\n`;
+            message += `• Federado: ${results.federado ? 'ACTIVO' : 'INACTIVO'}\\n`;
+            message += `• Red: ${results.network ? 'OK' : 'ERROR'}`;
+            
+            updateSystemLog(message, 'success');
+            
+            const totalOk = Object.values(results).filter(v => v === true).length;
+            const status = totalOk === 4 ? 'success' : totalOk >= 2 ? 'warning' : 'error';
+            showNotification(status, `Conectividad: ${totalOk}/4 servicios OK`);
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        updateSystemLog(`Error verificando conexión: ${error.message}`, 'error');
+        showNotification('error', 'Error verificando conectividad');
+    }
+}
+
+// Verificar rendimiento
+async function verificarRendimiento() {
+    try {
+        updateSystemLog('Verificando rendimiento...', 'info');
+        showNotification('info', 'Verificando rendimiento...', 2000);
+        
+        const response = await fetch('/api/dashboard/performance-check', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const perf = data.performance;
+            
+            let message = `Rendimiento: CPU ${perf.cpu_percent.toFixed(1)}%, RAM ${perf.memory_percent.toFixed(1)}%, Disco ${perf.disk_percent.toFixed(1)}%`;
+            updateSystemLog(message, data.status === 'good' ? 'success' : 'warning');
+            
+            const statusMsg = data.status === 'good' ? 'Rendimiento óptimo' : 'Rendimiento medio';
+            showNotification(data.status === 'good' ? 'success' : 'warning', statusMsg);
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        updateSystemLog(`Error verificando rendimiento: ${error.message}`, 'error');
+        showNotification('error', 'Error verificando rendimiento');
+    }
+}
+
+// Ejecutar diagnósticos
+async function ejecutarDiagnosticos() {
+    try {
+        updateSystemLog('Ejecutando diagnósticos...', 'info');
+        showNotification('info', 'Ejecutando diagnósticos...', 2000);
+        
+        const response = await fetch('/api/dashboard/diagnostics', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            updateSystemLog('Diagnósticos completados', data.status === 'healthy' ? 'success' : 'warning');
+            showNotification(data.status === 'healthy' ? 'success' : 'warning', 
+                           data.status === 'healthy' ? 'Sistema saludable' : 'Problemas detectados');
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        updateSystemLog(`Error ejecutando diagnósticos: ${error.message}`, 'error');
+        showNotification('error', 'Error ejecutando diagnósticos');
+    }
+}
+
+// Exportar configuración
+async function exportarConfiguracion() {
+    try {
+        updateSystemLog('Exportando configuración...', 'info');
+        showNotification('info', 'Exportando configuración...', 2000);
+        
+        const response = await fetch('/api/dashboard/export-config', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const configJson = JSON.stringify(data.config, null, 2);
+            const blob = new Blob([configJson], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = data.filename || 'ids_config.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            updateSystemLog('Configuración exportada exitosamente', 'success');
+            showNotification('success', 'Configuración exportada');
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        updateSystemLog(`Error exportando configuración: ${error.message}`, 'error');
+        showNotification('error', 'Error exportando configuración');
+    }
+}
+
+// Importar configuración
+async function importarConfiguracion(event) {
+    try {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        updateSystemLog('Importando configuración...', 'info');
+        
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const config = JSON.parse(e.target.result);
+                
+                const response = await fetch('/api/dashboard/import-config', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ config: config })
+                });
+                
+                if (response.ok) {
+                    updateSystemLog('Configuración importada exitosamente', 'success');
+                    showNotification('success', 'Configuración importada');
+                    
+                    // Actualizar formularios
+                    if (config.detector) {
+                        const iface = document.getElementById('interface-select');
+                        if (iface && config.detector.interface) iface.value = config.detector.interface;
+                    }
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (parseError) {
+                throw new Error('Archivo de configuración inválido');
+            }
+        };
+        
+        reader.readAsText(file);
+        event.target.value = '';
+        
+    } catch (error) {
+        updateSystemLog(`Error importando configuración: ${error.message}`, 'error');
+        showNotification('error', 'Error importando configuración');
+    }
+}
+
+// Cargar interfaces
+async function cargarInterfaces() {
+    try {
+        updateSystemLog('Detectando interfaces de red...', 'info');
+        showNotification('info', 'Detectando interfaces...', 2000);
+        
+        const select = document.getElementById('interface-select');
+        if (select) {
+            select.innerHTML = '<option value="">Detectando interfaces...</option>';
+            select.disabled = true;
+        }
+        
+        const response = await fetch('/api/system/interfaces');
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (select) {
+                select.innerHTML = '';
+                select.disabled = false;
+                
+                if (data.interfaces && data.interfaces.length > 0) {
+                    data.interfaces.forEach(iface => {
+                        const option = document.createElement('option');
+                        option.value = iface.name;
+                        option.textContent = iface.display_name;
+                        
+                        if (!iface.is_up) {
+                            option.textContent += ' (Inactiva)';
+                            option.disabled = true;
+                        }
+                        
+                        select.appendChild(option);
+                    });
+                    
+                    const activeInterface = data.interfaces.find(iface => iface.is_up);
+                    if (activeInterface) {
+                        select.value = activeInterface.name;
+                    }
+                    
+                    updateSystemLog(`${data.interfaces.length} interfaces detectadas`, 'success');
+                    showNotification('success', `${data.interfaces.length} interfaces encontradas`);
+                } else {
+                    select.innerHTML = '<option value="">No hay interfaces disponibles</option>';
+                    showNotification('warning', 'No se detectaron interfaces');
+                }
+            }
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        updateSystemLog(`Error detectando interfaces: ${error.message}`, 'error');
+        
+        const select = document.getElementById('interface-select');
+        if (select) {
+            select.disabled = false;
+            select.innerHTML = `
+                <option value="Wi-Fi">Wi-Fi (Fallback)</option>
+                <option value="Ethernet">Ethernet (Fallback)</option>
+            `;
+            select.value = 'Wi-Fi';
+        }
+        
+        showNotification('warning', 'Error detectando interfaces, usando fallback');
+    }
+}
 
 // Control del detector
 async function toggleDetector() {
     const btn = document.getElementById('btn-detector');
-    const icon = document.getElementById('icon-detector');
-    const text = document.getElementById('text-detector');
     
     try {
         btn.disabled = true;
         
         if (detectorState.running) {
+            updateSystemLog('Deteniendo detector...', 'info');
+            
             const response = await fetch('/api/detector/stop', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
@@ -524,19 +786,19 @@ async function toggleDetector() {
             
             if (response.ok) {
                 detectorState.running = false;
-                btn.className = 'btn btn-success';
-                icon.className = 'fas fa-play';
-                text.textContent = 'Iniciar Detector';
-                updateSystemLog('Detector detenido por el usuario');
-                updateDetectorStatus('stopped');
+                updateDetectorButtonState();
+                updateSystemLog('Detector detenido', 'success');
+                showNotification('success', 'Detector detenido');
             } else {
                 throw new Error('Error deteniendo detector');
             }
         } else {
+            updateSystemLog('Iniciando detector...', 'info');
+            
             const config = {
-                interface: document.getElementById('interface-select').value,
-                umbral_normal: parseFloat(document.getElementById('umbral-normal').value),
-                umbral_sospechoso: parseFloat(document.getElementById('umbral-sospechoso').value)
+                interface: document.getElementById('interface-select')?.value || 'Wi-Fi',
+                client_id: parseInt(document.getElementById('client-id')?.value || '1'),
+                servidor_federado: document.getElementById('servidor-federado')?.value || 'ws://localhost:8765'
             };
             
             const response = await fetch('/api/detector/start', {
@@ -547,35 +809,31 @@ async function toggleDetector() {
             
             if (response.ok) {
                 detectorState.running = true;
-                btn.className = 'btn btn-danger';
-                icon.className = 'fas fa-stop';
-                text.textContent = 'Detener Detector';
-                updateSystemLog(`Detector iniciado en ${config.interface}`);
-                updateDetectorStatus('running', config.interface);
+                updateDetectorButtonState();
+                updateSystemLog(`Detector iniciado en ${config.interface}`, 'success');
+                showNotification('success', 'Detector iniciado');
             } else {
-                const error = await response.json();
-                throw new Error(error.error || 'Error iniciando detector');
+                throw new Error('Error iniciando detector');
             }
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error: ' + error.message);
-        updateSystemLog('Error: ' + error.message);
+        updateSystemLog(`Error: ${error.message}`, 'error');
+        showNotification('error', `Error: ${error.message}`);
     } finally {
         btn.disabled = false;
     }
 }
 
-// Control del sistema federado
+// Control del federado
 async function toggleFederado() {
     const btn = document.getElementById('btn-federado');
-    const icon = document.getElementById('icon-federado');
-    const text = document.getElementById('text-federado');
     
     try {
         btn.disabled = true;
         
         if (federadoState.running) {
+            updateSystemLog('Deteniendo servidor federado...', 'info');
+            
             const response = await fetch('/api/federado/stop', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
@@ -583,19 +841,19 @@ async function toggleFederado() {
             
             if (response.ok) {
                 federadoState.running = false;
-                btn.className = 'btn btn-primary';
-                icon.className = 'fas fa-network-wired';
-                text.textContent = 'Iniciar Federado';
-                updateSystemLog('Sistema federado detenido');
-                updateFederadoStatus('stopped');
+                updateFederadoButtonState();
+                updateSystemLog('Servidor federado detenido', 'success');
+                showNotification('success', 'Servidor federado detenido');
             } else {
-                throw new Error('Error deteniendo sistema federado');
+                throw new Error('Error deteniendo servidor federado');
             }
         } else {
+            updateSystemLog('Iniciando servidor federado...', 'info');
+            
             const config = {
-                servidor: document.getElementById('servidor-url').value,
-                modo_aprendizaje: document.getElementById('modo-aprendizaje').checked,
-                duracion: parseInt(document.getElementById('duracion-aprendizaje').value)
+                host: document.getElementById('federado-host')?.value || '0.0.0.0',
+                port: parseInt(document.getElementById('federado-puerto')?.value || '8765'),
+                min_clients: parseInt(document.getElementById('min-clientes')?.value || '1')
             };
             
             const response = await fetch('/api/federado/start', {
@@ -606,372 +864,121 @@ async function toggleFederado() {
             
             if (response.ok) {
                 federadoState.running = true;
-                btn.className = 'btn btn-warning';
-                icon.className = 'fas fa-stop';
-                text.textContent = 'Detener Federado';
-                updateSystemLog(`Sistema federado iniciado ${config.modo_aprendizaje ? '(Modo Aprendizaje)' : ''}`);
-                updateFederadoStatus('running', config.servidor);
+                updateFederadoButtonState();
+                updateSystemLog(`Servidor federado iniciado en ${config.host}:${config.port}`, 'success');
+                showNotification('success', 'Servidor federado iniciado');
             } else {
-                const error = await response.json();
-                throw new Error(error.error || 'Error iniciando sistema federado');
+                throw new Error('Error iniciando servidor federado');
             }
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error: ' + error.message);
-        updateSystemLog('Error: ' + error.message);
+        updateSystemLog(`Error: ${error.message}`, 'error');
+        showNotification('error', `Error: ${error.message}`);
     } finally {
         btn.disabled = false;
     }
 }
 
-// Actualización de estado
-function updateDetectorStatus(status, interface = null) {
-    const statusBadge = document.getElementById('detector-status');
-    const interfaceElement = document.getElementById('detector-interface');
+// Actualizar estados de botones
+function updateDetectorButtonState() {
+    const btn = document.getElementById('btn-detector');
+    const icon = document.getElementById('icon-detector');
+    const text = document.getElementById('text-detector');
     
-    if (status === 'running') {
-        statusBadge.className = 'badge bg-success';
-        statusBadge.textContent = 'EJECUTÁNDOSE';
-        if (interface) interfaceElement.textContent = interface;
-    } else {
-        statusBadge.className = 'badge bg-secondary';
-        statusBadge.textContent = 'DETENIDO';
-        interfaceElement.textContent = '-';
+    if (btn && icon && text) {
+        if (detectorState.running) {
+            btn.className = 'btn btn-danger';
+            icon.className = 'fas fa-stop';
+            text.textContent = 'Detener Detector';
+        } else {
+            btn.className = 'btn btn-success';
+            icon.className = 'fas fa-play';
+            text.textContent = 'Iniciar Detector';
+        }
     }
 }
 
-function updateFederadoStatus(status, server = null) {
-    const statusBadge = document.getElementById('federado-status');
-    const serverElement = document.getElementById('federado-server');
+function updateFederadoButtonState() {
+    const btn = document.getElementById('btn-federado');
+    const icon = document.getElementById('icon-federado');
+    const text = document.getElementById('text-federado');
     
-    if (status === 'running') {
-        statusBadge.className = 'badge bg-success';
-        statusBadge.textContent = 'EJECUTÁNDOSE';
-        if (server) serverElement.textContent = server;
-    } else {
-        statusBadge.className = 'badge bg-secondary';
-        statusBadge.textContent = 'DETENIDO';
-        serverElement.textContent = '-';
+    if (btn && icon && text) {
+        if (federadoState.running) {
+            btn.className = 'btn btn-danger';
+            icon.className = 'fas fa-stop';
+            text.textContent = 'Detener Federado';
+        } else {
+            btn.className = 'btn btn-primary';
+            icon.className = 'fas fa-play';
+            text.textContent = 'Iniciar Federado';
+        }
     }
 }
 
-// Log del sistema
-function updateSystemLog(message, component = 'Sistema') {
-    const logContainer = document.getElementById('system-log');
-    const timestamp = new Date().toLocaleTimeString();
-    
-    const logEntry = document.createElement('div');
-    logEntry.className = 'log-entry';
-    logEntry.innerHTML = `
-        <small>
-            <span class="text-muted">[${timestamp}]</span>
-            <span class="text-info">[${component}]</span>
-            ${message}
-        </small>
-    `;
-    
-    logContainer.insertBefore(logEntry, logContainer.firstChild);
-    
-    while (logContainer.children.length > 20) {
-        logContainer.removeChild(logContainer.lastChild);
-    }
-    
-    logEntry.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+// Actualizar dashboard
+function actualizarDashboard() {
+    updateSystemLog('Actualizando dashboard...', 'info');
+    showNotification('info', 'Actualizando dashboard...', 2000);
+    updateServiceStatus();
+    updateSystemLog('Dashboard actualizado', 'success');
 }
 
-// Tiempo real
-function startRealtimeUpdates() {
-    realtimeInterval = setInterval(updateRealtimeData, 3000);
-    console.log('✅ Actualizaciones en tiempo real iniciadas');
-}
-
-async function updateRealtimeData() {
+// Estado de servicios
+async function updateServiceStatus() {
     try {
-        const statsResponse = await fetch('/api/realtime/stats');
-        if (!statsResponse.ok) throw new Error('Error en stats');
-        
-        const statsData = await statsResponse.json();
-        updateStatsDisplay(statsData);
-        
-        const detectionsResponse = await fetch('/api/realtime/detections?limit=10');
-        if (detectionsResponse.ok) {
-            const detectionsData = await detectionsResponse.json();
-            updateDetectionsTable(detectionsData.detections);
-        }
-        
-        updateConnectionStatus(true);
-        updateLastUpdateIndicator();
-        
-    } catch (error) {
-        console.error('Error actualizando datos:', error);
-        updateConnectionStatus(false);
-    }
-}
-
-function updateStatsDisplay(data) {
-    const resumen = data.resumen || {};
-    
-    updateCounterWithAnimation('total-detecciones', resumen.total_detecciones || 0);
-    updateCounterWithAnimation('alertas-criticas', resumen.alertas_criticas || 0);
-    updateCounterWithAnimation('clientes-activos', `${resumen.clientes_activos || 0}/${resumen.total_clientes || 0}`);
-    updateCounterWithAnimation('detecciones-1h', resumen.detecciones_1h || 0);
-    
-    if (data.actividad_minuto && data.actividad_minuto.length > 0) {
-        updateActivityChart(data.actividad_minuto);
-    }
-    
-    updateSeverityDistribution(data.severidad_1h || {});
-    updateAttackTypes(data.tipos_ataque_1h || []);
-}
-
-function updateCounterWithAnimation(elementId, newValue) {
-    const element = document.getElementById(elementId);
-    if (!element) return;
-    
-    const currentValue = element.textContent.trim();
-    const newValueStr = String(newValue);
-    
-    if (currentValue !== newValueStr) {
-        element.classList.add('counter-update');
-        element.textContent = newValueStr;
-        
-        setTimeout(() => {
-            element.classList.remove('counter-update');
-        }, 1000);
-    }
-}
-
-function updateDetectionsTable(detections) {
-    const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-    
-    if (!detections || detections.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay detecciones recientes</td></tr>';
-        return;
-    }
-    
-    detections.slice(0, 10).forEach((detection, index) => {
-        const row = document.createElement('tr');
-        row.className = 'detection-row-new';
-        
-        let severityClass = 'badge bg-info';
-        let severityText = detection.severity || 'low';
-        
-        switch(severityText) {
-            case 'critical':
-                severityClass = 'badge bg-danger';
-                break;
-            case 'high':
-                severityClass = 'badge bg-warning';
-                break;
-            case 'medium':
-                severityClass = 'badge bg-primary';
-                break;
-            default:
-                severityClass = 'badge bg-info';
-        }
-        
-        const timestamp = detection.timestamp ? 
-            new Date(detection.timestamp).toLocaleTimeString() : 
-            'N/A';
-        
-        const anomalyType = detection.anomaly_type || 'Normal';
-        
-        row.innerHTML = `
-            <td>${detection.client_name || 'Local'}</td>
-            <td><span class="badge bg-secondary">${anomalyType}</span></td>
-            <td><code>${detection.source_ip}</code></td>
-            <td><code>${detection.destination_ip}</code></td>
-            <td><span class="${severityClass}">${severityText.toUpperCase()}</span></td>
-            <td>${timestamp}</td>
-        `;
-        
-        tbody.appendChild(row);
-        
-        setTimeout(() => {
-            row.classList.add('fade-in-up');
-        }, index * 100);
-    });
-}
-
-function updateConnectionStatus(isConnected) {
-    const statusIndicator = document.getElementById('connection-status');
-    if (!statusIndicator) return;
-    
-    if (isConnected) {
-        statusIndicator.className = 'badge bg-success';
-        statusIndicator.textContent = 'CONECTADO';
-    } else {
-        statusIndicator.className = 'badge bg-danger';
-        statusIndicator.textContent = 'DESCONECTADO';
-    }
-}
-
-function updateLastUpdateIndicator() {
-    const indicator = document.getElementById('last-update');
-    if (!indicator) return;
-    
-    const now = new Date();
-    indicator.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
-}
-
-function initializeActivityChart() {
-    const ctx = document.getElementById('activity-chart');
-    if (ctx) {
-        activityChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Detecciones',
-                    data: [],
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
-                }, {
-                    label: 'Críticas',
-                    data: [],
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                animation: {
-                    duration: 0
+        // Verificar detector
+        try {
+            const detectorResponse = await fetch('/api/detector/status');
+            if (detectorResponse.ok) {
+                const data = await detectorResponse.json();
+                detectorState.running = data.stats.status === 'running';
+                updateDetectorButtonState();
+                
+                const statusElement = document.getElementById('detector-status');
+                if (statusElement) {
+                    statusElement.innerHTML = detectorState.running ? 
+                        '<span class="badge bg-success">EJECUTÁNDOSE</span>' :
+                        '<span class="badge bg-secondary">DETENIDO</span>';
                 }
             }
-        });
-    }
-}
-
-function updateActivityChart(activityData) {
-    if (!activityChart || !activityData.length) return;
-    
-    const labels = activityData.map(item => {
-        const date = new Date(item.timestamp);
-        return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    });
-    
-    const detectionCounts = activityData.map(item => item.count || 0);
-    const criticalCounts = activityData.map(item => item.critical_count || 0);
-    
-    activityChart.data.labels = labels;
-    activityChart.data.datasets[0].data = detectionCounts;
-    
-    if (activityChart.data.datasets[1]) {
-        activityChart.data.datasets[1].data = criticalCounts;
-    }
-    
-    activityChart.update('none');
-}
-
-function updateSeverityDistribution(severityData) {
-    const severityContainer = document.getElementById('severity-distribution');
-    if (!severityContainer) return;
-    
-    const total = Object.values(severityData).reduce((sum, count) => sum + count, 0);
-    
-    if (total === 0) {
-        severityContainer.innerHTML = '<p class="text-muted">No hay datos de severidad</p>';
-        return;
-    }
-    
-    const severityColors = {
-        'low': 'success',
-        'medium': 'primary', 
-        'high': 'warning',
-        'critical': 'danger'
-    };
-    
-    let html = '';
-    Object.entries(severityData).forEach(([severity, count]) => {
-        const percentage = ((count / total) * 100).toFixed(1);
-        const colorClass = severityColors[severity] || 'secondary';
+        } catch (e) {
+            console.warn('Detector no disponible');
+        }
         
-        html += `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge bg-${colorClass}">${severity.toUpperCase()}</span>
-                <span>${count} (${percentage}%)</span>
-            </div>
-        `;
-    });
-    
-    severityContainer.innerHTML = html;
-}
-
-function updateAttackTypes(attackTypes) {
-    const attackContainer = document.getElementById('attack-types');
-    if (!attackContainer) return;
-    
-    if (!attackTypes.length) {
-        attackContainer.innerHTML = '<p class="text-muted">No hay ataques detectados</p>';
-        return;
-    }
-    
-    let html = '';
-    attackTypes.slice(0, 5).forEach(attack => {
-        const isNormal = attack.tipo === 'Normal';
-        const badgeClass = isNormal ? 'bg-success' : 'bg-danger';
+        // Verificar federado
+        try {
+            const federadoResponse = await fetch('/api/federado/status');
+            if (federadoResponse.ok) {
+                const data = await federadoResponse.json();
+                federadoState.running = data.stats.status === 'running';
+                updateFederadoButtonState();
+                
+                const statusElement = document.getElementById('federado-status');
+                if (statusElement) {
+                    statusElement.innerHTML = federadoState.running ? 
+                        '<span class="badge bg-success">EJECUTÁNDOSE</span>' :
+                        '<span class="badge bg-secondary">DETENIDO</span>';
+                }
+            }
+        } catch (e) {
+            console.warn('Federado no disponible');
+        }
         
-        html += `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge ${badgeClass}">${attack.tipo}</span>
-                <span class="fw-bold">${attack.count}</span>
-            </div>
-        `;
-    });
-    
-    attackContainer.innerHTML = html;
-}
-
-// Funciones globales adicionales
-function actualizarDashboard() {
-    console.log('Actualizando dashboard...');
-    
-    const buttons = document.querySelectorAll('[onclick="actualizarDashboard()"]');
-    buttons.forEach(btn => {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
-        btn.disabled = true;
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }, 3000);
-    });
-    
-    setTimeout(() => {
-        location.reload();
-    }, 1000);
-}
-
-function cambiarPeriodo(periodo) {
-    console.log('Cambiando período a:', periodo);
-}
-
-// Detener actualizaciones al cerrar página
-window.addEventListener('beforeunload', function() {
-    if (realtimeInterval) {
-        clearInterval(realtimeInterval);
+    } catch (error) {
+        console.error('Error actualizando estado de servicios:', error);
     }
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    updateSystemLog('Iniciando dashboard IDS Federado...', 'info');
+    
+    cargarInterfaces();
+    updateServiceStatus();
+    
+    updateSystemLog('Dashboard iniciado correctamente', 'success');
+    showNotification('success', 'Dashboard cargado', 3000);
 });
 </script>
 {% endblock %}

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Detector Integrado - CLIENTE FEDERADO (CORREGIDO)
------------------------------------------------
-Cliente que usa detector.py completamente y solo añade funcionalidad BD/federada
+Detector Integrado - CLIENTE FEDERADO (SIN EMOJIS)
+------------------------------------------------
+Cliente que usa detector.py completamente sin problemas Unicode
 """
 
 import sys
@@ -22,6 +22,12 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 import logging
 
+# Configurar encoding para Windows ANTES de importar detector
+if sys.platform == 'win32':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.detach())
+
 # Importar el detector original COMPLETO
 from detector import NetworkMonitor, CONFIG, logger
 
@@ -31,10 +37,33 @@ try:
     from psycopg2.extras import RealDictCursor
     DB_AVAILABLE = True
 except ImportError:
-    logger.warning("⚠️ Base de datos no disponible - continuando sin BD")
+    logger.warning("BD no disponible - continuando sin BD")
     DB_AVAILABLE = False
     def obtener_conexion():
         return None
+
+# Configurar logging sin emojis para Windows
+def setup_windows_logging():
+    """Configura logging compatible con Windows"""
+    # Limpiar handlers existentes
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
+    
+    # Crear handler con encoding UTF-8
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    
+    # Formato simple sin emojis
+    formatter = logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%H:%M:%S'
+    )
+    handler.setFormatter(formatter)
+    
+    # Configurar logger
+    root_logger.addHandler(handler)
+    root_logger.setLevel(logging.INFO)
 
 class ClienteFederadoDetector(NetworkMonitor):
     """Cliente federado que hereda TODO de NetworkMonitor y añade funcionalidad BD/federada"""
@@ -90,40 +119,47 @@ class ClienteFederadoDetector(NetworkMonitor):
                 return
             
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                # Crear tabla de clientes federados con estructura correcta
+                # Crear tabla de clientes federados con estructura CORRECTA
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS federated_clients (
-                        id INTEGER PRIMARY KEY,
+                        client_id INTEGER PRIMARY KEY,
                         name VARCHAR(255),
                         description TEXT,
                         ip_address VARCHAR(45),
+                        port INTEGER DEFAULT 8080,
                         status VARCHAR(50) DEFAULT 'active',
-                        api_key VARCHAR(255),
-                        model_version VARCHAR(50),
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        model_version VARCHAR(50),
+                        total_detections INTEGER DEFAULT 0,
+                        total_rounds INTEGER DEFAULT 0,
+                        api_key VARCHAR(255),
                         last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 """)
                 
-                # Insertar o actualizar cliente
+                # Insertar o actualizar cliente con orden CORRECTO
                 cursor.execute("""
                     INSERT INTO federated_clients 
-                    (id, name, description, ip_address, status, 
-                     api_key, model_version, created_at, last_seen)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (id) DO UPDATE SET
+                    (client_id, name, description, ip_address, port, status, 
+                     created_at, model_version, total_detections, total_rounds, 
+                     api_key, last_seen)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (client_id) DO UPDATE SET
                         status = 'active',
                         last_seen = CURRENT_TIMESTAMP,
                         description = EXCLUDED.description
                 """, (
-                    self.client_id,
+                    self.client_id,  # client_id PRIMERO
                     f'Cliente-Detector-{self.client_id}',
                     f'Cliente federado detector local - Servidor: {self.servidor_federado}',
                     '192.168.18.14',
+                    8080,
                     'active',
-                    f'cliente_key_{self.client_id}_{int(time.time())}',
-                    'v1.0',
                     datetime.now(),
+                    'v1.0',
+                    0,
+                    0,
+                    f'cliente_key_{self.client_id}_{int(time.time())}',
                     datetime.now()
                 ))
                 conn.commit()
@@ -150,21 +186,21 @@ class ClienteFederadoDetector(NetworkMonitor):
         if DB_AVAILABLE:
             self.db_thread = threading.Thread(target=self._db_worker, daemon=True)
             self.db_thread.start()
-            logger.info("✅ Hilo BD iniciado")
+            logger.info("[BD] Hilo BD iniciado")
         else:
-            logger.warning("⚠️ BD no disponible, omitiendo hilo BD")
+            logger.warning("[BD] BD no disponible, omitiendo hilo BD")
         
         # Iniciar hilo federado
         self.federated_thread = threading.Thread(target=self._federated_worker, daemon=True)
         self.federated_thread.start()
-        logger.info("✅ Hilo federado iniciado")
+        logger.info("[FL] Hilo federado iniciado")
         
         # Iniciar captura de red usando TODA la lógica del detector padre
         try:
-            logger.info("✅ Iniciando detector de red completo...")
+            logger.info("[DETECTOR] Iniciando detector de red completo...")
             super().start_capture()  # Esto inicia TODA la lógica de detector.py
         except Exception as e:
-            logger.error(f"❌ Error iniciando captura: {e}")
+            logger.error(f"[ERROR] Error iniciando captura: {e}")
             raise
     
     def stop_capture_threads(self):
@@ -189,7 +225,7 @@ class ClienteFederadoDetector(NetworkMonitor):
         if self.federated_thread and self.federated_thread.is_alive():
             self.federated_thread.join(timeout=3.0)
         
-        logger.info("✅ Cliente federado detenido completamente")
+        logger.info("[STOP] Cliente federado detenido completamente")
     
     def _print_detection(self, status, flow, probability, attack_type=None, pattern_scores=None):
         """
@@ -244,7 +280,7 @@ class ClienteFederadoDetector(NetworkMonitor):
     
     def _db_worker(self):
         """Hilo para guardar detecciones en BD local"""
-        logger.info("🗄️ Trabajador BD iniciado")
+        logger.info("[BD] Trabajador BD iniciado")
         
         while not self.stop_events['db'].is_set():
             try:
@@ -264,7 +300,7 @@ class ClienteFederadoDetector(NetworkMonitor):
                 time.sleep(5)
                 
             except Exception as e:
-                logger.error(f"❌ Error en trabajador BD: {e}")
+                logger.error(f"[BD] Error en trabajador BD: {e}")
                 time.sleep(10)
     
     def _save_detections_to_db(self, detections):
@@ -323,10 +359,10 @@ class ClienteFederadoDetector(NetworkMonitor):
                     ))
                 
                 conn.commit()
-                logger.debug(f"💾 Guardadas {len(detections)} detecciones en BD")
+                logger.debug(f"[BD] Guardadas {len(detections)} detecciones")
                 
         except Exception as e:
-            logger.error(f"❌ Error guardando en BD: {e}")
+            logger.error(f"[BD] Error guardando: {e}")
             # Devolver a cola para reintento
             with self.queue_lock:
                 self.detection_queue = detections + self.detection_queue
@@ -341,7 +377,7 @@ class ClienteFederadoDetector(NetworkMonitor):
             
         with self.queue_lock:
             if self.detection_queue:
-                logger.info(f"💾 Guardando {len(self.detection_queue)} detecciones pendientes...")
+                logger.info(f"[BD] Guardando {len(self.detection_queue)} detecciones pendientes...")
                 self._save_detections_to_db(self.detection_queue)
                 self.detection_queue.clear()
     
@@ -349,7 +385,7 @@ class ClienteFederadoDetector(NetworkMonitor):
     
     def _federated_worker(self):
         """Hilo para comunicación con servidor federado"""
-        logger.info("🌐 Trabajador federado iniciado")
+        logger.info("[FL] Trabajador federado iniciado")
         
         while not self.stop_events['federated'].is_set():
             try:
@@ -359,11 +395,11 @@ class ClienteFederadoDetector(NetworkMonitor):
                 asyncio.run(self._federated_connection())
                 
             except Exception as e:
-                logger.error(f"❌ Error en conexión federada: {e}")
+                logger.error(f"[FL] Error en conexión federada: {e}")
                 
                 # Esperar antes de reintentar (backoff exponencial)
                 retry_delay = min(30, self.federated_stats['connection_attempts'] * 5)
-                logger.info(f"🔄 Reintentando conexión federada en {retry_delay}s...")
+                logger.info(f"[FL] Reintentando conexión en {retry_delay}s...")
                 
                 for _ in range(retry_delay):
                     if self.stop_events['federated'].is_set():
@@ -373,7 +409,7 @@ class ClienteFederadoDetector(NetworkMonitor):
     async def _federated_connection(self):
         """Mantiene conexión WebSocket con servidor federado"""
         try:
-            logger.info(f"🌐 Conectando a servidor federado: {self.servidor_federado}")
+            logger.info(f"[FL] Conectando a servidor: {self.servidor_federado}")
             
             async with websockets.connect(
                 self.servidor_federado,
@@ -385,12 +421,12 @@ class ClienteFederadoDetector(NetworkMonitor):
                 
                 # Registrar cliente
                 if not await self.register_client(websocket):
-                    logger.error("❌ No se pudo registrar en el servidor")
+                    logger.error("[FL] No se pudo registrar en el servidor")
                     return
                 
                 self.connected_to_server = True
                 self.federated_stats['connection_attempts'] = 0
-                logger.info("✅ Conectado al servidor federado")
+                logger.info("[FL] Conectado al servidor federado")
                 
                 # Iniciar tareas asíncronas
                 heartbeat_task = asyncio.create_task(self._heartbeat_worker(websocket))
@@ -407,9 +443,9 @@ class ClienteFederadoDetector(NetworkMonitor):
                             self.federated_stats['messages_received'] += 1
                             await self._handle_federated_message(data, websocket)
                         except json.JSONDecodeError:
-                            logger.error("❌ Mensaje federado con formato JSON inválido")
+                            logger.error("[FL] Mensaje con formato JSON inválido")
                         except Exception as e:
-                            logger.error(f"❌ Error procesando mensaje federado: {e}")
+                            logger.error(f"[FL] Error procesando mensaje: {e}")
                             
                 finally:
                     # Cancelar tareas
@@ -423,13 +459,13 @@ class ClienteFederadoDetector(NetworkMonitor):
                         pass
                     
         except websockets.exceptions.ConnectionClosedError:
-            logger.warning("⚠️ Conexión federada cerrada por el servidor")
+            logger.warning("[FL] Conexión cerrada por el servidor")
         except (OSError, ConnectionRefusedError) as e:
-            logger.warning(f"⚠️ No se pudo conectar al servidor federado: {e}")
+            logger.warning(f"[FL] No se pudo conectar: {e}")
         except asyncio.TimeoutError:
-            logger.warning("⚠️ Timeout conectando al servidor federado")
+            logger.warning("[FL] Timeout conectando al servidor")
         except Exception as e:
-            logger.error(f"❌ Error en conexión federada: {e}")
+            logger.error(f"[FL] Error en conexión: {e}")
         finally:
             self.connected_to_server = False
     
@@ -456,7 +492,7 @@ class ClienteFederadoDetector(NetworkMonitor):
             
             await websocket.send(json.dumps(registration_message))
             self.federated_stats['messages_sent'] += 1
-            logger.info("📤 Mensaje de registro enviado")
+            logger.info("[FL] Mensaje de registro enviado")
             
             # Esperar confirmación
             response = await asyncio.wait_for(websocket.recv(), timeout=30)
@@ -466,20 +502,20 @@ class ClienteFederadoDetector(NetworkMonitor):
                 self.server_assigned_id = data.get('client_id')
                 server_info = data.get('server_info', {})
                 
-                logger.info(f"✅ Registro confirmado - ID: {self.server_assigned_id}")
-                logger.info(f"🛡️ Servidor - Ronda: {server_info.get('current_round', 0)}, "
+                logger.info(f"[FL] Registro confirmado - ID: {self.server_assigned_id}")
+                logger.info(f"[FL] Servidor - Ronda: {server_info.get('current_round', 0)}, "
                            f"Clientes: {server_info.get('total_clients', 0)}")
                 
                 return True
             else:
-                logger.error(f"❌ Registro rechazado: {data.get('message', 'Razón desconocida')}")
+                logger.error(f"[FL] Registro rechazado: {data.get('message', 'Razón desconocida')}")
                 return False
                 
         except asyncio.TimeoutError:
-            logger.error("⏰ Timeout esperando confirmación de registro")
+            logger.error("[FL] Timeout esperando confirmación de registro")
             return False
         except Exception as e:
-            logger.error(f"❌ Error en registro: {e}")
+            logger.error(f"[FL] Error en registro: {e}")
             return False
     
     async def _heartbeat_worker(self, websocket):
@@ -509,9 +545,9 @@ class ClienteFederadoDetector(NetworkMonitor):
                 await asyncio.sleep(30)  # Heartbeat cada 30 segundos
                 
         except asyncio.CancelledError:
-            logger.debug("🔄 Heartbeat worker cancelado")
+            logger.debug("[FL] Heartbeat worker cancelado")
         except Exception as e:
-            logger.error(f"❌ Error en heartbeat: {e}")
+            logger.error(f"[FL] Error en heartbeat: {e}")
     
     async def _stats_sender(self, websocket):
         """Envía estadísticas detalladas periódicamente"""
@@ -546,46 +582,46 @@ class ClienteFederadoDetector(NetworkMonitor):
                 
                 await websocket.send(json.dumps(stats_msg))
                 self.federated_stats['messages_sent'] += 1
-                logger.debug("📊 Estadísticas enviadas al servidor")
+                logger.debug("[FL] Estadísticas enviadas al servidor")
                 
         except asyncio.CancelledError:
-            logger.debug("📊 Stats sender cancelado")
+            logger.debug("[FL] Stats sender cancelado")
         except Exception as e:
-            logger.error(f"❌ Error enviando estadísticas: {e}")
+            logger.error(f"[FL] Error enviando estadísticas: {e}")
     
     async def _handle_federated_message(self, data: Dict[str, Any], websocket):
         """Maneja mensajes del servidor federado"""
         msg_type = data.get('type')
         
         if msg_type == 'heartbeat_ack':
-            logger.debug("💓 Heartbeat confirmado")
+            logger.debug("[FL] Heartbeat confirmado")
             
         elif msg_type == 'global_model_update':
-            logger.info("🤖 Recibiendo actualización de modelo global")
+            logger.info("[FL] Recibiendo actualización de modelo global")
             self.federated_stats['model_updates_received'] += 1
             
         elif msg_type == 'client_joined':
             client_info = data.get('client_info', {})
-            logger.info(f"👋 Nuevo cliente: {client_info.get('name', 'Unknown')}")
+            logger.info(f"[FL] Nuevo cliente: {client_info.get('name', 'Unknown')}")
             
         elif msg_type == 'client_left':
             client_name = data.get('client_name', 'Unknown')
-            logger.info(f"👋 Cliente desconectado: {client_name}")
+            logger.info(f"[FL] Cliente desconectado: {client_name}")
             
         elif msg_type == 'critical_alert':
             alert = data.get('alert', {})
-            logger.warning(f"🚨 [ALERTA CRÍTICA] {alert.get('src_ip')} -> {alert.get('dst_ip')}")
+            logger.warning(f"[ALERT] {alert.get('src_ip')} -> {alert.get('dst_ip')}")
             
         elif msg_type == 'aggregation_request':
-            logger.info("🔄 Servidor solicita participación en agregación")
+            logger.info("[FL] Servidor solicita participación en agregación")
             self.rounds_participated += 1
             
         elif msg_type == 'server_message':
             message = data.get('message', '')
-            logger.info(f"📢 Mensaje del servidor: {message}")
+            logger.info(f"[FL] Mensaje del servidor: {message}")
             
         else:
-            logger.debug(f"❓ Mensaje federado desconocido: {msg_type}")
+            logger.debug(f"[FL] Mensaje desconocido: {msg_type}")
     
     def get_status(self):
         """Retorna estado completo del cliente federado"""
@@ -610,12 +646,15 @@ def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="
     """Ejecuta el cliente federado detector"""
     try:
         print("=" * 70)
-        print("🛡️ CLIENTE FEDERADO DETECTOR DE INTRUSIONES")
+        print("CLIENTE FEDERADO DETECTOR DE INTRUSIONES")
         print("=" * 70)
+        
+        # Configurar logging para Windows
+        setup_windows_logging()
         
         # Verificar modelo
         if not os.path.exists(model_path):
-            print(f"❌ ERROR: Modelo no encontrado: {model_path}")
+            print(f"ERROR: Modelo no encontrado: {model_path}")
             print("Verifique que el archivo modelo_rf.pkl existe")
             return
         
@@ -625,13 +664,13 @@ def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="
                 conn = obtener_conexion()
                 if conn:
                     conn.close()
-                    print("🗄️ Base de datos: CONECTADA")
+                    print("Base de datos: CONECTADA")
                 else:
-                    print("⚠️ Base de datos: NO DISPONIBLE (continuará sin BD)")
+                    print("Base de datos: NO DISPONIBLE (continuará sin BD)")
             except:
-                print("❌ Base de datos: ERROR DE CONEXIÓN (continuará sin BD)")
+                print("Base de datos: ERROR DE CONEXIÓN (continuará sin BD)")
         else:
-            print("⚠️ Base de datos: MÓDULO NO DISPONIBLE")
+            print("Base de datos: MÓDULO NO DISPONIBLE")
         
         # Crear cliente
         cliente = ClienteFederadoDetector(
@@ -642,12 +681,12 @@ def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="
         )
         
         # Mostrar información
-        print(f"🆔 Cliente ID: {client_id}")
-        print(f"🌐 Interfaz de red: {interface}")
-        print(f"🤖 Modelo ML: {model_path}")
-        print(f"🛡️ Servidor Federado: {servidor_federado}")
+        print(f"Cliente ID: {client_id}")
+        print(f"Interfaz de red: {interface}")
+        print(f"Modelo ML: {model_path}")
+        print(f"Servidor Federado: {servidor_federado}")
         print("-" * 70)
-        print("🚀 Iniciando cliente... (Ctrl+C para detener)")
+        print("Iniciando cliente... (Ctrl+C para detener)")
         print("-" * 70)
         
         # Iniciar
@@ -672,40 +711,40 @@ def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="
                     connection_status = "DESCONECTADO"
                 
                 # Mostrar estado
-                print(f"\n[{datetime.now().strftime('%H:%M:%S')}] 📊 Estado del Cliente:")
-                print(f"  ⏱️ Tiempo activo: {uptime}s")
-                print(f"  🌐 Servidor federado: {connection_status}")
-                print(f"  🔄 Rondas FL participadas: {status['rounds_participated']}")
-                print(f"  🎯 Detecciones totales: {status['total_detections']}")
-                print(f"  📋 Cola BD: {status['detections_pending']} pendientes")
-                print(f"  📊 Distribución alertas: {status['detection_counts']}")
+                print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Estado del Cliente:")
+                print(f"  Tiempo activo: {uptime}s")
+                print(f"  Servidor federado: {connection_status}")
+                print(f"  Rondas FL participadas: {status['rounds_participated']}")
+                print(f"  Detecciones totales: {status['total_detections']}")
+                print(f"  Cola BD: {status['detections_pending']} pendientes")
+                print(f"  Distribución alertas: {status['detection_counts']}")
                 
                 # Estadísticas federadas
                 fed_stats = status['federated_stats']
-                print(f"  📤📥 Msgs enviados/recibidos: {fed_stats['messages_sent']}/{fed_stats['messages_received']}")
-                print(f"  🤖 Actualizaciones modelo: {fed_stats['model_updates_received']}")
+                print(f"  Msgs enviados/recibidos: {fed_stats['messages_sent']}/{fed_stats['messages_received']}")
+                print(f"  Actualizaciones modelo: {fed_stats['model_updates_received']}")
                 
         except KeyboardInterrupt:
             print("\n" + "=" * 70)
-            print("🛑 DETENIENDO CLIENTE FEDERADO...")
+            print("DETENIENDO CLIENTE FEDERADO...")
             print("=" * 70)
             
             # Obtener estadísticas finales
             final_status = cliente.get_status()
             
-            print("📋 ESTADÍSTICAS FINALES:")
-            print(f"  ⏱️ Tiempo total activo: {int(final_status['uptime'])}s")
-            print(f"  🎯 Detecciones procesadas: {final_status['total_detections']}")
-            print(f"  🔄 Rondas FL participadas: {final_status['rounds_participated']}")
-            print(f"  📤 Mensajes federados enviados: {final_status['federated_stats']['messages_sent']}")
+            print("ESTADÍSTICAS FINALES:")
+            print(f"  Tiempo total activo: {int(final_status['uptime'])}s")
+            print(f"  Detecciones procesadas: {final_status['total_detections']}")
+            print(f"  Rondas FL participadas: {final_status['rounds_participated']}")
+            print(f"  Mensajes federados enviados: {final_status['federated_stats']['messages_sent']}")
             
             # Detener cliente
             cliente.stop_capture_threads()
         
-        print("✅ Cliente federado detenido correctamente")
+        print("Cliente federado detenido correctamente")
         
     except Exception as e:
-        print(f"❌ ERROR ejecutando cliente federado: {e}")
+        print(f"ERROR ejecutando cliente federado: {e}")
         import traceback
         traceback.print_exc()
 
@@ -713,7 +752,7 @@ def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="🛡️ Cliente Federado Detector de Intrusiones")
+    parser = argparse.ArgumentParser(description="Cliente Federado Detector de Intrusiones")
     parser.add_argument("--model", default="model/modelo_rf.pkl", 
                        help="Ruta del modelo ML")
     parser.add_argument("--interface", default="Ethernet", 

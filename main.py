@@ -12,6 +12,7 @@ import psutil
 import signal
 import sys
 import time
+import json
 
 # Importaciones de controladores
 from controladores.controlador_usuario import (
@@ -79,7 +80,7 @@ detector_stats = {
 }
 federado_stats = {
     'status': 'stopped',
-    'server': 'ws://localhost:5000',
+    'server': 'ws://localhost:8765',
     'clients': 0,
     'models': 0,
     'last_sync': None,
@@ -132,37 +133,6 @@ def supervisor_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        
-        # Verificar si el token viene en el header
-        auth_header = request.headers.get('Authorization')
-        if auth_header and auth_header.startswith('Bearer '):
-            token = auth_header.split(' ')[1]
-        
-        if not token:
-            return jsonify({'error': 'Token no proporcionado'}), 401
-        
-        try:
-            # Decodificar el token
-            data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
-            user_id = data['user_id']
-            current_user = obtener_usuario_por_id(user_id)
-            
-            if not current_user:
-                return jsonify({'error': 'Token inválido'}), 401
-            
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token expirado'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'error': 'Token inválido'}), 401
-        
-        return f(current_user, *args, **kwargs)
-    
-    return decorated
-
 #---------------------------------------------------------
 # Rutas de autenticación
 #---------------------------------------------------------
@@ -202,7 +172,7 @@ def login():
                     'user_id': user_data['id'],
                     'username': user_data['username'],
                     'role': user_data['role'],
-                    'exp': datetime.datetime.utcnow() + app.config['JWT_EXPIRATION_DELTA']
+                    'exp': datetime.datetime.now(datetime.timezone.utc) + app.config['JWT_EXPIRATION_DELTA']
                 }
                 token = jwt.encode(token_payload, app.config['JWT_SECRET_KEY'], algorithm='HS256')
                 
@@ -323,7 +293,7 @@ def dashboard():
                              datos={})
 
 #---------------------------------------------------------
-# RUTAS DE API TIEMPO REAL (UNIFICADAS)
+# RUTAS DE API TIEMPO REAL
 #---------------------------------------------------------
 
 @app.route('/api/realtime/stats')
@@ -333,7 +303,21 @@ def get_realtime_stats():
     try:
         conn = obtener_conexion()
         if not conn:
-            return jsonify({'error': 'Sin conexión BD'}), 500
+            return jsonify({
+                'timestamp': datetime.datetime.now().isoformat(),
+                'resumen': {
+                    'total_detecciones': 0,
+                    'detecciones_1h': 0,
+                    'detecciones_24h': 0,
+                    'alertas_criticas': 0,
+                    'clientes_detectando': 0,
+                    'total_clientes': 0,
+                    'clientes_activos': 0
+                },
+                'severidad_1h': {},
+                'tipos_ataque_1h': [],
+                'actividad_minuto': []
+            })
         
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             # Estadísticas básicas
@@ -352,7 +336,9 @@ def get_realtime_stats():
             
             # Distribución por severidad (última hora)
             cursor.execute("""
-                SELECT severity, COUNT(*) as count
+                SELECT 
+                    COALESCE(severity, 'unknown') as severity, 
+                    COUNT(*) as count
                 FROM detections 
                 WHERE timestamp >= NOW() - INTERVAL '1 hour'
                 GROUP BY severity
@@ -363,7 +349,7 @@ def get_realtime_stats():
             # Tipos de ataque (última hora)
             cursor.execute("""
                 SELECT 
-                    COALESCE(anomaly_type, 'Normal') as tipo,
+                    COALESCE(anomaly_type, 'Desconocido') as tipo,
                     COUNT(*) as count
                 FROM detections 
                 WHERE timestamp >= NOW() - INTERVAL '1 hour'
@@ -374,20 +360,6 @@ def get_realtime_stats():
             
             tipos_ataque_1h = [dict(row) for row in cursor.fetchall()]
             
-            # Actividad por minuto (última hora)
-            cursor.execute("""
-                SELECT 
-                    EXTRACT(EPOCH FROM date_trunc('minute', timestamp))::bigint * 1000 as timestamp,
-                    COUNT(*) as count,
-                    COUNT(*) FILTER (WHERE severity IN ('high', 'critical')) as critical_count
-                FROM detections 
-                WHERE timestamp >= NOW() - INTERVAL '1 hour'
-                GROUP BY date_trunc('minute', timestamp)
-                ORDER BY timestamp
-            """)
-            
-            actividad_minuto = [dict(row) for row in cursor.fetchall()]
-            
             # Estados de clientes
             cursor.execute("""
                 SELECT 
@@ -396,7 +368,8 @@ def get_realtime_stats():
                 FROM federated_clients
             """)
             
-            clientes_info = dict(cursor.fetchone()) if cursor.rowcount > 0 else {'total_clientes': 0, 'clientes_activos': 0}
+            clientes_row = cursor.fetchone()
+            clientes_info = dict(clientes_row) if clientes_row else {'total_clientes': 0, 'clientes_activos': 0}
             
         conn.close()
         
@@ -407,8 +380,7 @@ def get_realtime_stats():
                 **clientes_info
             },
             'severidad_1h': severidad_1h,
-            'tipos_ataque_1h': tipos_ataque_1h,
-            'actividad_minuto': actividad_minuto
+            'tipos_ataque_1h': tipos_ataque_1h
         }
         
         return jsonify(response_data)
@@ -431,11 +403,22 @@ def get_realtime_detections():
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute("""
                 SELECT 
-                    d.*,
-                    fc.name as client_name,
+                    d.detection_id as id,
+                    d.timestamp,
+                    COALESCE(d.source_ip, '0.0.0.0') as source_ip,
+                    COALESCE(d.destination_ip, '0.0.0.0') as destination_ip,
+                    COALESCE(d.source_port, 0) as source_port,
+                    COALESCE(d.destination_port, 0) as destination_port,
+                    COALESCE(d.protocol, 'TCP') as protocol,
+                    COALESCE(d.anomaly_type, 'Desconocido') as anomaly_type,
+                    COALESCE(d.severity, 'medium') as severity,
+                    COALESCE(d.confidence_score, 0.5) as confidence_score,
+                    COALESCE(fc.name, 'Cliente ' || CAST(d.client_id AS TEXT)) as client_name,
+                    d.is_confirmed,
+                    COALESCE(d.false_positive, false) as false_positive,
                     EXTRACT(EPOCH FROM d.timestamp) as timestamp_unix
                 FROM detections d
-                LEFT JOIN federated_clients fc ON d.client_id = fc.id
+                LEFT JOIN federated_clients fc ON CAST(d.client_id AS TEXT) = CAST(fc.client_id AS TEXT)
                 ORDER BY d.timestamp DESC
                 LIMIT %s
             """, (limit,))
@@ -443,7 +426,6 @@ def get_realtime_detections():
             detections = []
             for row in cursor.fetchall():
                 detection = dict(row)
-                # Formatear timestamp
                 if detection['timestamp']:
                     detection['timestamp'] = detection['timestamp'].isoformat()
                 detections.append(detection)
@@ -467,31 +449,26 @@ def start_detector():
     
     try:
         data = request.get_json() or {}
-        interface = data.get('interface', 'Ethernet')
-        umbral_normal = data.get('umbral_normal', 0.4)
-        umbral_sospechoso = data.get('umbral_sospechoso', 0.7)
-        client_id = data.get('client_id', 1)  # Cliente por defecto
+        interface = data.get('interface', 'Wi-Fi')
+        client_id = data.get('client_id', 1)
+        servidor_federado = data.get('servidor_federado', 'ws://192.168.18.88:8765')
         
         if detector_process and detector_process.poll() is None:
             return jsonify({'error': 'El detector ya está ejecutándose'}), 400
         
-        # Verificar que el archivo detector_integrado_bd.py existe (nombre corregido)
         if not os.path.exists('detector_integrado.py'):
             return jsonify({'error': 'Archivo detector_integrado.py no encontrado'}), 500
         
-        # Verificar que el modelo existe
         model_path = 'model/modelo_rf.pkl'
         if not os.path.exists(model_path):
             return jsonify({'error': f'Modelo {model_path} no encontrado'}), 500
         
-        # Comando corregido (eliminar duplicado de --interface)
         cmd = [
-            sys.executable, 'detector_integrado.py',  # Archivo corregido
+            sys.executable, 'detector_integrado.py',
             '--model', model_path,
             '--interface', interface,
             '--client-id', str(client_id),
-            '--normal-threshold', str(umbral_normal),
-            '--suspicious-threshold', str(umbral_sospechoso)
+            '--server', servidor_federado
         ]
         
         logger.info(f"Ejecutando comando: {' '.join(cmd)}")
@@ -501,13 +478,14 @@ def start_detector():
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            bufsize=1
+            bufsize=1,
+            cwd=os.getcwd()
         )
         
-        # Actualizar stats
         detector_stats['status'] = 'running'
         detector_stats['interface'] = interface
         detector_stats['client_id'] = client_id
+        detector_stats['servidor_federado'] = servidor_federado
         detector_stats['start_time'] = time.time()
         
         logger.info(f"Detector iniciado en interfaz {interface} con cliente ID {client_id}")
@@ -516,6 +494,11 @@ def start_detector():
             'success': True,
             'message': f'Detector iniciado en {interface} (Cliente {client_id})',
             'pid': detector_process.pid,
+            'config': {
+                'interface': interface,
+                'client_id': client_id,
+                'servidor_federado': servidor_federado
+            },
             'stats': detector_stats
         })
         
@@ -533,15 +516,22 @@ def stop_detector():
         if not detector_process or detector_process.poll() is not None:
             return jsonify({'error': 'El detector no está ejecutándose'}), 400
         
+        # Intentar terminar el proceso suavemente
         detector_process.terminate()
         
         try:
+            # Esperar 5 segundos para que termine
             detector_process.wait(timeout=5)
         except subprocess.TimeoutExpired:
+            # Si no termina, forzar la terminación
             detector_process.kill()
             detector_process.wait()
         
+        # Actualizar stats
         detector_stats['status'] = 'stopped'
+        if 'start_time' in detector_stats:
+            del detector_stats['start_time']
+        
         detector_process = None
         
         logger.info("Detector detenido")
@@ -562,112 +552,189 @@ def get_detector_status():
     """Obtiene el estado del detector"""
     global detector_process
     
+    # Verificar si el proceso sigue activo
     if detector_process and detector_process.poll() is not None:
         detector_stats['status'] = 'stopped'
         detector_process = None
     
+    # Calcular uptime si está corriendo
     if detector_stats['status'] == 'running' and 'start_time' in detector_stats:
         detector_stats['uptime'] = int(time.time() - detector_stats['start_time'])
     else:
         detector_stats['uptime'] = 0
+    
+    # Intentar obtener estadísticas de la BD si está disponible
+    try:
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                # Estadísticas de detecciones recientes
+                cursor.execute("""
+                    SELECT 
+                        COUNT(*) as total_detections,
+                        COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '1 hour') as detections_1h,
+                        COUNT(*) FILTER (WHERE severity = 'high') as high_severity,
+                        COUNT(*) FILTER (WHERE severity = 'critical') as critical_alerts
+                    FROM detections 
+                    WHERE client_id = %s
+                """, (detector_stats.get('client_id', 1),))
+                
+                result = cursor.fetchone()
+                if result:
+                    detector_stats['detections'] = {
+                        'total': result[0],
+                        'last_hour': result[1],
+                        'high_severity': result[2],
+                        'critical': result[3]
+                    }
+            conn.close()
+    except Exception as e:
+        logger.error(f"Error obteniendo estadísticas del detector: {e}")
     
     return jsonify({'stats': detector_stats})
 
 @app.route('/api/federado/start', methods=['POST'])
 @login_required
 def start_federado():
-    """Inicia el sistema federado"""
+    """Inicia el servidor federado"""
     global federado_process
     
     try:
         data = request.get_json() or {}
-        servidor = data.get('servidor', 'ws://localhost:5000')
-        modo_aprendizaje = data.get('modo_aprendizaje', False)
-        duracion = data.get('duracion', 300)
+        host = data.get('host', '0.0.0.0')
+        port = data.get('port', 8765)
+        min_clients = data.get('min_clients', 1)
         
         if federado_process and federado_process.poll() is None:
-            return jsonify({'error': 'El sistema federado ya está ejecutándose'}), 400
+            return jsonify({'error': 'El servidor federado ya está ejecutándose'}), 400
         
         if not os.path.exists('servidor_federado.py'):
             return jsonify({'error': 'Archivo servidor_federado.py no encontrado'}), 500
         
-        cmd = [sys.executable, 'servidor_federado.py']
+        # Comando CORREGIDO para servidor federado
+        cmd = [
+            sys.executable, 'servidor_federado.py',
+            '--host', host,
+            '--port', str(port),
+            '--min-clients', str(min_clients)
+        ]
         
-        if modo_aprendizaje:
-            cmd.extend(['--learning-mode', '--learning-duration', str(duracion)])
+        logger.info(f"Ejecutando servidor federado: {' '.join(cmd)}")
         
         federado_process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            bufsize=1
+            bufsize=1,
+            cwd=os.getcwd()
         )
         
+        # Actualizar stats
         federado_stats['status'] = 'running'
-        federado_stats['server'] = servidor
+        federado_stats['host'] = host
+        federado_stats['port'] = port
+        federado_stats['server'] = f'ws://{host}:{port}'
         federado_stats['start_time'] = time.time()
         
-        logger.info(f"Sistema federado iniciado con servidor {servidor}")
+        logger.info(f"Servidor federado iniciado en {host}:{port}")
         
         return jsonify({
             'success': True,
-            'message': f'Sistema federado iniciado',
+            'message': f'Servidor federado iniciado en {host}:{port}',
             'pid': federado_process.pid,
+            'config': {
+                'host': host,
+                'port': port,
+                'min_clients': min_clients,
+                'server_url': f'ws://{host}:{port}'
+            },
             'stats': federado_stats
         })
         
     except Exception as e:
-        logger.error(f"Error iniciando sistema federado: {e}")
-        return jsonify({'error': f'Error iniciando sistema federado: {str(e)}'}), 500
+        logger.error(f"Error iniciando servidor federado: {e}")
+        return jsonify({'error': f'Error iniciando servidor federado: {str(e)}'}), 500
 
 @app.route('/api/federado/stop', methods=['POST'])
 @login_required
 def stop_federado():
-    """Detiene el sistema federado"""
+    """Detiene el servidor federado"""
     global federado_process
     
     try:
         if not federado_process or federado_process.poll() is not None:
-            return jsonify({'error': 'El sistema federado no está ejecutándose'}), 400
+            return jsonify({'error': 'El servidor federado no está ejecutándose'}), 400
         
+        # Intentar terminar el proceso suavemente
         federado_process.terminate()
         
         try:
+            # Esperar 5 segundos para que termine
             federado_process.wait(timeout=5)
         except subprocess.TimeoutExpired:
+            # Si no termina, forzar la terminación
             federado_process.kill()
             federado_process.wait()
         
+        # Actualizar stats
         federado_stats['status'] = 'stopped'
+        if 'start_time' in federado_stats:
+            del federado_stats['start_time']
+        
         federado_process = None
         
-        logger.info("Sistema federado detenido")
+        logger.info("Servidor federado detenido")
         
         return jsonify({
             'success': True,
-            'message': 'Sistema federado detenido correctamente',
+            'message': 'Servidor federado detenido correctamente',
             'stats': federado_stats
         })
         
     except Exception as e:
-        logger.error(f"Error deteniendo sistema federado: {e}")
-        return jsonify({'error': f'Error deteniendo sistema federado: {str(e)}'}), 500
+        logger.error(f"Error deteniendo servidor federado: {e}")
+        return jsonify({'error': f'Error deteniendo servidor federado: {str(e)}'}), 500
 
 @app.route('/api/federado/status')
 @login_required
-def get_federato_status():
-    """Obtiene el estado del sistema federado"""
+def get_federado_status():
+    """Obtiene el estado del servidor federado"""
     global federado_process
     
+    # Verificar si el proceso sigue activo
     if federado_process and federado_process.poll() is not None:
         federado_stats['status'] = 'stopped'
         federado_process = None
     
+    # Calcular uptime si está corriendo
     if federado_stats['status'] == 'running' and 'start_time' in federado_stats:
         federado_stats['uptime'] = int(time.time() - federado_stats['start_time'])
     else:
         federado_stats['uptime'] = 0
+    
+    # Intentar obtener estadísticas de clientes federados
+    try:
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                # Contar clientes federados activos
+                cursor.execute("""
+                    SELECT 
+                        COUNT(*) as total_clients,
+                        COUNT(*) FILTER (WHERE status = 'active') as active_clients,
+                        MAX(last_seen) as last_activity
+                    FROM federated_clients
+                """)
+                
+                result = cursor.fetchone()
+                if result:
+                    federado_stats['clients'] = result[1] or 0
+                    federado_stats['total_clients'] = result[0] or 0
+                    federado_stats['last_activity'] = result[2]
+            conn.close()
+    except Exception as e:
+        logger.error(f"Error obteniendo estadísticas del federado: {e}")
     
     return jsonify({'stats': federado_stats})
 
@@ -678,27 +745,29 @@ def get_system_log():
     try:
         log_entries = []
         
-        if os.path.exists('ids_detection.log'):
-            with open('ids_detection.log', 'r', encoding='utf-8') as f:
+        # Log de la aplicación principal
+        if os.path.exists('app.log'):
+            with open('app.log', 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
                 for line in lines[-50:]:
                     if line.strip():
                         log_entries.append({
                             'timestamp': datetime.datetime.now().isoformat(),
-                            'component': 'Detector',
+                            'component': 'Sistema',
+                            'level': 'INFO',
                             'message': line.strip()
                         })
         
-        if os.path.exists('cliente_federado.log'):
-            with open('cliente_federado.log', 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-                for line in lines[-50:]:
-                    if line.strip():
-                        log_entries.append({
-                            'timestamp': datetime.datetime.now().isoformat(),
-                            'component': 'Federado',
-                            'message': line.strip()
-                        })
+        # Si no hay logs, agregar datos de ejemplo
+        if not log_entries:
+            log_entries = [
+                {
+                    'timestamp': datetime.datetime.now().isoformat(),
+                    'component': 'Sistema',
+                    'level': 'INFO',
+                    'message': 'Sistema IDS iniciado correctamente'
+                }
+            ]
         
         log_entries.sort(key=lambda x: x['timestamp'], reverse=True)
         
@@ -708,695 +777,513 @@ def get_system_log():
         logger.error(f"Error obteniendo log: {e}")
         return jsonify({'error': 'Error obteniendo log'}), 500
 
+@app.route('/api/system/interfaces')
+@login_required
+def get_network_interfaces():
+    """Obtiene interfaces de red disponibles"""
+    try:
+        import psutil
+        import socket
+        interfaces = []
+        
+        # Obtener todas las interfaces de red
+        for interface_name, addresses in psutil.net_if_addrs().items():
+            # Filtrar interfaces inútiles
+            if interface_name in ['Loopback Pseudo-Interface 1', 'lo', 'Loopback']:
+                continue
+            
+            interface_info = {
+                'name': interface_name,
+                'display_name': interface_name,
+                'addresses': [],
+                'is_up': False,
+                'speed': 'Unknown',
+                'type': 'Unknown'
+            }
+            
+            # Obtener direcciones IPv4
+            for addr in addresses:
+                if addr.family == socket.AF_INET:  # IPv4
+                    interface_info['addresses'].append(addr.address)
+            
+            # Solo incluir interfaces con direcciones IPv4 válidas
+            if interface_info['addresses']:
+                # Verificar si la interfaz está activa
+                try:
+                    net_if_stats = psutil.net_if_stats()
+                    if interface_name in net_if_stats:
+                        stats = net_if_stats[interface_name]
+                        interface_info['is_up'] = stats.isup
+                        interface_info['speed'] = f"{stats.speed} Mbps" if stats.speed > 0 else "Unknown"
+                        
+                        # Determinar tipo de interfaz
+                        name_lower = interface_name.lower()
+                        if 'wifi' in name_lower or 'wireless' in name_lower or 'wi-fi' in name_lower:
+                            interface_info['type'] = 'Wi-Fi'
+                        elif 'ethernet' in name_lower or 'local' in name_lower:
+                            interface_info['type'] = 'Ethernet'
+                        elif 'bluetooth' in name_lower:
+                            interface_info['type'] = 'Bluetooth'
+                        else:
+                            interface_info['type'] = 'Other'
+                        
+                        # Mejorar nombre para mostrar
+                        if interface_info['type'] != 'Other':
+                            interface_info['display_name'] = f"{interface_info['type']} ({interface_name})"
+                        
+                except Exception as e:
+                    logger.debug(f"Error obteniendo stats de {interface_name}: {e}")
+                
+                interfaces.append(interface_info)
+        
+        # Ordenar por tipo y estado (activas primero)
+        interfaces.sort(key=lambda x: (not x['is_up'], x['type'], x['name']))
+        
+        logger.info(f"Detectadas {len(interfaces)} interfaces de red utilizables")
+        
+        return jsonify({
+            'success': True,
+            'interfaces': interfaces,
+            'total_count': len(interfaces),
+            'active_count': sum(1 for iface in interfaces if iface['is_up'])
+        })
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo interfaces: {e}")
+        # Fallback con interfaces comunes
+        fallback_interfaces = [
+            {
+                'name': 'Wi-Fi',
+                'display_name': 'Wi-Fi (Adaptador inalámbrico)',
+                'addresses': ['192.168.1.100'],
+                'is_up': True,
+                'speed': 'Unknown',
+                'type': 'Wi-Fi'
+            },
+            {
+                'name': 'Ethernet',
+                'display_name': 'Ethernet (Conexión de área local)',
+                'addresses': ['192.168.1.101'],
+                'is_up': True,
+                'speed': 'Unknown', 
+                'type': 'Ethernet'
+            }
+        ]
+        
+        return jsonify({
+            'success': True,
+            'interfaces': fallback_interfaces,
+            'total_count': len(fallback_interfaces),
+            'active_count': len(fallback_interfaces),
+            'fallback': True
+        })
+
 #---------------------------------------------------------
-# Rutas para detecciones
+# RUTAS NUEVAS PARA LAS FUNCIONES DEL DASHBOARD
+#---------------------------------------------------------
+
+@app.route('/api/dashboard/verify-connection', methods=['POST'])
+@login_required
+def verificar_conexion():
+    """Verifica la conectividad del sistema"""
+    try:
+        results = {
+            'database': False,
+            'detector': False,
+            'federado': False,
+            'network': False,
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+        
+        # Verificar BDgs
+        try:
+            conn = obtener_conexion()
+            if conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("SELECT 1")
+                    cursor.fetchone()
+                results['database'] = True
+                conn.close()
+        except Exception as e:
+            logger.error(f"Error verificando BD: {e}")
+        
+        # Verificar detector
+        if detector_process and detector_process.poll() is None:
+            results['detector'] = True
+        
+        # Verificar federado
+        if federado_process and federado_process.poll() is None:
+            results['federado'] = True
+        
+        # Verificar red
+        try:
+            import socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.connect(("8.8.8.8", 80))
+            results['network'] = True
+            sock.close()
+        except Exception:
+            pass
+        
+        return jsonify({
+            'success': True,
+            'results': results,
+            'message': 'Verificación de conectividad completada'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error verificando conexión: {e}")
+        return jsonify({'error': 'Error verificando conexión'}), 500
+
+@app.route('/api/dashboard/performance-check', methods=['POST'])
+@login_required
+def verificar_rendimiento():
+    """Verifica el rendimiento del sistema"""
+    try:
+        performance = {
+            'cpu_percent': psutil.cpu_percent(),
+            'memory_percent': psutil.virtual_memory().percent,
+            'disk_percent': psutil.disk_usage('/').percent,
+            'process_count': len(psutil.pids()),
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+        
+        # Evaluación de rendimiento
+        issues = []
+        if performance['cpu_percent'] > 80:
+            issues.append('CPU sobrecargada')
+        if performance['memory_percent'] > 85:
+            issues.append('Memoria baja')
+        if performance['disk_percent'] > 90:
+            issues.append('Espacio en disco bajo')
+        
+        status = 'good' if not issues else 'warning' if len(issues) <= 2 else 'critical'
+        
+        return jsonify({
+            'success': True,
+            'performance': performance,
+            'status': status,
+            'issues': issues,
+            'message': f'Estado del sistema: {status}'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error verificando rendimiento: {e}")
+        return jsonify({'error': 'Error verificando rendimiento'}), 500
+
+@app.route('/api/dashboard/diagnostics', methods=['POST'])
+@login_required
+def ejecutar_diagnosticos():
+    """Ejecuta diagnósticos del sistema"""
+    try:
+        diagnostics = {
+            'system_info': {
+                'python_version': sys.version,
+                'platform': sys.platform,
+                'working_directory': os.getcwd()
+            },
+            'files_check': {
+                'detector_integrado': os.path.exists('detector_integrado.py'),
+                'servidor_federado': os.path.exists('servidor_federado.py'),
+                'model_file': os.path.exists('model/modelo_rf.pkl'),
+                'database_module': True  # Ya importado
+            },
+            'processes': {
+                'detector_running': detector_process is not None and detector_process.poll() is None,
+                'federado_running': federado_process is not None and federado_process.poll() is None
+            },
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+        
+        # Contar problemas
+        problems = []
+        if not diagnostics['files_check']['detector_integrado']:
+            problems.append('Archivo detector_integrado.py no encontrado')
+        if not diagnostics['files_check']['servidor_federado']:
+            problems.append('Archivo servidor_federado.py no encontrado')
+        if not diagnostics['files_check']['model_file']:
+            problems.append('Archivo modelo ML no encontrado')
+        
+        status = 'healthy' if not problems else 'issues_found'
+        
+        return jsonify({
+            'success': True,
+            'diagnostics': diagnostics,
+            'status': status,
+            'problems': problems,
+            'message': f'Diagnósticos completados - {status}'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error ejecutando diagnósticos: {e}")
+        return jsonify({'error': 'Error ejecutando diagnósticos'}), 500
+
+@app.route('/api/dashboard/export-config', methods=['POST'])
+@login_required
+def exportar_configuracion():
+    """Exporta la configuración del sistema"""
+    try:
+        config = {
+            'detector': {
+                'status': detector_stats['status'],
+                'interface': detector_stats.get('interface', 'Wi-Fi'),
+                'client_id': detector_stats.get('client_id', 1),
+                'servidor_federado': detector_stats.get('servidor_federado', 'ws://localhost:8765')
+            },
+            'federado': {
+                'status': federado_stats['status'],
+                'host': federado_stats.get('host', '0.0.0.0'),
+                'port': federado_stats.get('port', 8765),
+                'server': federado_stats.get('server', 'ws://localhost:8765')
+            },
+            'export_info': {
+                'timestamp': datetime.datetime.now().isoformat(),
+                'exported_by': session['username'],
+                'version': '1.0'
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'config': config,
+            'filename': f'ids_config_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.json',
+            'message': 'Configuración exportada exitosamente'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error exportando configuración: {e}")
+        return jsonify({'error': 'Error exportando configuración'}), 500
+
+@app.route('/api/dashboard/import-config', methods=['POST'])
+@login_required
+def importar_configuracion():
+    """Importa la configuración del sistema"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'config' not in data:
+            return jsonify({'error': 'Datos de configuración inválidos'}), 400
+        
+        config = data['config']
+        
+        # Actualizar configuración detector
+        if 'detector' in config:
+            detector_config = config['detector']
+            detector_stats.update({
+                'interface': detector_config.get('interface', detector_stats.get('interface')),
+                'client_id': detector_config.get('client_id', detector_stats.get('client_id')),
+                'servidor_federado': detector_config.get('servidor_federado', detector_stats.get('servidor_federado'))
+            })
+        
+        # Actualizar configuración federado
+        if 'federado' in config:
+            federado_config = config['federado']
+            federado_stats.update({
+                'host': federado_config.get('host', federado_stats.get('host')),
+                'port': federado_config.get('port', federado_stats.get('port')),
+                'server': federado_config.get('server', federado_stats.get('server'))
+            })
+        
+        # Registrar actividad
+        registrar_actividad_usuario(
+            session['user_id'],
+            'import_config',
+            'Configuración importada',
+            request.remote_addr
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': 'Configuración importada exitosamente'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error importando configuración: {e}")
+        return jsonify({'error': 'Error importando configuración'}), 500
+
+#---------------------------------------------------------
+# Rutas básicas adicionales
 #---------------------------------------------------------
 
 @app.route('/detecciones')
 @login_required
 def detecciones():
-    # Parámetros de filtrado y paginación
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 20, type=int)
-    
-    # Filtros desde la URL
-    filtros = {
-        'client_id': request.args.get('cliente', None, type=int),
-        'severity': request.args.get('severidad', None),
-        'attack_type': request.args.get('tipo', None),
-        'ip': request.args.get('ip', None),
-        'fecha_inicio': request.args.get('fecha_inicio', None),
-        'fecha_fin': request.args.get('fecha_fin', None),
-        'revisado': request.args.get('revisado', None)
-    }
-    
-    # Eliminar filtros vacíos
-    filtros = {k: v for k, v in filtros.items() if v is not None}
-    
-    # Calcular límite y offset para paginación
-    offset = (page - 1) * per_page
-    
-    # Obtener datos
-    detecciones_data = obtener_detecciones(limite=per_page, offset=offset, filtros=filtros)
-    total_detecciones = obtener_total_detecciones(filtros)
-    stats = obtener_estadisticas_detecciones()
-    tipos_ataque = obtener_tipos_ataque()
-    clientes = obtener_clientes()
-    
-    # Calcular total de páginas para la paginación
-    total_pages = (total_detecciones + per_page - 1) // per_page
-    
-    # Datos de usuario
     user = obtener_usuario_por_id(session['user_id'])
-    
-    return render_template('detecciones.html', 
-                          user=user, 
-                          detecciones=detecciones_data, 
-                          stats=stats,
-                          tipos_ataque=tipos_ataque,
-                          clientes=clientes,
-                          filtros=filtros,
-                          pagina_actual=page,
-                          total_paginas=total_pages,
-                          total_detecciones=total_detecciones)
-
-@app.route('/detecciones/<int:deteccion_id>')
-@login_required
-def deteccion_detalle(deteccion_id):
-    user = obtener_usuario_por_id(session['user_id'])
-    deteccion = obtener_deteccion_por_id(deteccion_id)
-    
-    if not deteccion:
-        flash('Detección no encontrada', 'danger')
-        return redirect(url_for('detecciones'))
-    
-    return render_template('deteccion_detalle.html', user=user, deteccion=deteccion)
-
-#---------------------------------------------------------
-# Rutas para clientes federados
-#---------------------------------------------------------
+    try:
+        detecciones_data = obtener_detecciones(limite=50)
+        return render_template('detecciones.html', user=user, detecciones=detecciones_data)
+    except Exception as e:
+        logger.error(f"Error en detecciones: {e}")
+        flash('Error al cargar detecciones', 'danger')
+        return render_template('detecciones.html', user=user, detecciones=[])
 
 @app.route('/clientes')
 @login_required
 def clientes():
     user = obtener_usuario_por_id(session['user_id'])
-    lista_clientes = obtener_clientes()
-    
-    return render_template('clientes.html', user=user, clientes=lista_clientes)
-
-@app.route('/clientes/<int:cliente_id>')
-@login_required
-def cliente_detalle(cliente_id):
-    user = obtener_usuario_por_id(session['user_id'])
-    cliente = obtener_cliente_por_id(cliente_id)
-    
-    if not cliente:
-        flash('Cliente no encontrado', 'danger')
-        return redirect(url_for('clientes'))
-    
-    # Obtener detecciones del cliente
-    filtros = {'client_id': cliente_id}
-    detecciones = obtener_detecciones(limite=50, filtros=filtros)
-    
-    return render_template('cliente_detalle.html', user=user, cliente=cliente, detecciones=detecciones)
-
-@app.route('/clientes/nuevo', methods=['POST'])
-@admin_required
-def crear_cliente_route():
-    nombre = request.form.get('nombre')
-    ubicacion = request.form.get('ubicacion')
-    
-    if not nombre:
-        flash('El nombre del cliente es obligatorio', 'warning')
-        return redirect(url_for('clientes'))
-    
-    cliente = crear_cliente(nombre, ubicacion)
-    
-    if cliente:
-        flash(f'Cliente {nombre} creado exitosamente', 'success')
-        # Registrar actividad
-        registrar_actividad_usuario(
-            session['user_id'],
-            'crear_cliente',
-            f'Cliente {nombre} creado',
-            request.remote_addr
-        )
-    else:
-        flash('Error al crear el cliente', 'danger')
-    
-    return redirect(url_for('clientes'))
-
-@app.route('/clientes/<int:cliente_id>/actualizar', methods=['POST'])
-@admin_required
-def actualizar_cliente_route(cliente_id):
-    datos = {
-        'name': request.form.get('nombre'),
-        'location': request.form.get('ubicacion'),
-        'status': request.form.get('estado')
-    }
-    
-    exito = actualizar_cliente(cliente_id, datos)
-    
-    if exito:
-        flash('Cliente actualizado exitosamente', 'success')
-        # Registrar actividad
-        registrar_actividad_usuario(
-            session['user_id'],
-            'actualizar_cliente',
-            f'Cliente ID {cliente_id} actualizado',
-            request.remote_addr
-        )
-    else:
-        flash('Error al actualizar el cliente', 'danger')
-    
-    return redirect(url_for('cliente_detalle', cliente_id=cliente_id))
-
-@app.route('/clientes/<int:cliente_id>/eliminar', methods=['POST'])
-@admin_required
-def eliminar_cliente_route(cliente_id):
-    exito = eliminar_cliente(cliente_id)
-    
-    if exito:
-        flash('Cliente eliminado exitosamente', 'success')
-        # Registrar actividad
-        registrar_actividad_usuario(
-            session['user_id'],
-            'eliminar_cliente',
-            f'Cliente ID {cliente_id} eliminado',
-            request.remote_addr
-        )
-    else:
-        flash('Error al eliminar el cliente', 'danger')
-    
-    return redirect(url_for('clientes'))
-
-@app.route('/clientes/<int:cliente_id>/regenerar_key', methods=['POST'])
-@admin_required
-def regenerar_key_route(cliente_id):
-    nueva_key = regenerar_api_key(cliente_id)
-    
-    if nueva_key:
-        flash('API Key regenerada exitosamente', 'success')
-        # Registrar actividad
-        registrar_actividad_usuario(
-            session['user_id'],
-            'regenerar_api_key',
-            f'API Key regenerada para cliente ID {cliente_id}',
-            request.remote_addr
-        )
-        return jsonify({'success': True, 'api_key': nueva_key})
-    else:
-        flash('Error al regenerar API Key', 'danger')
-        return jsonify({'error': 'No se pudo regenerar la API Key'}), 500
-
-#---------------------------------------------------------
-# Rutas para reportes
-#---------------------------------------------------------
+    try:
+        lista_clientes = obtener_clientes()
+        return render_template('clientes.html', user=user, clientes=lista_clientes)
+    except Exception as e:
+        logger.error(f"Error en clientes: {e}")
+        flash('Error al cargar clientes', 'danger')
+        return render_template('clientes.html', user=user, clientes=[])
 
 @app.route('/reportes')
 @login_required
 def reportes():
     user = obtener_usuario_por_id(session['user_id'])
-    tipo = request.args.get('tipo', 'detecciones')
-    
-    # Filtros para reportes
-    filtros = {
-        'fecha_inicio': request.args.get('fecha_inicio'),
-        'fecha_fin': request.args.get('fecha_fin'),
-        'cliente_id': request.args.get('cliente_id', type=int),
-        'severidad': request.args.get('severidad'),
-        'tipo_ataque': request.args.get('tipo_ataque')
-    }
-    
-    # Eliminar filtros vacíos
-    filtros = {k: v for k, v in filtros.items() if v is not None}
-    
-    # Generar reporte según tipo
-    if tipo == 'detecciones':
-        reporte = generar_reporte_detecciones(filtros)
-    elif tipo == 'clientes':
-        reporte = generar_reporte_clientes(filtros)
-    elif tipo == 'rendimiento':
-        reporte = generar_reporte_rendimiento()
-    else:
-        reporte = {}
-    
-    # Obtener lista de clientes para filtros
-    clientes = obtener_clientes()
-    
-    # Obtener tipos de ataque para filtros
-    tipos_ataque = obtener_tipos_ataque()
-    
-    return render_template('reportes.html', 
-                          user=user, 
-                          tipo=tipo, 
-                          reporte=reporte, 
-                          filtros=filtros,
-                          clientes=clientes,
-                          tipos_ataque=tipos_ataque)
-
-@app.route('/reportes/exportar')
-@login_required
-def exportar_reporte():
-    tipo = request.args.get('tipo', 'detecciones')
-    
-    # Filtros para reportes
-    filtros = {
-        'fecha_inicio': request.args.get('fecha_inicio'),
-        'fecha_fin': request.args.get('fecha_fin'),
-        'cliente_id': request.args.get('cliente_id', type=int),
-        'severidad': request.args.get('severidad'),
-        'tipo_ataque': request.args.get('tipo_ataque')
-    }
-    
-    # Eliminar filtros vacíos
-    filtros = {k: v for k, v in filtros.items() if v is not None}
-    
-    # Generar CSV
-    csv_path = exportar_reporte_csv(tipo, filtros)
-    
-    if csv_path:
-        # Registrar actividad
-        registrar_actividad_usuario(
-            session['user_id'],
-            'exportar_reporte',
-            f'Exportación de reporte {tipo} a CSV',
-            request.remote_addr
-        )
-        return send_from_directory(
-            os.path.dirname(csv_path),
-            os.path.basename(csv_path),
-            as_attachment=True,
-            download_name=f"reporte_{tipo}.csv"
-        )
-    else:
-        flash('Error al exportar reporte', 'danger')
-        return redirect(url_for('reportes', tipo=tipo))
-
-#---------------------------------------------------------
-# Rutas para administración
-#---------------------------------------------------------
+    try:
+        return render_template('reportes.html', user=user)
+    except Exception as e:
+        logger.error(f"Error en reportes: {e}")
+        flash('Error al cargar reportes', 'danger')
+        return render_template('reportes.html', user=user)
 
 @app.route('/admin')
 @admin_required
 def admin():
-    user = obtener_usuario_por_id(session['user_id'])
-    
-    # Listar usuarios para la pestaña de usuarios
-    usuarios = listar_usuarios()
-    
-    # Obtener roles y permisos
-    roles = obtener_roles()
-    permisos = obtener_permisos()
-    
-    # Obtener logs del sistema
-    logs = obtener_logs_sistema(limit=100)
-    
-    # Obtener configuración del sistema
-    configuracion = obtener_configuracion_sistema()
-    
-    return render_template('admin.html', 
-                           user=user, 
-                           usuarios=usuarios, 
-                           roles=roles,
-                           permisos=permisos,
-                           logs=logs,
-                           configuracion=configuracion)
-
-#---------------------------------------------------------
-# Rutas de gestión de usuarios
-#---------------------------------------------------------
-
-@app.route('/admin/usuarios/crear', methods=['POST'])
-@admin_required
-def crear_usuario_route():
+    """Panel de administración del sistema"""
     try:
-        datos = {
-            'username': request.form.get('username'),
-            'email': request.form.get('email'),
-            'first_name': request.form.get('first_name'),
-            'last_name': request.form.get('last_name'),
-            'password': request.form.get('password'),
-            'role_id': request.form.get('role_id'),
-            'is_active': request.form.get('is_active') == 'on'
+        user = obtener_usuario_por_id(session['user_id'])
+        if not user:
+            flash('Error al obtener información del usuario', 'danger')
+            return redirect(url_for('login'))
+        
+        # Obtener datos para el panel de administración
+        datos_admin = {
+            'usuarios': listar_usuarios(),
+            'roles': obtener_roles(),
+            'permisos': obtener_permisos(),
+            'configuracion': obtener_configuracion_sistema(),
+            'logs_recientes': obtener_logs_sistema(limit=20)
         }
         
-        # Validaciones
-        if not datos['username'] or not datos['email'] or not datos['password']:
-            flash('Username, email y contraseña son obligatorios', 'danger')
-            return redirect(url_for('admin'))
+        # Registrar actividad
+        registrar_actividad_usuario(
+            session['user_id'],
+            'access_admin',
+            'Acceso al panel de administración',
+            request.remote_addr
+        )
         
-        if not datos['role_id']:
-            flash('Debe seleccionar un rol', 'danger')
-            return redirect(url_for('admin'))
-        
-        # Crear usuario
-        nuevo_id = crear_usuario(datos, session['user_id'])
-        
-        if nuevo_id:
-            flash('Usuario creado exitosamente', 'success')
-            registrar_actividad_usuario(
-                session['user_id'],
-                'crear_usuario',
-                f'Usuario {datos["username"]} creado',
-                request.remote_addr
-            )
-        else:
-            flash('Error al crear el usuario', 'danger')
-            
-    except Exception as e:
-        logger.error(f"Error en crear_usuario_route: {e}")
-        flash('Error interno del servidor', 'danger')
-    
-    return redirect(url_for('admin'))
-
-@app.route('/admin/usuarios/<int:user_id>/actualizar', methods=['POST'])
-@admin_required
-def actualizar_usuario_route(user_id):
-    try:
-        datos = {
-            'username': request.form.get('username'),
-            'email': request.form.get('email'),
-            'first_name': request.form.get('first_name'),
-            'last_name': request.form.get('last_name'),
-            'role_id': request.form.get('role_id'),
-            'is_active': request.form.get('is_active') == 'on'
-        }
-        
-        exito = actualizar_usuario(user_id, datos, session['user_id'])
-        
-        if exito:
-            return jsonify({'success': True, 'message': 'Usuario actualizado exitosamente'})
-        else:
-            return jsonify({'success': False, 'error': 'Error al actualizar usuario'})
-            
-    except Exception as e:
-        logger.error(f"Error en actualizar_usuario_route: {e}")
-        return jsonify({'success': False, 'error': 'Error interno del servidor'})
-
-@app.route('/admin/usuarios/<int:user_id>/eliminar', methods=['POST'])
-@admin_required
-def eliminar_usuario_route(user_id):
-    try:
-        # No permitir eliminar el propio usuario
-        if user_id == session['user_id']:
-            flash('No puedes eliminar tu propia cuenta', 'danger')
-            return redirect(url_for('admin'))
-        
-        exito = eliminar_usuario(user_id, session['user_id'])
-        
-        if exito:
-            flash('Usuario eliminado exitosamente', 'success')
-            registrar_actividad_usuario(
-                session['user_id'],
-                'eliminar_usuario',
-                f'Usuario ID {user_id} eliminado',
-                request.remote_addr
-            )
-        else:
-            flash('Error al eliminar el usuario', 'danger')
-            
-    except Exception as e:
-        logger.error(f"Error en eliminar_usuario_route: {e}")
-        flash('Error interno del servidor', 'danger')
-    
-    return redirect(url_for('admin'))
-
-@app.route('/admin/usuarios/<int:user_id>/cambiar-password', methods=['POST'])
-@admin_required
-def cambiar_password_usuario_route(user_id):
-    try:
-        nueva_password = request.form.get('nueva_password')
-        confirmar_password = request.form.get('confirmar_password')
-        
-        if not nueva_password or len(nueva_password) < 6:
-            return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'})
-        
-        if nueva_password != confirmar_password:
-            return jsonify({'success': False, 'error': 'Las contraseñas no coinciden'})
-        
-        # Necesitas implementar esta función en el controlador_usuario
-        from controladores.controlador_usuario import cambiar_password_usuario
-        exito = cambiar_password_usuario(user_id, nueva_password, session['user_id'])
-        
-        if exito:
-            return jsonify({'success': True, 'message': 'Contraseña actualizada exitosamente'})
-        else:
-            return jsonify({'success': False, 'error': 'Error al actualizar contraseña'})
-            
-    except Exception as e:
-        logger.error(f"Error en cambiar_password_usuario_route: {e}")
-        return jsonify({'success': False, 'error': 'Error interno del servidor'})
-
-@app.route('/admin/configuracion/actualizar', methods=['POST'])
-@admin_required
-def actualizar_configuracion_route():
-    try:
-        configuracion = {
-            'federated_server_host': request.form.get('federated_server_host'),
-            'federated_server_port': request.form.get('federated_server_port'),
-            'aggregation_rounds': request.form.get('aggregation_rounds'),
-            'min_clients_per_round': request.form.get('min_clients_per_round'),
-            'model_update_interval': request.form.get('model_update_interval'),
-            'alert_notification_emails': request.form.get('alert_notification_emails'),
-            'session_timeout': request.form.get('session_timeout'),
-            'max_login_attempts': request.form.get('max_login_attempts'),
-            'force_ssl': request.form.get('force_ssl'),
-            'enable_api': request.form.get('enable_api'),
-            'api_token_expiration': request.form.get('api_token_expiration'),
-            'enable_email_alerts': request.form.get('enable_email_alerts'),
-            'alert_severity_threshold': request.form.get('alert_severity_threshold'),
-            'max_alerts_per_hour': request.form.get('max_alerts_per_hour')
-        }
-        
-        # Validar campos obligatorios
-        campos_requeridos = [
-            'federated_server_host', 'federated_server_port', 'aggregation_rounds',
-            'min_clients_per_round', 'model_update_interval', 'session_timeout',
-            'max_login_attempts', 'api_token_expiration', 'alert_severity_threshold',
-            'max_alerts_per_hour'
-        ]
-        
-        for campo in campos_requeridos:
-            if not configuracion.get(campo):
-                flash(f'El campo {campo.replace("_", " ").title()} es obligatorio', 'warning')
-                return redirect(url_for('admin'))
-        
-        exito = actualizar_configuracion_sistema(configuracion, session['user_id'])
-        
-        if exito:
-            flash('Configuración actualizada exitosamente', 'success')
-            registrar_actividad_usuario(
-                session['user_id'],
-                'actualizar_configuracion',
-                'Configuración del sistema actualizada',
-                request.remote_addr
-            )
-        else:
-            flash('Error al actualizar la configuración', 'danger')
+        return render_template('admin.html', 
+                             user=user, 
+                             datos=datos_admin)
         
     except Exception as e:
-        logger.error(f"Error en actualizar_configuracion_route: {e}")
-        flash('Error al procesar la configuración', 'danger')
-    
-    return redirect(url_for('admin'))
+        logger.error(f"Error en panel de administración: {e}")
+        flash('Error al cargar el panel de administración', 'danger')
+        return render_template('admin.html', 
+                             user={'username': session.get('username', 'Usuario')}, 
+                             datos={})
 
 #---------------------------------------------------------
-# Rutas para gestión de roles y permisos
+# Rutas adicionales de administración
 #---------------------------------------------------------
-
-@app.route('/admin/roles/nuevo', methods=['POST'])
-@admin_required
-def crear_rol_route():
-    datos = {
-        'name': request.form.get('name'),
-        'display_name': request.form.get('display_name'),
-        'description': request.form.get('description')
-    }
-    
-    if not datos['name'] or not datos['display_name']:
-        flash('El nombre y nombre para mostrar son obligatorios', 'warning')
-        return redirect(url_for('admin'))
-    
-    rol = crear_rol(datos['name'], datos['display_name'], datos['description'], session['user_id'])
-    
-    if rol:
-        flash('Rol creado exitosamente', 'success')
-    else:
-        flash('Error al crear el rol', 'danger')
-    
-    return redirect(url_for('admin'))
-
-# Reemplazar la ruta actualizar_rol_route existente por esta versión corregida:
-@app.route('/admin/roles/<int:role_id>/actualizar', methods=['POST'])
-@admin_required
-def actualizar_rol_route(role_id):
-    try:
-        datos = {
-            'name': request.form.get('name'),
-            'display_name': request.form.get('display_name'),
-            'description': request.form.get('description')
-        }
-        
-        if not datos['name'] or not datos['display_name']:
-            return jsonify({'success': False, 'error': 'El nombre y nombre para mostrar son obligatorios'})
-        
-        exito = actualizar_rol(role_id, datos, session['user_id'])
-        
-        if exito:
-            return jsonify({'success': True, 'message': 'Rol actualizado exitosamente'})
-        else:
-            return jsonify({'success': False, 'error': 'Error al actualizar el rol'})
-            
-    except Exception as e:
-        logger.error(f"Error en actualizar_rol_route: {e}")
-        return jsonify({'success': False, 'error': 'Error interno del servidor'})
-@app.route('/admin/roles/<int:role_id>/eliminar', methods=['POST'])
-@admin_required
-def eliminar_rol_route(role_id):
-    exito = eliminar_rol(role_id, session['user_id'])
-    
-    if exito:
-        flash('Rol eliminado exitosamente', 'success')
-    else:
-        flash('Error al eliminar el rol. Verifique que no tenga usuarios asignados.', 'danger')
-    
-    return redirect(url_for('admin'))
-
-@app.route('/admin/permisos/nuevo', methods=['POST'])
-@admin_required
-def crear_permiso_route():
-    datos = {
-        'name': request.form.get('name'),
-        'display_name': request.form.get('display_name'),
-        'description': request.form.get('description'),
-        'module': request.form.get('module')
-    }
-    
-    if not datos['name'] or not datos['display_name']:
-        flash('El nombre y nombre para mostrar son obligatorios', 'warning')
-        return redirect(url_for('admin'))
-    
-    permiso = crear_permiso(
-        datos['name'],
-        datos['display_name'],
-        datos['description'],
-        datos['module'],
-        session['user_id']
-    )
-    
-    if permiso:
-        flash('Permiso creado exitosamente', 'success')
-    else:
-        flash('Error al crear el permiso', 'danger')
-    
-    return redirect(url_for('admin'))
 
 @app.route('/admin/roles/<int:role_id>/permisos', methods=['GET', 'POST'])
 @admin_required
 def gestionar_permisos_rol(role_id):
-    if request.method == 'POST':
+    """Gestiona permisos de un rol"""
+    if request.method == 'GET':
         try:
-            # Obtener permisos seleccionados
-            permission_ids = request.form.getlist('permissions')
-            permission_ids = [int(pid) for pid in permission_ids if pid.isdigit()]
+            todos_permisos = obtener_permisos()
+            permisos_rol = obtener_permisos_rol(role_id)
             
-            exito = asignar_permisos_rol(role_id, permission_ids, session['user_id'])
+            return jsonify({
+                'success': True,
+                'todos_permisos': todos_permisos,
+                'permisos_rol': [p['id'] for p in permisos_rol]
+            })
+        except Exception as e:
+            logger.error(f"Error obteniendo permisos del rol: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+    
+    elif request.method == 'POST':
+        try:
+            permission_ids = request.form.getlist('permissions')
+            
+            # Asignar permisos al rol
+            exito = asignar_permisos_rol(role_id, permission_ids)
             
             if exito:
-                return jsonify({'success': True, 'message': 'Permisos actualizados exitosamente'})
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'update_role_permissions',
+                    f'Permisos actualizados para rol {role_id}',
+                    request.remote_addr
+                )
+                return jsonify({'success': True, 'message': 'Permisos actualizados correctamente'})
             else:
-                return jsonify({'success': False, 'error': 'Error al actualizar permisos'})
+                return jsonify({'success': False, 'error': 'Error actualizando permisos'}), 500
                 
         except Exception as e:
-            logger.error(f"Error al actualizar permisos del rol: {e}")
-            return jsonify({'success': False, 'error': 'Error interno del servidor'})
-    
-    # GET: Devolver permisos del rol
-    try:
-        permisos_rol = obtener_permisos_rol(role_id)
-        todos_permisos = obtener_permisos()
-        
-        return jsonify({
-            'success': True,
-            'permisos_rol': [p['id'] for p in permisos_rol],
-            'todos_permisos': [dict(p) for p in todos_permisos]
-        })
-        
-    except Exception as e:
-        logger.error(f"Error al obtener permisos: {e}")
-        return jsonify({'success': False, 'error': 'Error al cargar permisos'})
+            logger.error(f"Error asignando permisos: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/admin/permisos/<int:permiso_id>/actualizar', methods=['POST'])
+@app.route('/admin/usuarios/<int:user_id>/actualizar', methods=['POST'])
 @admin_required
-def actualizar_permiso_route(permiso_id):
+def actualizar_usuario_admin(user_id):
+    """Actualiza un usuario desde el panel de admin"""
     try:
-        datos = {
-            'name': request.form.get('name'),
-            'display_name': request.form.get('display_name'),
-            'description': request.form.get('description'),
-            'module': request.form.get('module', 'general')
+        data = {
+            'username': request.form.get('username'),
+            'email': request.form.get('email'),
+            'first_name': request.form.get('first_name'),
+            'last_name': request.form.get('last_name'),
+            'role_id': request.form.get('role_id'),
+            'is_active': request.form.get('is_active') == 'on'
         }
         
-        if not datos['name'] or not datos['display_name']:
-            return jsonify({'success': False, 'error': 'Nombre y nombre para mostrar son obligatorios'})
-        
-        # Actualizar permiso usando el controlador
-        from controladores.controlador_roles import actualizar_permiso
-        exito = actualizar_permiso(permiso_id, datos, session['user_id'])
+        exito = actualizar_usuario(user_id, data)
         
         if exito:
-            return jsonify({'success': True, 'message': 'Permiso actualizado exitosamente'})
-        else:
-            return jsonify({'success': False, 'error': 'Error al actualizar el permiso'})
-            
-    except Exception as e:
-        logger.error(f"Error en actualizar_permiso_route: {e}")
-        return jsonify({'success': False, 'error': 'Error interno del servidor'})
-
-# Agregar esta ruta después de la ruta actualizar_permiso_route:
-@app.route('/admin/permisos/<int:permiso_id>/eliminar', methods=['POST'])
-@admin_required
-def eliminar_permiso_route(permiso_id):
-    try:
-        exito = eliminar_permiso(permiso_id, session['user_id'])
-        
-        if exito:
-            flash('Permiso eliminado exitosamente', 'success')
             registrar_actividad_usuario(
                 session['user_id'],
-                'eliminar_permiso',
-                f'Permiso ID {permiso_id} eliminado',
+                'update_user',
+                f'Usuario {user_id} actualizado',
                 request.remote_addr
             )
+            return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'})
         else:
-            flash('Error al eliminar el permiso. Verifique que no esté asignado a ningún rol.', 'danger')
-        
+            return jsonify({'success': False, 'error': 'Error actualizando usuario'}), 500
+            
     except Exception as e:
-        logger.error(f"Error en eliminar_permiso_route: {e}")
-        flash('Error interno del servidor', 'danger')
-    
-    return redirect(url_for('admin'))
+        logger.error(f"Error actualizando usuario: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-#---------------------------------------------------------
-# Rutas de API
-#---------------------------------------------------------
-
-@app.route('/api/token', methods=['POST'])
-def get_token():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    
-    if not username or not password:
-        return jsonify({'error': 'Se requiere usuario y contraseña'}), 400
-    
-    user_data = autenticar_usuario(username, password)
-    
-    if not user_data:
-        return jsonify({'error': 'Credenciales inválidas'}), 401
-    
-    token_payload = {
-        'user_id': user_data['id'],
-        'username': user_data['username'],
-        'role': user_data['role'],
-        'exp': datetime.datetime.utcnow() + app.config['JWT_EXPIRATION_DELTA']
-    }
-    token = jwt.encode(token_payload, app.config['JWT_SECRET_KEY'], algorithm='HS256')
-    
-    registrar_actividad_usuario(
-        user_data['id'],
-        'api_token',
-        'Generación de token API',
-        request.remote_addr
-    )
-    
-    return jsonify({
-        'token': token,
-        'user_id': user_data['id'],
-        'username': user_data['username'],
-        'role': user_data['role']
-    })
+@app.route('/admin/usuarios/<int:user_id>/cambiar-password', methods=['POST'])
+@admin_required
+def cambiar_password_admin(user_id):
+    """Cambia la contraseña de un usuario desde admin"""
+    try:
+        nueva_password = request.form.get('nueva_password')
+        confirmar_password = request.form.get('confirmar_password')
+        
+        if nueva_password != confirmar_password:
+            return jsonify({'success': False, 'error': 'Las contraseñas no coinciden'}), 400
+        
+        if len(nueva_password) < 6:
+            return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'}), 400
+        
+        # Cambiar contraseña directamente (admin bypass)
+        exito = cambiar_contrasena_usuario(user_id, None, nueva_password, admin_override=True)
+        
+        if exito:
+            registrar_actividad_usuario(
+                session['user_id'],
+                'admin_change_password',
+                f'Contraseña cambiada para usuario {user_id}',
+                request.remote_addr
+            )
+            return jsonify({'success': True, 'message': 'Contraseña actualizada correctamente'})
+        else:
+            return jsonify({'success': False, 'error': 'Error cambiando contraseña'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error cambiando contraseña: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 #---------------------------------------------------------
 # Manejadores de errores
@@ -1411,30 +1298,6 @@ def server_error(e):
     logger.error(f"Error 500: {str(e)}")
     return render_template('500.html'), 500
 
-@app.errorhandler(403)
-def forbidden(e):
-    return render_template('403.html'), 403
-
-#---------------------------------------------------------
-# Filtros personalizados para Jinja2
-#---------------------------------------------------------
-
-@app.template_filter('number_format')
-def number_format_filter(value):
-    """Formatea números con separadores de miles"""
-    try:
-        return f"{value:,}"
-    except (ValueError, TypeError):
-        return value
-
-@app.template_filter('percentage')
-def percentage_filter(value, decimals=1):
-    """Convierte a porcentaje"""
-    try:
-        return f"{value * 100:.{decimals}f}%"
-    except (ValueError, TypeError):
-        return "0%"
-
 #---------------------------------------------------------
 # Inicialización de la aplicación
 #---------------------------------------------------------
@@ -1447,6 +1310,271 @@ def inicializar_sistema():
         logger.info("Sistema IDS inicializado correctamente")
     except Exception as e:
         logger.error(f"Error inicializando sistema: {e}")
+
+# Filtros personalizados para Jinja2
+# Reemplazar TODOS los filtros existentes:
+
+@app.template_filter('date_format')
+def date_format(value, format='%Y-%m-%d %H:%M'):
+    """Formatea fechas - VERSIÓN ROBUSTA"""
+    try:
+        if value is None:
+            return "N/A"
+        
+        # Si es string, intentar parsearlo
+        if isinstance(value, str):
+            # Intentar varios formatos comunes
+            formats_to_try = [
+                '%Y-%m-%dT%H:%M:%S.%f%z',  # ISO con microsegundos y timezone
+                '%Y-%m-%dT%H:%M:%S%z',     # ISO con timezone
+                '%Y-%m-%dT%H:%M:%S.%f',    # ISO con microsegundos
+                '%Y-%m-%dT%H:%M:%S',       # ISO básico
+                '%Y-%m-%d %H:%M:%S.%f',    # Formato SQL con microsegundos
+                '%Y-%m-%d %H:%M:%S',       # Formato SQL básico
+                '%Y-%m-%d'                 # Solo fecha
+            ]
+            
+            for fmt in formats_to_try:
+                try:
+                    if 'Z' in value:
+                        value = value.replace('Z', '+00:00')
+                    dt = datetime.datetime.strptime(value, fmt)
+                    return dt.strftime(format)
+                except ValueError:
+                    continue
+            
+            # Si no se pudo parsear, devolver el string
+            return str(value)
+        
+        # Si ya es un objeto datetime
+        elif hasattr(value, 'strftime'):
+            return value.strftime(format)
+        
+        # Para otros tipos
+        else:
+            return str(value) if value is not None else "N/A"
+            
+    except Exception as e:
+        logger.error(f"Error formateando fecha {value}: {e}")
+        return str(value) if value is not None else "N/A"
+
+@app.template_filter('time_format')
+def time_format(value):
+    """Formatea solo la hora - VERSIÓN ROBUSTA"""
+    try:
+        if value is None:
+            return "N/A"
+        
+        if isinstance(value, str):
+            formats_to_try = [
+                '%Y-%m-%dT%H:%M:%S.%f%z',
+                '%Y-%m-%dT%H:%M:%S%z', 
+                '%Y-%m-%dT%H:%M:%S.%f',
+                '%Y-%m-%dT%H:%M:%S',
+                '%Y-%m-%d %H:%M:%S.%f',
+                '%Y-%m-%d %H:%M:%S'
+            ]
+            
+            for fmt in formats_to_try:
+                try:
+                    if 'Z' in value:
+                        value = value.replace('Z', '+00:00')
+                    dt = datetime.datetime.strptime(value, fmt)
+                    return dt.strftime('%H:%M:%S')
+                except ValueError:
+                    continue
+            
+            return str(value)
+        elif hasattr(value, 'strftime'):
+            return value.strftime('%H:%M:%S')
+        else:
+            return str(value) if value is not None else "N/A"
+    except Exception as e:
+        logger.error(f"Error formateando hora {value}: {e}")
+        return str(value) if value is not None else "N/A"
+
+@app.template_filter('time_ago')
+def time_ago(value):
+    """Tiempo transcurrido - VERSIÓN ROBUSTA"""
+    try:
+        if value is None:
+            return "Desconocido"
+        
+        from datetime import datetime, timedelta
+        
+        if isinstance(value, str):
+            formats_to_try = [
+                '%Y-%m-%dT%H:%M:%S.%f%z',
+                '%Y-%m-%dT%H:%M:%S%z',
+                '%Y-%m-%dT%H:%M:%S.%f',
+                '%Y-%m-%dT%H:%M:%S',
+                '%Y-%m-%d %H:%M:%S.%f',
+                '%Y-%m-%d %H:%M:%S'
+            ]
+            
+            dt = None
+            for fmt in formats_to_try:
+                try:
+                    if 'Z' in value:
+                        value = value.replace('Z', '+00:00')
+                    dt = datetime.strptime(value, fmt)
+                    break
+                except ValueError:
+                    continue
+            
+            if dt is None:
+                return "Desconocido"
+                
+        elif hasattr(value, 'replace'):
+            dt = value
+        else:
+            return "Desconocido"
+        
+        now = datetime.now()
+        
+        # Manejar timezone si existe
+        if hasattr(dt, 'tzinfo') and dt.tzinfo is not None:
+            if now.tzinfo is None:
+                from datetime import timezone
+                now = now.replace(tzinfo=timezone.utc)
+        elif now.tzinfo is not None and (not hasattr(dt, 'tzinfo') or dt.tzinfo is None):
+            dt = dt.replace(tzinfo=now.tzinfo)
+        
+        try:
+            diff = now - dt
+        except TypeError:
+            # Si hay problemas con timezone, usar versiones naive
+            if hasattr(dt, 'replace') and hasattr(dt, 'tzinfo'):
+                dt = dt.replace(tzinfo=None)
+            now = datetime.now()
+            diff = now - dt
+        
+        if diff.days > 0:
+            return f"hace {diff.days} día{'s' if diff.days > 1 else ''}"
+        elif diff.seconds > 3600:
+            hours = diff.seconds // 3600
+            return f"hace {hours} hora{'s' if hours > 1 else ''}"
+        elif diff.seconds > 60:
+            minutes = diff.seconds // 60
+            return f"hace {minutes} minuto{'s' if minutes > 1 else ''}"
+        else:
+            return "hace unos segundos"
+            
+    except Exception as e:
+        logger.error(f"Error calculando tiempo transcurrido para {value}: {e}")
+        return "Desconocido"
+
+@app.template_filter('number_format')
+def number_format(value):
+    """Formatea números con separadores de miles - VERSIÓN ROBUSTA"""
+    try:
+        if value is None:
+            return "0"
+        
+        # Convertir a número si es string
+        if isinstance(value, str):
+            try:
+                value = float(value)
+            except ValueError:
+                return str(value)
+        
+        # Formatear como entero si es un número entero
+        if isinstance(value, (int, float)) and value == int(value):
+            return "{:,}".format(int(value))
+        elif isinstance(value, (int, float)):
+            return "{:,.2f}".format(float(value))
+        else:
+            return str(value)
+            
+    except Exception as e:
+        logger.error(f"Error formateando número {value}: {e}")
+        return str(value) if value is not None else "0"
+
+@app.template_filter('percentage')
+def percentage_format(value):
+    """Formatea porcentajes - VERSIÓN ROBUSTA"""
+    try:
+        if value is None:
+            return "0%"
+        
+        if isinstance(value, str):
+            try:
+                value = float(value)
+            except ValueError:
+                return str(value) + "%"
+        
+        if isinstance(value, (int, float)):
+            return "{:.1f}%".format(float(value))
+        else:
+            return str(value) + "%"
+            
+    except Exception as e:
+        logger.error(f"Error formateando porcentaje {value}: {e}")
+        return "0%"
+    """Formatea números con separadores de miles"""
+    try:
+        if value is None:
+            return "0"
+        return "{:,}".format(int(value))
+    except (ValueError, TypeError):
+        return str(value) if value is not None else "0"
+
+@app.template_filter('percentage')
+def percentage_format(value):
+    """Formatea porcentajes"""
+    try:
+        if value is None:
+            return "0%"
+        return "{:.1f}%".format(float(value))
+    except (ValueError, TypeError):
+        return "0%"
+
+@app.template_filter('date_format')
+def date_format(value, format='%Y-%m-%d %H:%M'):
+    """Formatea fechas"""
+    try:
+        if isinstance(value, str):
+            # Intentar parsear fecha ISO
+            from datetime import datetime
+            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+            return dt.strftime(format)
+        elif hasattr(value, 'strftime'):
+            return value.strftime(format)
+        else:
+            return str(value)
+    except:
+        return str(value) if value else ""
+
+@app.template_filter('time_ago')
+def time_ago(value):
+    """Muestra tiempo transcurrido"""
+    try:
+        from datetime import datetime, timedelta
+        if isinstance(value, str):
+            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        elif hasattr(value, 'replace'):
+            dt = value
+        else:
+            return "Desconocido"
+        
+        now = datetime.now()
+        if dt.tzinfo:
+            now = now.replace(tzinfo=dt.tzinfo)
+        
+        diff = now - dt
+        
+        if diff.days > 0:
+            return f"hace {diff.days} día{'s' if diff.days > 1 else ''}"
+        elif diff.seconds > 3600:
+            hours = diff.seconds // 3600
+            return f"hace {hours} hora{'s' if hours > 1 else ''}"
+        elif diff.seconds > 60:
+            minutes = diff.seconds // 60
+            return f"hace {minutes} minuto{'s' if minutes > 1 else ''}"
+        else:
+            return "hace unos segundos"
+    except:
+        return "Desconocido"
 
 if __name__ == "__main__":
     inicializar_sistema()

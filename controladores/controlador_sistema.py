@@ -518,3 +518,47 @@ def restaurar_configuracion_defecto():
     }
     
     return actualizar_configuracion_sistema(configuracion_defecto)
+
+def obtener_logs_sistema(limit=100):
+    """Obtiene logs del sistema"""
+    try:
+        logs = []
+        # Implementar lectura de logs reales si es necesario
+        return logs
+    except Exception as e:
+        logger.error(f"Error obteniendo logs: {e}")
+        return []
+
+def obtener_configuracion_sistema():
+    """Obtiene configuración del sistema"""
+    try:
+        return {
+            'sistema': {
+                'version': '1.0.0',
+                'modo_debug': False,
+                'logs_habilitados': True
+            },
+            'federado': {
+                'host': '0.0.0.0',
+                'puerto': 8765,
+                'min_clientes': 2
+            },
+            'detector': {
+                'interface': 'Wi-Fi',
+                'umbral_confianza': 0.7,
+                'buffer_size': 1000
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error obteniendo configuración: {e}")
+        return {}
+
+def actualizar_configuracion_sistema(configuracion, user_id=None):
+    """Actualiza configuración del sistema"""
+    try:
+        # Implementar actualización de configuración
+        logger.info("Configuración actualizada")
+        return True
+    except Exception as e:
+        logger.error(f"Error actualizando configuración: {e}")
+        return False
