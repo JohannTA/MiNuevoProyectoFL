@@ -506,7 +506,7 @@ def get_realtime_stats():
             'error': 'Datos limitados disponibles'
         })
 @app.route('/api/realtime/detections')
-@login_required/re
+@login_required
 def get_realtime_detections():
     """Obtiene últimas detecciones en tiempo real"""
     try:
@@ -662,52 +662,7 @@ def stop_detector():
         logger.error(f"Error deteniendo detector: {e}")
         return jsonify({'error': f'Error deteniendo detector: {str(e)}'}), 500
 
-@app.route('/api/detector/status')
-@login_required
-def get_detector_status():
-    """Obtiene el estado del detector"""
-    global detector_process
-    
-    # Verificar si el proceso sigue activo
-    if detector_process and detector_process.poll() is not None:
-        detector_stats['status'] = 'stopped'
-        detector_process = None
-    
-    # Calcular uptime si está corriendo
-    if detector_stats['status'] == 'running' and 'start_time' in detector_stats:
-        detector_stats['uptime'] = int(time.time() - detector_stats['start_time'])
-    else:
-        detector_stats['uptime'] = 0
-    
-    # Intentar obtener estadísticas de la BD si está disponible
-    try:
-        conn = obtener_conexion()
-        if conn:
-            with conn.cursor() as cursor:
-                # Estadísticas de detecciones recientes
-                cursor.execute("""
-                    SELECT 
-                        COUNT(*) as total_detections,
-                        COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '1 hour') as detections_1h,
-                        COUNT(*) FILTER (WHERE severity = 'high') as high_severity,
-                        COUNT(*) FILTER (WHERE severity = 'critical') as critical_alerts
-                    FROM detections 
-                    WHERE client_id = %s
-                """, (detector_stats.get('client_id', 1),))
-                
-                result = cursor.fetchone()
-                if result:
-                    detector_stats['detections'] = {
-                        'total': result[0],
-                        'last_hour': result[1],
-                        'high_severity': result[2],
-                        'critical': result[3]
-                    }
-            conn.close()
-    except Exception as e:
-        logger.error(f"Error obteniendo estadísticas del detector: {e}")
-    
-    return jsonify({'stats': detector_stats})
+
 
 @app.route('/api/federado/start', methods=['POST'])
 @login_required

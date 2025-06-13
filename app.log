@@ -4816,3 +4816,13 @@ INFO - 192.168.18.14 - - [12/Jun/2025 23:24:24] "POST /api/dashboard/performance
 INFO - Ejecutando comando: C:\Users\johan\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Ethernet --client-id 1 --server ws://192.168.18.88:8765
 INFO - Detector iniciado en interfaz Ethernet con cliente ID 1
 INFO - 192.168.18.14 - - [13/Jun/2025 00:00:42] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.14:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.18.14 - - [13/Jun/2025 00:31:54] "GET / HTTP/1.1" 200 -
