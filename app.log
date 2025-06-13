@@ -4773,3 +4773,46 @@ INFO - [31m[1mWARNING: This is a development server. Do not use it in a produc
 INFO - [33mPress CTRL+C to quit[0m
 INFO - 127.0.0.1 - - [12/Jun/2025 22:12:50] "[32mGET / HTTP/1.1[0m" 302 -
 INFO - 127.0.0.1 - - [12/Jun/2025 22:12:50] "GET /login?next=http://127.0.0.1:5000/ HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.14:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 192.168.18.14 - - [12/Jun/2025 22:59:59] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 192.168.18.14 - - [12/Jun/2025 22:59:59] "GET /login?next=http://192.168.18.14:5000/ HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:00] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
+INFO - Coinciden: False
+WARNING - Contraseña incorrecta para usuario: admin (Intento 1)
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:06] "POST /login HTTP/1.1" 200 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:24] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:28] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:28] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:29] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:00:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:04:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:04:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:22:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:22:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.18.14 - - [12/Jun/2025 23:23:18] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:23:49] "POST /api/dashboard/verify-connection HTTP/1.1" 200 -
+INFO - 192.168.18.14 - - [12/Jun/2025 23:24:24] "POST /api/dashboard/performance-check HTTP/1.1" 200 -
+INFO - Ejecutando comando: C:\Users\johan\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Ethernet --client-id 1 --server ws://192.168.18.88:8765
+INFO - Detector iniciado en interfaz Ethernet con cliente ID 1
+INFO - 192.168.18.14 - - [13/Jun/2025 00:00:42] "POST /api/detector/start HTTP/1.1" 200 -

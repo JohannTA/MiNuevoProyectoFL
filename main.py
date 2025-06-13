@@ -295,102 +295,218 @@ def dashboard():
 #---------------------------------------------------------
 # RUTAS DE API TIEMPO REAL
 #---------------------------------------------------------
-
+@app.route('/api/detector/status')
+@login_required
+def get_detector_status():
+    """Obtiene el estado del detector con estadísticas detalladas"""
+    global detector_process
+    
+    # Verificar si el proceso sigue activo
+    if detector_process and detector_process.poll() is not None:
+        detector_stats['status'] = 'stopped'
+        detector_process = None
+    
+    # Calcular uptime si está corriendo
+    if detector_stats['status'] == 'running' and 'start_time' in detector_stats:
+        detector_stats['uptime'] = int(time.time() - detector_stats['start_time'])
+    else:
+        detector_stats['uptime'] = 0
+    
+    # Intentar obtener estadísticas de la BD si está disponible
+    try:
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                # Estadísticas de detecciones recientes
+                cursor.execute("""
+                    SELECT 
+                        COUNT(*) as total_detections,
+                        COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '1 hour') as detections_1h,
+                        COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '24 hours') as detections_24h,
+                        COUNT(*) FILTER (WHERE severity = 'high') as high_severity,
+                        COUNT(*) FILTER (WHERE severity = 'critical') as critical_alerts,
+                        COUNT(DISTINCT source_ip) as unique_sources,
+                        COUNT(DISTINCT destination_ip) as unique_destinations
+                    FROM detections 
+                    WHERE client_id = %s
+                """, (detector_stats.get('client_id', 1),))
+                
+                result = cursor.fetchone()
+                if result:
+                    detector_stats['detections'] = {
+                        'total': result[0],
+                        'last_hour': result[1],
+                        'last_24h': result[2],
+                        'high_severity': result[3],
+                        'critical': result[4],
+                        'unique_sources': result[5],
+                        'unique_destinations': result[6]
+                    }
+                
+                # Últimas detecciones para mostrar actividad
+                cursor.execute("""
+                    SELECT anomaly_type, severity, confidence_score, timestamp
+                    FROM detections 
+                    WHERE client_id = %s AND timestamp >= NOW() - INTERVAL '1 hour'
+                    ORDER BY timestamp DESC
+                    LIMIT 10
+                """, (detector_stats.get('client_id', 1),))
+                
+                recent_detections = []
+                for row in cursor.fetchall():
+                    recent_detections.append({
+                        'type': row[0],
+                        'severity': row[1], 
+                        'score': float(row[2]) if row[2] else 0,
+                        'timestamp': row[3].isoformat() if row[3] else None
+                    })
+                
+                detector_stats['recent_activity'] = recent_detections
+            
+            conn.close()
+    except Exception as e:
+        logger.error(f"Error obteniendo estadísticas del detector: {e}")
+        # Valores por defecto si hay error
+        detector_stats['detections'] = {
+            'total': 0, 'last_hour': 0, 'last_24h': 0,
+            'high_severity': 0, 'critical': 0,
+            'unique_sources': 0, 'unique_destinations': 0
+        }
+        detector_stats['recent_activity'] = []
+    
+    return jsonify({'stats': detector_stats})
 @app.route('/api/realtime/stats')
 @login_required
 def get_realtime_stats():
     """Obtiene estadísticas en tiempo real para el dashboard"""
     try:
         conn = obtener_conexion()
-        if not conn:
-            return jsonify({
-                'timestamp': datetime.datetime.now().isoformat(),
-                'resumen': {
-                    'total_detecciones': 0,
-                    'detecciones_1h': 0,
-                    'detecciones_24h': 0,
-                    'alertas_criticas': 0,
-                    'clientes_detectando': 0,
-                    'total_clientes': 0,
-                    'clientes_activos': 0
-                },
-                'severidad_1h': {},
-                'tipos_ataque_1h': [],
-                'actividad_minuto': []
-            })
         
-        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            # Estadísticas básicas
-            cursor.execute("""
-                SELECT 
-                    COUNT(*) as total_detecciones,
-                    COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '1 hour') as detecciones_1h,
-                    COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '24 hours') as detecciones_24h,
-                    COUNT(*) FILTER (WHERE severity IN ('high', 'critical')) as alertas_criticas,
-                    COUNT(DISTINCT client_id) as clientes_detectando
-                FROM detections
-            """)
+        # Estadísticas base si no hay BD
+        stats_base = {
+            'total_detecciones': 0,
+            'detecciones_1h': 0,
+            'detecciones_24h': 0,
+            'alertas_criticas': 0,
+            'clientes_detectando': 0,
+            'total_clientes': 0,
+            'clientes_activos': 0
+        }
+        
+        if conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Estadísticas básicas de detecciones
+                cursor.execute("""
+                    SELECT 
+                        COUNT(*) as total_detecciones,
+                        COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '1 hour') as detecciones_1h,
+                        COUNT(*) FILTER (WHERE timestamp >= NOW() - INTERVAL '24 hours') as detecciones_24h,
+                        COUNT(*) FILTER (WHERE severity IN ('high', 'critical')) as alertas_criticas,
+                        COUNT(DISTINCT client_id) as clientes_detectando
+                    FROM detections
+                """)
+                
+                stats_row = cursor.fetchone()
+                if stats_row:
+                    stats_base.update(dict(stats_row))
+                
+                # Estados de clientes federados
+                cursor.execute("""
+                    SELECT 
+                        COUNT(*) as total_clientes,
+                        COUNT(*) FILTER (WHERE status = 'active' AND last_seen >= NOW() - INTERVAL '5 minutes') as clientes_activos
+                    FROM federated_clients
+                """)
+                
+                clientes_row = cursor.fetchone()
+                if clientes_row:
+                    stats_base.update(dict(clientes_row))
+                
+                # Distribución por severidad (última hora)
+                cursor.execute("""
+                    SELECT 
+                        COALESCE(severity, 'unknown') as severity, 
+                        COUNT(*) as count
+                    FROM detections 
+                    WHERE timestamp >= NOW() - INTERVAL '1 hour'
+                    GROUP BY severity
+                """)
+                
+                severidad_1h = {row['severity']: row['count'] for row in cursor.fetchall()}
+                
+                # Tipos de ataque (última hora)
+                cursor.execute("""
+                    SELECT 
+                        COALESCE(anomaly_type, 'Desconocido') as tipo,
+                        COUNT(*) as count
+                    FROM detections 
+                    WHERE timestamp >= NOW() - INTERVAL '1 hour'
+                    GROUP BY anomaly_type
+                    ORDER BY count DESC
+                    LIMIT 5
+                """)
+                
+                tipos_ataque_1h = [dict(row) for row in cursor.fetchall()]
             
-            stats_row = cursor.fetchone()
-            stats = dict(stats_row) if stats_row else {}
+            conn.close()
+        else:
+            # Si no hay BD, usar datos del detector en memoria si está corriendo
+            if detector_process and detector_process.poll() is None:
+                # Simular datos básicos del detector activo
+                stats_base.update({
+                    'total_detecciones': detector_stats.get('detections', {}).get('total', 0),
+                    'detecciones_24h': detector_stats.get('detections', {}).get('last_hour', 0),
+                    'alertas_criticas': detector_stats.get('detections', {}).get('critical', 0),
+                    'clientes_activos': 1 if detector_stats.get('status') == 'running' else 0
+                })
             
-            # Distribución por severidad (última hora)
-            cursor.execute("""
-                SELECT 
-                    COALESCE(severity, 'unknown') as severity, 
-                    COUNT(*) as count
-                FROM detections 
-                WHERE timestamp >= NOW() - INTERVAL '1 hour'
-                GROUP BY severity
-            """)
-            
-            severidad_1h = {row['severity']: row['count'] for row in cursor.fetchall()}
-            
-            # Tipos de ataque (última hora)
-            cursor.execute("""
-                SELECT 
-                    COALESCE(anomaly_type, 'Desconocido') as tipo,
-                    COUNT(*) as count
-                FROM detections 
-                WHERE timestamp >= NOW() - INTERVAL '1 hour'
-                GROUP BY anomaly_type
-                ORDER BY count DESC
-                LIMIT 5
-            """)
-            
-            tipos_ataque_1h = [dict(row) for row in cursor.fetchall()]
-            
-            # Estados de clientes
-            cursor.execute("""
-                SELECT 
-                    COUNT(*) as total_clientes,
-                    COUNT(*) FILTER (WHERE status = 'active') as clientes_activos
-                FROM federated_clients
-            """)
-            
-            clientes_row = cursor.fetchone()
-            clientes_info = dict(clientes_row) if clientes_row else {'total_clientes': 0, 'clientes_activos': 0}
-            
-        conn.close()
+            severidad_1h = {}
+            tipos_ataque_1h = []
+        
+        # Combinar con estados de procesos locales
+        detector_running = detector_process is not None and detector_process.poll() is None
+        federado_running = federado_process is not None and federado_process.poll() is None
+        
+        # Si hay detector corriendo, incrementar clientes activos
+        if detector_running and stats_base['clientes_activos'] == 0:
+            stats_base['clientes_activos'] = 1
+            stats_base['total_clientes'] = max(1, stats_base['total_clientes'])
         
         response_data = {
             'timestamp': datetime.datetime.now().isoformat(),
-            'resumen': {
-                **stats,
-                **clientes_info
-            },
+            'resumen': stats_base,
             'severidad_1h': severidad_1h,
-            'tipos_ataque_1h': tipos_ataque_1h
+            'tipos_ataque_1h': tipos_ataque_1h,
+            'system_status': {
+                'detector_running': detector_running,
+                'federado_running': federado_running,
+                'detector_stats': detector_stats.copy(),
+                'federado_stats': federado_stats.copy()
+            }
         }
         
         return jsonify(response_data)
         
     except Exception as e:
         logger.error(f"Error en stats tiempo real: {e}")
-        return jsonify({'error': 'Error obteniendo estadísticas'}), 500
-
+        # Retornar datos básicos en caso de error
+        return jsonify({
+            'timestamp': datetime.datetime.now().isoformat(),
+            'resumen': {
+                'total_detecciones': detector_stats.get('detections', {}).get('total', 0),
+                'detecciones_1h': 0,
+                'detecciones_24h': detector_stats.get('detections', {}).get('last_hour', 0),
+                'alertas_criticas': detector_stats.get('detections', {}).get('critical', 0),
+                'clientes_detectando': 0,
+                'total_clientes': 1 if detector_process and detector_process.poll() is None else 0,
+                'clientes_activos': 1 if detector_process and detector_process.poll() is None else 0
+            },
+            'severidad_1h': {},
+            'tipos_ataque_1h': [],
+            'error': 'Datos limitados disponibles'
+        })
 @app.route('/api/realtime/detections')
-@login_required
+@login_required/re
 def get_realtime_detections():
     """Obtiene últimas detecciones en tiempo real"""
     try:
