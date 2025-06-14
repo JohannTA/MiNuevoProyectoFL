@@ -1225,45 +1225,45 @@ INFO -  * Restarting with stat
 INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 992-068-034
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.18.14:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - 127.0.0.1 - - [10/Jun/2025 22:28:07] "[32mGET / HTTP/1.1[0m" 302 -
 INFO - 127.0.0.1 - - [10/Jun/2025 22:28:07] "GET /login?next=http://127.0.0.1:5000/ HTTP/1.1" 200 -
 INFO - 127.0.0.1 - - [10/Jun/2025 22:28:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 127.0.0.1 - - [10/Jun/2025 22:34:48] "POST /login HTTP/1.1" 200 -
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 127.0.0.1 - - [10/Jun/2025 22:34:53] "POST /login HTTP/1.1" 200 -
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 127.0.0.1 - - [10/Jun/2025 22:34:58] "POST /login HTTP/1.1" 200 -
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 127.0.0.1 - - [10/Jun/2025 22:38:14] "POST /login HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_usuario.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - Buscando usuario: admin
@@ -1271,7 +1271,7 @@ INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
+INFO - Autenticaciï¿½n exitosa para usuario: admin
 INFO - 127.0.0.1 - - [10/Jun/2025 23:04:59] "[32mPOST /login HTTP/1.1[0m" 302 -
 ERROR - Error al obtener datos para dashboard: column "reviewed" does not exist
 LINE 5: ...           (SELECT COUNT(*) FROM detections WHERE reviewed =...
@@ -1295,44 +1295,44 @@ LINE 9:         FROM user_activity ua
 INFO - 127.0.0.1 - - [10/Jun/2025 23:05:42] "GET /admin HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_sistema.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_sistema.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - Se obtuvieron 5 roles
 INFO - Se obtuvieron 23 permisos
 INFO - Se obtuvieron 10 logs del sistema
-INFO - Se obtuvo configuración del sistema con 14 elementos
+INFO - Se obtuvo configuraciï¿½n del sistema con 14 elementos
 INFO - 127.0.0.1 - - [10/Jun/2025 23:11:26] "GET /admin HTTP/1.1" 200 -
-INFO - Se actualizaron 13 elementos de configuración
+INFO - Se actualizaron 13 elementos de configuraciï¿½n
 INFO - 127.0.0.1 - - [10/Jun/2025 23:11:43] "[32mPOST /admin/configuracion/actualizar HTTP/1.1[0m" 302 -
 INFO - Se obtuvieron 5 roles
 INFO - Se obtuvieron 23 permisos
 INFO - Se obtuvieron 12 logs del sistema
-INFO - Se obtuvo configuración del sistema con 14 elementos
+INFO - Se obtuvo configuraciï¿½n del sistema con 14 elementos
 INFO - 127.0.0.1 - - [10/Jun/2025 23:11:50] "GET /admin HTTP/1.1" 200 -
 INFO - Se obtuvieron 5 roles
 INFO - Se obtuvieron 23 permisos
 INFO - Se obtuvieron 12 logs del sistema
-INFO - Se obtuvo configuración del sistema con 14 elementos
+INFO - Se obtuvo configuraciï¿½n del sistema con 14 elementos
 INFO - 127.0.0.1 - - [10/Jun/2025 23:12:02] "GET /admin HTTP/1.1" 200 -
 INFO - Rol creado exitosamente: mirol
 INFO - 127.0.0.1 - - [10/Jun/2025 23:14:14] "[32mPOST /admin/roles/nuevo HTTP/1.1[0m" 302 -
 INFO - Se obtuvieron 6 roles
 INFO - Se obtuvieron 23 permisos
 INFO - Se obtuvieron 13 logs del sistema
-INFO - Se obtuvo configuración del sistema con 14 elementos
+INFO - Se obtuvo configuraciï¿½n del sistema con 14 elementos
 INFO - 127.0.0.1 - - [10/Jun/2025 23:14:21] "GET /admin HTTP/1.1" 200 -
 INFO - Permiso creado exitosamente: mipermiso
 INFO - 127.0.0.1 - - [10/Jun/2025 23:17:27] "[32mPOST /admin/permisos/nuevo HTTP/1.1[0m" 302 -
 INFO - Se obtuvieron 6 roles
 INFO - Se obtuvieron 24 permisos
 INFO - Se obtuvieron 14 logs del sistema
-INFO - Se obtuvo configuración del sistema con 14 elementos
+INFO - Se obtuvo configuraciï¿½n del sistema con 14 elementos
 INFO - 127.0.0.1 - - [10/Jun/2025 23:17:33] "GET /admin HTTP/1.1" 200 -
 ERROR - Error al obtener datos para dashboard: column "reviewed" does not exist
 LINE 5: ...           (SELECT COUNT(*) FROM detections WHERE reviewed =...
@@ -1341,43 +1341,43 @@ LINE 5: ...           (SELECT COUNT(*) FROM detections WHERE reviewed =...
 INFO - 127.0.0.1 - - [10/Jun/2025 23:19:40] "GET /dashboard HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\backup\\cliente_federado.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_dashboard.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\controladores\\controlador_dashboard.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.18.14:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - Datos del dashboard obtenidos exitosamente
 INFO - 127.0.0.1 - - [10/Jun/2025 23:33:51] "GET / HTTP/1.1" 200 -
 INFO - Datos del dashboard obtenidos exitosamente
 INFO - 127.0.0.1 - - [10/Jun/2025 23:38:57] "GET / HTTP/1.1" 200 -
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.18.14:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - Datos del dashboard obtenidos exitosamente
@@ -1392,29 +1392,29 @@ INFO - Datos del dashboard obtenidos exitosamente
 INFO - 192.168.18.14 - - [11/Jun/2025 00:00:44] "GET / HTTP/1.1" 200 -
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\actualizador_tiempo_real.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\sistema_completo.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\detector_integrado.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.18.14:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - Datos del dashboard obtenidos exitosamente
@@ -1557,24 +1557,24 @@ ERROR - Error obteniendo detecciones tiempo real: name 'RealDictCursor' is not d
 INFO - 192.168.18.14 - - [11/Jun/2025 00:12:14] "[35m[1mGET /api/realtime/detections?limit=5 HTTP/1.1[0m" 500 -
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\detector.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\detector_integrado.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO -  * Detected change in 'c:\\Users\\johan\\OneDrive\\Documentos\\NUEVOFL\\MiNuevoProyectoFL\\main.py', reloading
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://192.168.18.14:5000
 INFO - [33mPress CTRL+C to quit[0m
 INFO -  * Restarting with stat
-INFO - Iniciando aplicación IDS Federado...
+INFO - Iniciando aplicaciï¿½n IDS Federado...
 WARNING -  * Debugger is active!
 INFO -  * Debugger PIN: 932-902-915
 INFO - 192.168.18.14 - - [11/Jun/2025 00:22:53] "GET /api/realtime/stats HTTP/1.1" 200 -
@@ -1612,7 +1612,7 @@ INFO - 192.168.18.14 - - [11/Jun/2025 00:23:32] "GET /api/realtime/detections?li
 INFO - 192.168.18.14 - - [11/Jun/2025 00:23:33] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 00:23:34] "GET /api/realtime/detections?limit=5 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -1688,7 +1688,7 @@ INFO - 192.168.18.14 - - [11/Jun/2025 01:02:03] "GET /api/realtime/detections?li
 INFO - 192.168.18.14 - - [11/Jun/2025 01:02:05] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 01:02:06] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -1734,7 +1734,7 @@ INFO - 192.168.18.14 - - [11/Jun/2025 01:07:21] "GET /api/realtime/detections?li
 INFO - 192.168.18.14 - - [11/Jun/2025 01:07:23] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 01:07:24] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -1798,7 +1798,7 @@ INFO - 192.168.18.14 - - [11/Jun/2025 01:18:59] "GET /api/realtime/detections?li
 INFO - 192.168.18.14 - - [11/Jun/2025 01:19:01] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 01:19:01] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -1863,7 +1863,7 @@ INFO - 192.168.18.14 - - [11/Jun/2025 01:20:27] "GET /api/realtime/detections?li
 INFO - 192.168.18.14 - - [11/Jun/2025 01:20:30] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 01:20:31] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -1921,7 +1921,7 @@ INFO - 192.168.18.14 - - [11/Jun/2025 01:21:43] "GET /api/realtime/detections?li
 INFO - 192.168.18.14 - - [11/Jun/2025 01:21:45] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.14 - - [11/Jun/2025 01:21:46] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -1936,7 +1936,7 @@ INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
+INFO - Autenticaciï¿½n exitosa para usuario: admin
 INFO - 192.168.248.241 - - [11/Jun/2025 11:23:41] "[32mPOST /login HTTP/1.1[0m" 302 -
 INFO - Datos del dashboard obtenidos exitosamente
 INFO - 192.168.248.241 - - [11/Jun/2025 11:23:47] "GET /dashboard HTTP/1.1" 200 -
@@ -2485,7 +2485,7 @@ INFO - 192.168.248.241 - - [11/Jun/2025 11:53:31] "GET /api/realtime/stats HTTP/
 INFO - 192.168.248.241 - - [11/Jun/2025 11:53:32] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - 192.168.248.241 - - [11/Jun/2025 11:53:34] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -2500,7 +2500,7 @@ INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
+INFO - Autenticaciï¿½n exitosa para usuario: admin
 INFO - 10.40.40.135 - - [11/Jun/2025 14:55:18] "[32mPOST /login HTTP/1.1[0m" 302 -
 INFO - Datos del dashboard obtenidos exitosamente
 INFO - 10.40.40.135 - - [11/Jun/2025 14:55:26] "GET /dashboard HTTP/1.1" 200 -
@@ -2526,7 +2526,7 @@ INFO - 10.40.40.135 - - [11/Jun/2025 14:55:57] "GET /api/realtime/detections?lim
 INFO - 10.40.40.135 - - [11/Jun/2025 14:55:58] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 10.40.40.135 - - [11/Jun/2025 14:56:00] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -2541,23 +2541,23 @@ INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
 INFO - Coinciden: False
-WARNING - Contraseña incorrecta para usuario: admin (Intento 1)
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Contraseï¿½a incorrecta para usuario: admin (Intento 1)
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 192.168.18.5 - - [12/Jun/2025 00:05:41] "POST /login HTTP/1.1" 200 -
 INFO - Buscando usuario: admin
 INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: a51267b51505548e728c291d223e18c0bac9c9e4f58b906a4fb09ab6f5612119
 INFO - Coinciden: False
-WARNING - Contraseña incorrecta para usuario: admin (Intento 2)
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
+WARNING - Contraseï¿½a incorrecta para usuario: admin (Intento 2)
+WARNING - Intento de inicio de sesiï¿½n fallido para el usuario: admin
 INFO - 192.168.18.5 - - [12/Jun/2025 00:05:46] "POST /login HTTP/1.1" 200 -
 INFO - Buscando usuario: admin
 INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
+INFO - Autenticaciï¿½n exitosa para usuario: admin
 INFO - 192.168.18.5 - - [12/Jun/2025 00:08:55] "[32mPOST /login HTTP/1.1[0m" 302 -
 INFO - Datos del dashboard obtenidos exitosamente
 INFO - 192.168.18.5 - - [12/Jun/2025 00:08:59] "GET /dashboard HTTP/1.1" 200 -
@@ -2742,7 +2742,7 @@ INFO - 192.168.18.5 - - [12/Jun/2025 00:13:18] "GET /api/realtime/detections?lim
 INFO - 192.168.18.5 - - [12/Jun/2025 00:13:19] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [12/Jun/2025 00:13:21] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -2755,10 +2755,10 @@ LINE 8: ...    LEFT JOIN federated_clients fc ON d.client_id = fc.clien...
 HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
 
 INFO - 192.168.18.5 - - [12/Jun/2025 00:32:33] "GET /dashboard HTTP/1.1" 200 -
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema de permisos inicializado
-INFO - Conexión a base de datos verificada
-INFO - Aplicación inicializada correctamente
+INFO - Conexiï¿½n a base de datos verificada
+INFO - Aplicaciï¿½n inicializada correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
@@ -2957,11 +2957,11 @@ Traceback (most recent call last):
   File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 99, in _get_source_fast
     raise TemplateNotFound(template)
 jinja2.exceptions.TemplateNotFound: error.html
-INFO - Señal recibida, cerrando aplicación...
-INFO - Permisos básicos del sistema inicializados
+INFO - Seï¿½al recibida, cerrando aplicaciï¿½n...
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema de permisos inicializado
-INFO - Conexión a base de datos verificada
-INFO - Aplicación inicializada correctamente
+INFO - Conexiï¿½n a base de datos verificada
+INFO - Aplicaciï¿½n inicializada correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
@@ -3160,9 +3160,9 @@ Traceback (most recent call last):
   File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 99, in _get_source_fast
     raise TemplateNotFound(template)
 jinja2.exceptions.TemplateNotFound: error.html
-INFO - Señal recibida, cerrando aplicación...
+INFO - Seï¿½al recibida, cerrando aplicaciï¿½n...
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3182,7 +3182,7 @@ INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
 INFO - 192.168.18.5 - - [12/Jun/2025 00:44:16] "POST /api/detector/start HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [12/Jun/2025 00:45:18] "[33mPOST /api/detector/stop HTTP/1.1[0m" 404 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3270,7 +3270,7 @@ jinja2.exceptions.TemplateAssertionError: No filter named 'number_format'.
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 01:14:30] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3359,7 +3359,7 @@ werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin'
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 01:18:26] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3444,7 +3444,7 @@ jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'resumen'
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 01:21:26] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3608,7 +3608,7 @@ jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'resumen'
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 01:22:04] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3622,7 +3622,7 @@ INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
+INFO - Autenticaciï¿½n exitosa para usuario: admin
 INFO - 127.0.0.1 - - [12/Jun/2025 01:22:23] "[32mPOST /login HTTP/1.1[0m" 302 -
 INFO - Datos del dashboard obtenidos exitosamente
 ERROR - Error en dashboard: 'str object' has no attribute 'strftime'
@@ -3702,7 +3702,7 @@ jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'resumen'
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 127.0.0.1 - - [12/Jun/2025 01:22:27] "[35m[1mGET /dashboard HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3722,7 +3722,7 @@ INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\P
 INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
 INFO - 192.168.18.5 - - [12/Jun/2025 01:37:15] "POST /api/detector/start HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3735,7 +3735,7 @@ INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 01:45:37] "GET / HTTP/1.1" 200 -
 INFO - Se obtuvieron 6 roles
 INFO - Se obtuvieron 39 permisos
-ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'cambiar_contrasena' instead?
+ERROR - Error en panel de administraciï¿½n: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'cambiar_contrasena' instead?
 ERROR - Exception on /admin [GET]
 Traceback (most recent call last):
   File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 890, in admin
@@ -3826,7 +3826,7 @@ INFO - 192.168.18.5 - - [12/Jun/2025 01:46:28] "GET /dashboard HTTP/1.1" 200 -
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 01:46:44] "GET /dashboard HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -3848,7 +3848,7 @@ INFO - Usuario encontrado: admin
 INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
+INFO - Autenticaciï¿½n exitosa para usuario: admin
 INFO - 192.168.18.5 - - [12/Jun/2025 01:58:27] "[32mPOST /login HTTP/1.1[0m" 302 -
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 01:58:31] "GET /dashboard HTTP/1.1" 200 -
@@ -3943,7 +3943,7 @@ INFO - 192.168.18.5 - - [12/Jun/2025 02:02:38] "GET /api/federado/status HTTP/1.
 INFO - 192.168.18.5 - - [12/Jun/2025 02:02:39] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [12/Jun/2025 02:02:40] "GET /api/realtime/detections?limit=10 HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4091,7 +4091,7 @@ INFO - 192.168.18.5 - - [12/Jun/2025 02:20:50] "GET /api/realtime/detections?lim
 INFO - 192.168.18.5 - - [12/Jun/2025 02:21:46] "GET /api/detector/status HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [12/Jun/2025 02:21:47] "GET /api/federado/status HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4101,7 +4101,7 @@ INFO - [33mPress CTRL+C to quit[0m
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 02:27:12] "GET /dashboard HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4189,7 +4189,7 @@ INFO - 192.168.18.5 - - [12/Jun/2025 02:45:58] "GET /api/detector/status HTTP/1.
 INFO - 192.168.18.5 - - [12/Jun/2025 02:45:59] "GET /api/federado/status HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [12/Jun/2025 02:46:53] "GET /api/realtime/stats HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4199,7 +4199,7 @@ INFO - [33mPress CTRL+C to quit[0m
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 127.0.0.1 - - [12/Jun/2025 02:47:07] "GET / HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4209,7 +4209,7 @@ INFO - [33mPress CTRL+C to quit[0m
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 02:59:01] "GET / HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4219,7 +4219,7 @@ INFO - [33mPress CTRL+C to quit[0m
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 03:12:14] "GET / HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4233,7 +4233,7 @@ INFO - 192.168.18.5 - - [12/Jun/2025 03:14:54] "GET / HTTP/1.1" 200 -
 INFO - Datos del dashboard obtenidos exitosamente desde BD
 INFO - 192.168.18.5 - - [12/Jun/2025 03:18:55] "GET / HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4316,7 +4316,7 @@ jinja2.exceptions.TemplateSyntaxError: expected token 'end of statement block', 
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 03:49:26] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4399,7 +4399,7 @@ jinja2.exceptions.TemplateSyntaxError: expected token 'end of statement block', 
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 03:49:51] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4557,7 +4557,7 @@ jinja2.exceptions.TemplateAssertionError: block 'extra_js' defined twice
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 03:53:51] "[35m[1mGET /dashboard HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4640,7 +4640,7 @@ jinja2.exceptions.TemplateAssertionError: block 'extra_js' defined twice
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 03:56:43] "[35m[1mGET /dashboard HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4723,7 +4723,7 @@ jinja2.exceptions.TemplateAssertionError: block 'extra_js' defined twice
 ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
 INFO - 192.168.18.5 - - [12/Jun/2025 03:57:10] "[35m[1mGET / HTTP/1.1[0m" 500 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4764,7 +4764,7 @@ INFO - 127.0.0.1 - - [12/Jun/2025 04:28:53] "POST /api/detector/start HTTP/1.1" 
 INFO - Detector detenido
 INFO - 127.0.0.1 - - [12/Jun/2025 04:29:04] "POST /api/detector/stop HTTP/1.1" 200 -
 INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
+INFO - Permisos bï¿½sicos del sistema inicializados
 INFO - Sistema IDS inicializado correctamente
 INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
@@ -4773,360 +4773,3 @@ INFO - [31m[1mWARNING: This is a development server. Do not use it in a produc
 INFO - [33mPress CTRL+C to quit[0m
 INFO - 127.0.0.1 - - [12/Jun/2025 22:12:50] "[32mGET / HTTP/1.1[0m" 302 -
 INFO - 127.0.0.1 - - [12/Jun/2025 22:12:50] "GET /login?next=http://127.0.0.1:5000/ HTTP/1.1" 200 -
-INFO - Inicializando sistema IDS...
-INFO - Permisos básicos del sistema inicializados
-INFO - Sistema IDS inicializado correctamente
-INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:5000
- * Running on http://192.168.248.241:5000
-INFO - [33mPress CTRL+C to quit[0m
-INFO - 192.168.248.241 - - [13/Jun/2025 09:43:58] "[32mGET / HTTP/1.1[0m" 302 -
-INFO - 192.168.248.241 - - [13/Jun/2025 09:43:58] "GET /login?next=http://192.168.248.241:5000/ HTTP/1.1" 200 -
-INFO - Buscando usuario: admin
-INFO - Usuario encontrado: admin
-INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:06] "[32mPOST /login HTTP/1.1[0m" 302 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:11] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:11] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:12] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:14] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:20] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:28] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Ethernet 2 --client-id 1 --server ws://192.168.18.88:8765
-INFO - Detector iniciado en interfaz Ethernet 2 con cliente ID 1
-INFO - 192.168.248.241 - - [13/Jun/2025 09:44:38] "POST /api/detector/start HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:06:49] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - Detector detenido
-INFO - 192.168.248.241 - - [13/Jun/2025 13:06:53] "POST /api/detector/stop HTTP/1.1" 200 -
-ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
-LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
-                                     ^
-
-INFO - 192.168.248.241 - - [13/Jun/2025 13:07:08] "GET /detecciones HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:07:19] "GET /clientes HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:07:30] "GET /reportes HTTP/1.1" 200 -
-ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
-LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
-                                     ^
-
-INFO - 192.168.248.241 - - [13/Jun/2025 13:07:37] "GET /detecciones HTTP/1.1" 200 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:28:25] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:28:25] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:28:26] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:28:28] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Ethernet 2 --client-id 1 --server ws://192.168.18.88:8765
-INFO - Detector iniciado en interfaz Ethernet 2 con cliente ID 1
-INFO - 192.168.248.241 - - [13/Jun/2025 13:28:41] "POST /api/detector/start HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:28:53] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - Detector detenido
-INFO - 192.168.248.241 - - [13/Jun/2025 13:29:00] "POST /api/detector/stop HTTP/1.1" 200 -
-INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Wi-Fi --client-id 1 --server ws://192.168.18.88:8765
-INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
-INFO - 192.168.248.241 - - [13/Jun/2025 13:29:02] "POST /api/detector/start HTTP/1.1" 200 -
-INFO - Ejecutando servidor federado: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe servidor_federado.py --host 0.0.0.0 --port 8765 --min-clients 1
-INFO - Servidor federado iniciado en 0.0.0.0:8765
-INFO - 192.168.248.241 - - [13/Jun/2025 13:30:58] "POST /api/federado/start HTTP/1.1" 200 -
-INFO - Detector detenido
-INFO - 192.168.248.241 - - [13/Jun/2025 13:31:00] "POST /api/detector/stop HTTP/1.1" 200 -
-ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
-LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
-                                     ^
-
-INFO - 192.168.248.241 - - [13/Jun/2025 13:33:38] "GET /detecciones HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:33:42] "GET /clientes HTTP/1.1" 200 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:33:49] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:33:49] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:33:51] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:33:52] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - Se obtuvieron 6 roles
-INFO - Se obtuvieron 39 permisos
-ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
-ERROR - Exception on /admin [GET]
-Traceback (most recent call last):
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1170, in admin
-    # Obtener datos para el panel de administración
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
-    self.environment.handle_exception()
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
-    {% extends "maestra.html" %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
-    {% block content %}{% endblock %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
-    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
-    return self.handle_url_build_error(error, endpoint, values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
-    rv = url_adapter.build(  # type: ignore[union-attr]
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
-    raise BuildError(endpoint, values, method, self)
-werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 118, in decorated_function
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1177, in admin
-    }
-      
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
-    self.environment.handle_exception()
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
-    {% extends "maestra.html" %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
-    {% block content %}{% endblock %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
-    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
-    return self.handle_url_build_error(error, endpoint, values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
-    rv = url_adapter.build(  # type: ignore[union-attr]
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
-    raise BuildError(endpoint, values, method, self)
-werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
-ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
-INFO - 192.168.248.241 - - [13/Jun/2025 13:39:54] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:02] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:02] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:03] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:05] "GET /api/federado/status HTTP/1.1" 200 -
-ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
-LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
-                                     ^
-
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:07] "GET /detecciones HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:10] "GET /clientes HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:13] "GET /reportes HTTP/1.1" 200 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:24] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:24] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:25] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:40:27] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:49:23] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:49:24] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:49:33] "POST /api/dashboard/verify-connection HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:49:55] "POST /api/dashboard/performance-check HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:50:01] "POST /api/dashboard/diagnostics HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:50:08] "POST /api/dashboard/export-config HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:51:37] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - Se obtuvieron 6 roles
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - Se obtuvieron 39 permisos
-INFO - 192.168.248.241 - - [13/Jun/2025 13:52:38] "GET /dashboard HTTP/1.1" 200 -
-ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
-ERROR - Exception on /admin [GET]
-Traceback (most recent call last):
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1170, in admin
-    # Obtener datos para el panel de administración
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
-    self.environment.handle_exception()
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
-    {% extends "maestra.html" %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
-    {% block content %}{% endblock %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
-    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
-    return self.handle_url_build_error(error, endpoint, values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
-    rv = url_adapter.build(  # type: ignore[union-attr]
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
-    raise BuildError(endpoint, values, method, self)
-werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 118, in decorated_function
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1177, in admin
-    }
-      
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
-    self.environment.handle_exception()
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
-    {% extends "maestra.html" %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
-    {% block content %}{% endblock %}
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
-    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
-    return self.handle_url_build_error(error, endpoint, values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
-    rv = url_adapter.build(  # type: ignore[union-attr]
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
-    raise BuildError(endpoint, values, method, self)
-werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
-ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
-INFO - 192.168.248.241 - - [13/Jun/2025 13:52:39] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:52:53] "GET /clientes HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:52:54] "GET /clientes HTTP/1.1" 200 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:35] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:37] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:37] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:38] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:39] "[32mGET /logout HTTP/1.1[0m" 302 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:39] "GET /login HTTP/1.1" 200 -
-INFO - Buscando usuario: admin
-INFO - Usuario encontrado: admin
-INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:45] "[32mPOST /login HTTP/1.1[0m" 302 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:50] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:51] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:52] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:53] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:57] "[32mGET /logout HTTP/1.1[0m" 302 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:53:58] "GET /login HTTP/1.1" 200 -
-INFO - Buscando usuario: admin
-INFO - Usuario encontrado: admin
-INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
-INFO - 192.168.248.241 - - [13/Jun/2025 13:54:04] "[32mPOST /login HTTP/1.1[0m" 302 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:54:10] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:54:10] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:54:11] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:54:13] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:55:52] "[32mGET /logout HTTP/1.1[0m" 302 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:55:52] "GET /login HTTP/1.1" 200 -
-INFO - Buscando usuario: admin
-INFO - Usuario encontrado: admin
-INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Hash generado: fd5f56b40a79a385708428e7b32ab996a681080a166a2206e750eb4819186145
-INFO - Coinciden: False
-WARNING - Contraseña incorrecta para usuario: admin (Intento 1)
-WARNING - Intento de inicio de sesión fallido para el usuario: admin
-INFO - 192.168.248.241 - - [13/Jun/2025 13:56:01] "POST /login HTTP/1.1" 200 -
-INFO - Buscando usuario: admin
-INFO - Usuario encontrado: admin
-INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
-INFO - Coinciden: True
-INFO - Autenticación exitosa para usuario: admin
-INFO - 192.168.248.241 - - [13/Jun/2025 13:56:11] "[32mPOST /login HTTP/1.1[0m" 302 -
-INFO - Datos del dashboard obtenidos exitosamente desde BD
-INFO - 192.168.248.241 - - [13/Jun/2025 13:56:16] "GET /dashboard HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:56:17] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:56:18] "GET /api/detector/status HTTP/1.1" 200 -
-INFO - 192.168.248.241 - - [13/Jun/2025 13:56:19] "GET /api/federado/status HTTP/1.1" 200 -
-INFO - Detectadas 8 interfaces de red utilizables
-INFO - 192.168.248.241 - - [13/Jun/2025 13:57:57] "GET /api/system/interfaces HTTP/1.1" 200 -
-INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Wi-Fi --client-id 1 --server ws://192.168.18.88:8765
-INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
-INFO - 192.168.248.241 - - [13/Jun/2025 13:58:03] "POST /api/detector/start HTTP/1.1" 200 -
-INFO - Detector detenido
-INFO - 192.168.248.241 - - [13/Jun/2025 13:58:40] "POST /api/detector/stop HTTP/1.1" 200 -
-INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Wi-Fi --client-id 1 --server ws://192.168.248.117:8765
-INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
-INFO - 192.168.248.241 - - [13/Jun/2025 13:59:19] "POST /api/detector/start HTTP/1.1" 200 -
-INFO - Detector detenido
-INFO - 192.168.248.241 - - [13/Jun/2025 14:00:10] "POST /api/detector/stop HTTP/1.1" 200 -
