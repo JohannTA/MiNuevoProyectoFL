@@ -445,8 +445,8 @@ def get_realtime_detections():
 @login_required
 def start_detector():
     """Inicia el detector de flujos"""
-    global detector_process
-    
+    global detector_process, detector_output_queue
+
     try:
         data = request.get_json() or {}
         interface = data.get('interface', 'Wi-Fi')
@@ -473,14 +473,31 @@ def start_detector():
         
         logger.info(f"Ejecutando comando: {' '.join(cmd)}")
         
+        # Inicializar cola de salida si no existe
+        if 'detector_output_queue' not in globals():
+            global detector_output_queue
+            detector_output_queue = []
+        
+        # Limpiar cola anterior
+        detector_output_queue.clear()
+        
         detector_process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.STDOUT, 
             text=True,
             bufsize=1,
             cwd=os.getcwd()
         )
+        
+        # Leer salida del proceso en un hilo separado
+        # Iniciar hilo para capturar salida
+        output_thread = threading.Thread(
+            target=capture_detector_output, 
+            args=(detector_process,),
+            daemon=True
+        )
+        output_thread.start()
         
         detector_stats['status'] = 'running'
         detector_stats['interface'] = interface

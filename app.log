@@ -4773,3 +4773,360 @@ INFO - [31m[1mWARNING: This is a development server. Do not use it in a produc
 INFO - [33mPress CTRL+C to quit[0m
 INFO - 127.0.0.1 - - [12/Jun/2025 22:12:50] "[32mGET / HTTP/1.1[0m" 302 -
 INFO - 127.0.0.1 - - [12/Jun/2025 22:12:50] "GET /login?next=http://127.0.0.1:5000/ HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.248.241:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 192.168.248.241 - - [13/Jun/2025 09:43:58] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 192.168.248.241 - - [13/Jun/2025 09:43:58] "GET /login?next=http://192.168.248.241:5000/ HTTP/1.1" 200 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:06] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:11] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:11] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:12] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:14] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:20] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:28] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Ethernet 2 --client-id 1 --server ws://192.168.18.88:8765
+INFO - Detector iniciado en interfaz Ethernet 2 con cliente ID 1
+INFO - 192.168.248.241 - - [13/Jun/2025 09:44:38] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:06:49] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - Detector detenido
+INFO - 192.168.248.241 - - [13/Jun/2025 13:06:53] "POST /api/detector/stop HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 192.168.248.241 - - [13/Jun/2025 13:07:08] "GET /detecciones HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:07:19] "GET /clientes HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:07:30] "GET /reportes HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 192.168.248.241 - - [13/Jun/2025 13:07:37] "GET /detecciones HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:28:25] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:28:25] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:28:26] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:28:28] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Ethernet 2 --client-id 1 --server ws://192.168.18.88:8765
+INFO - Detector iniciado en interfaz Ethernet 2 con cliente ID 1
+INFO - 192.168.248.241 - - [13/Jun/2025 13:28:41] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:28:53] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - Detector detenido
+INFO - 192.168.248.241 - - [13/Jun/2025 13:29:00] "POST /api/detector/stop HTTP/1.1" 200 -
+INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Wi-Fi --client-id 1 --server ws://192.168.18.88:8765
+INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
+INFO - 192.168.248.241 - - [13/Jun/2025 13:29:02] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - Ejecutando servidor federado: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe servidor_federado.py --host 0.0.0.0 --port 8765 --min-clients 1
+INFO - Servidor federado iniciado en 0.0.0.0:8765
+INFO - 192.168.248.241 - - [13/Jun/2025 13:30:58] "POST /api/federado/start HTTP/1.1" 200 -
+INFO - Detector detenido
+INFO - 192.168.248.241 - - [13/Jun/2025 13:31:00] "POST /api/detector/stop HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 192.168.248.241 - - [13/Jun/2025 13:33:38] "GET /detecciones HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:33:42] "GET /clientes HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:33:49] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:33:49] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:33:51] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:33:52] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - Se obtuvieron 6 roles
+INFO - Se obtuvieron 39 permisos
+ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Exception on /admin [GET]
+Traceback (most recent call last):
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1170, in admin
+    # Obtener datos para el panel de administración
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 118, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1177, in admin
+    }
+      
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+INFO - 192.168.248.241 - - [13/Jun/2025 13:39:54] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:02] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:02] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:03] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:05] "GET /api/federado/status HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:07] "GET /detecciones HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:10] "GET /clientes HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:13] "GET /reportes HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:24] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:24] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:25] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:40:27] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:49:23] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:49:24] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:49:33] "POST /api/dashboard/verify-connection HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:49:55] "POST /api/dashboard/performance-check HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:50:01] "POST /api/dashboard/diagnostics HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:50:08] "POST /api/dashboard/export-config HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:51:37] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - Se obtuvieron 6 roles
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Se obtuvieron 39 permisos
+INFO - 192.168.248.241 - - [13/Jun/2025 13:52:38] "GET /dashboard HTTP/1.1" 200 -
+ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Exception on /admin [GET]
+Traceback (most recent call last):
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1170, in admin
+    # Obtener datos para el panel de administración
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 118, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1177, in admin
+    }
+      
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+INFO - 192.168.248.241 - - [13/Jun/2025 13:52:39] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:52:53] "GET /clientes HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:52:54] "GET /clientes HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:35] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:37] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:37] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:38] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:39] "[32mGET /logout HTTP/1.1[0m" 302 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:39] "GET /login HTTP/1.1" 200 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:45] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:50] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:51] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:52] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:53] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:57] "[32mGET /logout HTTP/1.1[0m" 302 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:53:58] "GET /login HTTP/1.1" 200 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 192.168.248.241 - - [13/Jun/2025 13:54:04] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:54:10] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:54:10] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:54:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:54:13] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:55:52] "[32mGET /logout HTTP/1.1[0m" 302 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:55:52] "GET /login HTTP/1.1" 200 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: fd5f56b40a79a385708428e7b32ab996a681080a166a2206e750eb4819186145
+INFO - Coinciden: False
+WARNING - Contraseña incorrecta para usuario: admin (Intento 1)
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 192.168.248.241 - - [13/Jun/2025 13:56:01] "POST /login HTTP/1.1" 200 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 192.168.248.241 - - [13/Jun/2025 13:56:11] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.248.241 - - [13/Jun/2025 13:56:16] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:56:17] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:56:18] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.248.241 - - [13/Jun/2025 13:56:19] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 192.168.248.241 - - [13/Jun/2025 13:57:57] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Wi-Fi --client-id 1 --server ws://192.168.18.88:8765
+INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
+INFO - 192.168.248.241 - - [13/Jun/2025 13:58:03] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - Detector detenido
+INFO - 192.168.248.241 - - [13/Jun/2025 13:58:40] "POST /api/detector/stop HTTP/1.1" 200 -
+INFO - Ejecutando comando: C:\Users\JOHANN\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe detector_integrado.py --model model/modelo_rf.pkl --interface Wi-Fi --client-id 1 --server ws://192.168.248.117:8765
+INFO - Detector iniciado en interfaz Wi-Fi con cliente ID 1
+INFO - 192.168.248.241 - - [13/Jun/2025 13:59:19] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - Detector detenido
+INFO - 192.168.248.241 - - [13/Jun/2025 14:00:10] "POST /api/detector/stop HTTP/1.1" 200 -
