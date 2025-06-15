@@ -2,18 +2,24 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from functools import wraps
 from db.db import obtener_conexion
 from psycopg2.extras import RealDictCursor
+import psutil
+import numpy as np  
 import os
 import jwt
 import datetime
+import logging
 import hashlib
 import logging
 import subprocess
-import psutil
 import signal
 import sys
 import time
 import json
-
+import socket
+import threading
+detector_output_queue = []
+federado_output_queue = []
+detector_output_lock = threading.Lock()
 # Importaciones de controladores
 from controladores.controlador_usuario import (
     obtener_usuario_por_id, autenticar_usuario, registrar_actividad_usuario, 
@@ -556,13 +562,75 @@ def get_realtime_detections():
 #---------------------------------------------------------
 # RUTAS DE CONTROL DE DETECTOR Y FEDERADO
 #---------------------------------------------------------
-
+def capture_detector_output(process):
+    """Captura la salida del proceso detector en tiempo real"""
+    global detector_output_queue, detector_output_lock
+    
+    try:
+        while True:
+            line = process.stdout.readline()
+            if not line:
+                # Proceso terminó
+                break
+            
+            line = line.strip()
+            if line:
+                # Agregar timestamp y limpiar línea
+                timestamp = datetime.datetime.now().strftime('%H:%M:%S')
+                
+                # Procesar línea para extraer información útil
+                processed_line = {
+                    'timestamp': timestamp,
+                    'raw': line,
+                    'type': 'info'
+                }
+                
+                # Clasificar tipo de mensaje basado en palabras clave
+                line_upper = line.upper()
+                if any(keyword in line_upper for keyword in ['ERROR', 'FAILED', 'EXCEPTION']):
+                    processed_line['type'] = 'error'
+                elif any(keyword in line_upper for keyword in ['WARNING', 'WARN']):
+                    processed_line['type'] = 'warning'
+                elif any(keyword in line_upper for keyword in ['ATTACK', 'ATAQUE', 'SUSPICIOUS', 'SOSPECHOSO']):
+                    processed_line['type'] = 'alert'
+                elif any(keyword in line_upper for keyword in ['INFO', 'STARTED', 'INICIADO', 'SUCCESS', 'OK']):
+                    processed_line['type'] = 'success'
+                elif any(keyword in line_upper for keyword in ['NORMAL', 'TRÁFICO']):
+                    processed_line['type'] = 'normal'
+                
+                # Agregar a cola con thread safety
+                with detector_output_lock:
+                    detector_output_queue.append(processed_line)
+                    # Mantener últimas 200 líneas
+                    if len(detector_output_queue) > 200:
+                        detector_output_queue.pop(0)
+                
+                # También imprimir en el log del servidor para debugging
+                logger.info(f"[DETECTOR] {line}")
+                
+    except Exception as e:
+        logger.error(f"Error capturando salida del detector: {e}")
+        with detector_output_lock:
+            detector_output_queue.append({
+                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+                'raw': f"Error capturando salida: {str(e)}",
+                'type': 'error'
+            })
+    finally:
+        logger.info("Captura de salida del detector terminada")
+        with detector_output_lock:
+            detector_output_queue.append({
+                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+                'raw': "--- Proceso detector terminado ---",
+                'type': 'warning'
+            })
+ 
 @app.route('/api/detector/start', methods=['POST'])
 @login_required
 def start_detector():
     """Inicia el detector de flujos"""
     global detector_process, detector_output_queue
-
+    
     try:
         data = request.get_json() or {}
         interface = data.get('interface', 'Wi-Fi')
@@ -577,7 +645,7 @@ def start_detector():
         
         model_path = 'model/modelo_rf.pkl'
         if not os.path.exists(model_path):
-            return jsonify({'error': f'Modelo {model_path} no encontrado'}), 500
+            return jsonify({'error': 'Archivo de modelo no encontrado'}), 500
         
         cmd = [
             sys.executable, 'detector_integrado.py',
@@ -589,29 +657,32 @@ def start_detector():
         
         logger.info(f"Ejecutando comando: {' '.join(cmd)}")
         
-        # Inicializar cola de salida si no existe
-        if 'detector_output_queue' not in globals():
-            global detector_output_queue
-            detector_output_queue = []
-        
         # Limpiar cola anterior
-        detector_output_queue.clear()
+        with detector_output_lock:
+            detector_output_queue.clear()
+            detector_output_queue.append({
+                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+                'raw': f"Iniciando detector: {' '.join(cmd)}",
+                'type': 'info'
+            })
         
+        # Crear proceso con captura de salida
         detector_process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, 
+            stderr=subprocess.STDOUT,  # Redirigir stderr a stdout
             text=True,
-            bufsize=1,
+            bufsize=1,  # Línea por línea
+            universal_newlines=True,
             cwd=os.getcwd()
         )
         
-        # Leer salida del proceso en un hilo separado
         # Iniciar hilo para capturar salida
         output_thread = threading.Thread(
             target=capture_detector_output, 
             args=(detector_process,),
-            daemon=True
+            daemon=True,
+            name="DetectorOutputCapture"
         )
         output_thread.start()
         
@@ -638,7 +709,7 @@ def start_detector():
     except Exception as e:
         logger.error(f"Error iniciando detector: {e}")
         return jsonify({'error': f'Error iniciando detector: {str(e)}'}), 500
-
+    
 @app.route('/api/detector/stop', methods=['POST'])
 @login_required
 def stop_detector():
@@ -680,7 +751,36 @@ def stop_detector():
         return jsonify({'error': f'Error deteniendo detector: {str(e)}'}), 500
 
 
-
+@app.route('/api/detector/output')
+@login_required
+def get_detector_output():
+    """Obtiene la salida del detector"""
+    global detector_output_queue, detector_output_lock
+    
+    try:
+        # Obtener líneas desde un índice específico
+        since = request.args.get('since', 0, type=int)
+        
+        with detector_output_lock:
+            # Retornar líneas desde el índice solicitado
+            lines = detector_output_queue[since:] if since < len(detector_output_queue) else []
+            total_lines = len(detector_output_queue)
+        
+        # Verificar si el proceso sigue corriendo
+        is_running = detector_process is not None and detector_process.poll() is None
+        
+        return jsonify({
+            'lines': lines,
+            'total': total_lines,
+            'since': since,
+            'running': is_running,
+            'timestamp': datetime.datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo salida del detector: {e}")
+        return jsonify({'error': 'Error obteniendo salida'}), 500
+    
 @app.route('/api/federado/start', methods=['POST'])
 @login_required
 def start_federado():
@@ -870,8 +970,6 @@ def get_system_log():
 def get_network_interfaces():
     """Obtiene interfaces de red disponibles"""
     try:
-        import psutil
-        import socket
         interfaces = []
         
         # Obtener todas las interfaces de red
@@ -983,7 +1081,7 @@ def verificar_conexion():
             'timestamp': datetime.datetime.now().isoformat()
         }
         
-        # Verificar BDgs
+        # Verificar BD
         try:
             conn = obtener_conexion()
             if conn:
@@ -1005,7 +1103,6 @@ def verificar_conexion():
         
         # Verificar red
         try:
-            import socket
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.connect(("8.8.8.8", 80))
             results['network'] = True
@@ -1028,10 +1125,17 @@ def verificar_conexion():
 def verificar_rendimiento():
     """Verifica el rendimiento del sistema"""
     try:
+        # Usar ruta correcta para Windows
+        try:
+            disk_usage = psutil.disk_usage('C:' if sys.platform == 'win32' else '/')
+            disk_percent = disk_usage.percent
+        except:
+            disk_percent = 0
+
         performance = {
-            'cpu_percent': psutil.cpu_percent(),
+            'cpu_percent': psutil.cpu_percent(interval=1),
             'memory_percent': psutil.virtual_memory().percent,
-            'disk_percent': psutil.disk_usage('/').percent,
+            'disk_percent': disk_percent,
             'process_count': len(psutil.pids()),
             'timestamp': datetime.datetime.now().isoformat()
         }
@@ -1356,8 +1460,7 @@ def cambiar_password_admin(user_id):
             return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'}), 400
         
         # Cambiar contraseña directamente (admin bypass)
-        exito = cambiar_contrasena_usuario(user_id, None, nueva_password, admin_override=True)
-        
+        exito = cambiar_contrasena_usuario(user_id, None, nueva_password)
         if exito:
             registrar_actividad_usuario(
                 session['user_id'],
@@ -1552,32 +1655,6 @@ def time_ago(value):
         logger.error(f"Error calculando tiempo transcurrido para {value}: {e}")
         return "Desconocido"
 
-@app.template_filter('number_format')
-def number_format(value):
-    """Formatea números con separadores de miles - VERSIÓN ROBUSTA"""
-    try:
-        if value is None:
-            return "0"
-        
-        # Convertir a número si es string
-        if isinstance(value, str):
-            try:
-                value = float(value)
-            except ValueError:
-                return str(value)
-        
-        # Formatear como entero si es un número entero
-        if isinstance(value, (int, float)) and value == int(value):
-            return "{:,}".format(int(value))
-        elif isinstance(value, (int, float)):
-            return "{:,.2f}".format(float(value))
-        else:
-            return str(value)
-            
-    except Exception as e:
-        logger.error(f"Error formateando número {value}: {e}")
-        return str(value) if value is not None else "0"
-
 @app.template_filter('percentage')
 def percentage_format(value):
     """Formatea porcentajes - VERSIÓN ROBUSTA"""
@@ -1607,15 +1684,6 @@ def percentage_format(value):
     except (ValueError, TypeError):
         return str(value) if value is not None else "0"
 
-@app.template_filter('percentage')
-def percentage_format(value):
-    """Formatea porcentajes"""
-    try:
-        if value is None:
-            return "0%"
-        return "{:.1f}%".format(float(value))
-    except (ValueError, TypeError):
-        return "0%"
 
 @app.template_filter('date_format')
 def date_format(value, format='%Y-%m-%d %H:%M'):
@@ -1663,7 +1731,342 @@ def time_ago(value):
             return "hace unos segundos"
     except:
         return "Desconocido"
+# ========================================
+# RUTAS API PARA CONTADORES DEL DASHBOARD
+# ========================================
+@app.route('/api/dashboard/clear-data', methods=['POST'])
+@login_required
+def clear_data():
+    """Limpia todos los datos del sistema"""
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
 
+        with conn.cursor() as cursor:
+            # Limpiar datos pero mantener estructura
+            tables_to_clear = ['detections', 'user_activity']
+            cleared_count = 0
+            
+            for table in tables_to_clear:
+                try:
+                    cursor.execute(f"DELETE FROM {table}")
+                    cleared_count += cursor.rowcount
+                except Exception as e:
+                    logger.warning(f"No se pudo limpiar tabla {table}: {e}")
+            
+            conn.commit()
+
+        conn.close()
+        
+        # Registrar actividad
+        registrar_actividad_usuario(
+            session['user_id'],
+            'clear_data',
+            f'Datos del sistema limpiados ({cleared_count} registros)',
+            request.remote_addr
+        )
+        
+        logger.info(f"Datos limpiados por usuario {session['username']}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Datos limpiados exitosamente ({cleared_count} registros)',
+            'cleared_records': cleared_count
+        })
+
+    except Exception as e:
+        logger.error(f"Error limpiando datos: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+@app.route('/api/dashboard/status')
+@login_required
+def get_dashboard_status():
+    """Obtiene el estado general del dashboard"""
+    try:
+        # Combinar estados del detector y federado
+        detector_running = detector_process is not None and detector_process.poll() is None
+        federado_running = federado_process is not None and federado_process.poll() is None
+        
+        status = {
+            'detector': {
+                'running': detector_running,
+                'stats': detector_stats.copy()
+            },
+            'federado': {
+                'running': federado_running,
+                'stats': federado_stats.copy()
+            },
+            'system': {
+                'timestamp': datetime.datetime.now().isoformat(),
+                'uptime': time.time() - app_start_time if 'app_start_time' in globals() else 0
+            }
+        }
+        
+        return jsonify({'success': True, 'status': status})
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo estado del dashboard: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Variable para tracking de uptime de la aplicación
+app_start_time = time.time()
+
+@app.route('/api/dashboard/counters')
+@login_required
+def get_dashboard_counters():
+    """Obtiene los contadores principales del dashboard en tiempo real"""
+    try:
+        conn = obtener_conexion()
+        
+        # Contadores por defecto
+        counters = {
+            'total_detecciones': 0,
+            'detecciones_24h': 0,
+            'alertas_criticas': 0,
+            'clientes_activos': 0,
+            'total_clientes': 0,
+            'clientes_conectados': 0
+        }
+        
+        if not conn:
+            logger.warning("Sin conexión BD - usando contadores por defecto")
+            
+            # Si hay detector corriendo, simular algunos datos
+            if detector_process and detector_process.poll() is None:
+                counters['clientes_activos'] = 1
+                counters['total_clientes'] = 1
+                counters['total_detecciones'] = detector_stats.get('detections', {}).get('total', 0)
+                counters['detecciones_24h'] = detector_stats.get('detections', {}).get('last_24h', 0)
+                counters['alertas_criticas'] = detector_stats.get('detections', {}).get('critical', 0)
+            
+            return jsonify({
+                'success': True,
+                'counters': counters,
+                'timestamp': datetime.datetime.now().isoformat(),
+                'source': 'fallback'
+            })
+
+        try:
+            with conn.cursor() as cursor:
+                # 1. Total de detecciones
+                cursor.execute("SELECT COUNT(*) FROM detections")
+                total_detecciones = cursor.fetchone()[0] or 0
+
+                # 2. Detecciones últimas 24 horas
+                cursor.execute("""
+                    SELECT COUNT(*) 
+                    FROM detections 
+                    WHERE timestamp >= NOW() - INTERVAL '24 hours'
+                """)
+                detecciones_24h = cursor.fetchone()[0] or 0
+
+                # 3. Alertas críticas pendientes
+                cursor.execute("""
+                    SELECT COUNT(*) 
+                    FROM detections 
+                    WHERE severity IN ('high', 'critical') 
+                    AND (is_confirmed IS NULL OR is_confirmed = FALSE)
+                """)
+                alertas_criticas = cursor.fetchone()[0] or 0
+
+                # 4. Total de clientes federados
+                cursor.execute("SELECT COUNT(*) FROM federated_clients")
+                total_clientes = cursor.fetchone()[0] or 0
+
+                # 5. Clientes activos (últimos 5 minutos)
+                cursor.execute("""
+                    SELECT COUNT(*) 
+                    FROM federated_clients 
+                    WHERE status = 'active' 
+                    AND last_seen >= NOW() - INTERVAL '5 minutes'
+                """)
+                clientes_activos = cursor.fetchone()[0] or 0
+
+                # 6. Clientes conectados (cualquier estado activo)
+                cursor.execute("""
+                    SELECT COUNT(*) 
+                    FROM federated_clients 
+                    WHERE status IN ('active', 'connected')
+                """)
+                clientes_conectados = cursor.fetchone()[0] or 0
+
+                # Actualizar contadores
+                counters.update({
+                    'total_detecciones': total_detecciones,
+                    'detecciones_24h': detecciones_24h,
+                    'alertas_criticas': alertas_criticas,
+                    'clientes_activos': clientes_activos,
+                    'total_clientes': total_clientes,
+                    'clientes_conectados': clientes_conectados
+                })
+
+        except Exception as e:
+            logger.error(f"Error ejecutando consultas de contadores: {e}")
+            raise
+
+        finally:
+            conn.close()
+
+        # Si no hay clientes en BD pero detector está corriendo, simular
+        if counters['total_clientes'] == 0 and detector_process and detector_process.poll() is None:
+            counters['clientes_activos'] = 1
+            counters['total_clientes'] = 1
+            logger.info("Simulando cliente activo para detector local")
+
+        logger.debug(f"Contadores actualizados: {counters}")
+
+        return jsonify({
+            'success': True,
+            'counters': counters,
+            'timestamp': datetime.datetime.now().isoformat(),
+            'source': 'database'
+        })
+
+    except Exception as e:
+        logger.error(f"Error obteniendo contadores del dashboard: {e}")
+        return jsonify({
+            'success': False, 
+            'error': str(e),
+            'counters': {
+                'total_detecciones': 0,
+                'detecciones_24h': 0,
+                'alertas_criticas': 0,
+                'clientes_activos': 0,
+                'total_clientes': 0,
+                'clientes_conectados': 0
+            }
+        }), 500
+
+@app.route('/api/dashboard/recent-detections')
+@login_required
+def get_recent_detections():
+    """Obtiene las detecciones más recientes para la tabla"""
+    try:
+        limit = request.args.get('limit', 10, type=int)
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({
+                'success': True,
+                'detections': [],
+                'message': 'Sin conexión a BD'
+            })
+
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    d.detection_id,
+                    d.timestamp,
+                    COALESCE(d.source_ip, '0.0.0.0') as source_ip,
+                    COALESCE(d.destination_ip, '0.0.0.0') as destination_ip,
+                    COALESCE(d.source_port, 0) as source_port,
+                    COALESCE(d.destination_port, 0) as destination_port,
+                    COALESCE(d.protocol, 'TCP') as protocol,
+                    COALESCE(d.anomaly_type, 'Desconocido') as anomaly_type,
+                    COALESCE(d.severity, 'medium') as severity,
+                    COALESCE(d.confidence_score, 0.5) as confidence_score,
+                    COALESCE(fc.name, 'Cliente ' || CAST(d.client_id AS TEXT)) as client_name,
+                    d.is_confirmed,
+                    COALESCE(d.false_positive, false) as false_positive
+                FROM detections d
+                LEFT JOIN federated_clients fc ON CAST(d.client_id AS TEXT) = CAST(fc.client_id AS TEXT)
+                ORDER BY d.timestamp DESC
+                LIMIT %s
+            """, (limit,))
+            
+            detections = []
+            for row in cursor.fetchall():
+                detection = {
+                    'id': row[0],
+                    'timestamp': row[1].isoformat() if row[1] else None,
+                    'source_ip': row[2],
+                    'destination_ip': row[3],
+                    'source_port': row[4],
+                    'destination_port': row[5],
+                    'protocol': row[6],
+                    'anomaly_type': row[7],
+                    'severity': row[8],
+                    'confidence_score': row[9],
+                    'client_name': row[10],
+                    'is_confirmed': row[11],
+                    'false_positive': row[12]
+                }
+                detections.append(detection)
+
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'detections': detections,
+            'count': len(detections)
+        })
+
+    except Exception as e:
+        logger.error(f"Error obteniendo detecciones recientes: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'detections': []
+        }), 500
+
+
+@app.route('/api/dashboard/test-data', methods=['POST'])
+@login_required
+def insert_test_data():
+    """Inserta datos de prueba para testing"""
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
+
+        with conn.cursor() as cursor:
+            # Insertar cliente de prueba si no existe
+            cursor.execute("""
+                INSERT INTO federated_clients (client_id, name, status, ip_address, last_seen)
+                VALUES ('1', 'Cliente Prueba', 'active', '192.168.1.100', NOW())
+                ON CONFLICT (client_id) DO UPDATE SET
+                    status = 'active',
+                    last_seen = NOW()
+            """)
+
+            # Insertar detecciones de prueba
+            test_detections = [
+                ('192.168.1.50', '192.168.1.1', 'high', 'scan', 'TCP'),
+                ('10.0.0.25', '10.0.0.1', 'critical', 'dos', 'UDP'),
+                ('172.16.1.100', '172.16.1.10', 'medium', 'web', 'HTTP'),
+                ('192.168.1.75', '8.8.8.8', 'low', 'normal', 'TCP'),
+                ('10.10.10.50', '10.10.10.1', 'high', 'malware', 'TCP')
+            ]
+
+            for src_ip, dst_ip, severity, attack_type, protocol in test_detections:
+                cursor.execute("""
+                    INSERT INTO detections 
+                    (client_id, source_ip, destination_ip, source_port, destination_port, 
+                     protocol, anomaly_type, severity, confidence_score, timestamp)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                """, (
+                    1, src_ip, dst_ip, 
+                    np.random.randint(1024, 65535), 
+                    np.random.randint(1, 1024),
+                    protocol, attack_type, severity, 
+                    np.random.uniform(0.6, 0.95)
+                ))
+
+            conn.commit()
+
+        conn.close()
+        
+        logger.info("Datos de prueba insertados correctamente")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Datos de prueba insertados',
+            'inserted': len(test_detections) + 1
+        })
+
+    except Exception as e:
+        logger.error(f"Error insertando datos de prueba: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 if __name__ == "__main__":
     inicializar_sistema()
     
