@@ -2,766 +2,690 @@
 # -*- coding: utf-8 -*-
 
 """
-Detector Integrado - CLIENTE FEDERADO (SIN EMOJIS)
-------------------------------------------------
-Cliente que usa detector.py completamente sin problemas Unicode
+Detector Integrado Completo - Versión Final
+--------------------------------------------
+Muestra TODA la salida de detector.py + integración completa con PostgreSQL
 """
 
 import sys
 import os
 import json
-import uuid
 import threading
 import time
-import asyncio
-import websockets
-import pickle
-import numpy as np
-import psutil
+import subprocess
+import requests
+import re
+import sqlite3
 from datetime import datetime
-from typing import Optional, Dict, Any
 import logging
+import uuid
+import signal
 
-# Configurar encoding para Windows ANTES de importar detector
-if sys.platform == 'win32':
-    import codecs
-    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
-    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.detach())
+# Configurar logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-# Importar el detector original COMPLETO
-from detector import NetworkMonitor, CONFIG, logger
-
-# Importar conexión BD local
-try:
-    from db.db import obtener_conexion
-    from psycopg2.extras import RealDictCursor
-    DB_AVAILABLE = True
-except ImportError:
-    logger.warning("BD no disponible - continuando sin BD")
-    DB_AVAILABLE = False
-    def obtener_conexion():
-        return None
-
-# Configurar logging sin emojis para Windows
-def setup_windows_logging():
-    """Configura logging compatible con Windows"""
-    # Limpiar handlers existentes
-    root_logger = logging.getLogger()
-    for handler in root_logger.handlers[:]:
-        root_logger.removeHandler(handler)
+class DetectorFederado:
+    """Detector federado que muestra toda la salida del detector.py"""
     
-    # Crear handler con encoding UTF-8
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.INFO)
-    
-    # Formato simple sin emojis
-    formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%H:%M:%S'
-    )
-    handler.setFormatter(formatter)
-    
-    # Configurar logger
-    root_logger.addHandler(handler)
-    root_logger.setLevel(logging.INFO)
-
-class ClienteFederadoDetector(NetworkMonitor):
-    """Cliente federado que hereda TODO de NetworkMonitor y añade funcionalidad BD/federada"""
-    
-    def __init__(self, model_path, interface='Ethernet', client_id=1, 
-                 servidor_federado="ws://192.168.1.100:8765"):
+    def __init__(self, user_id, interface, model_path):
+        # Parámetros básicos
+        self.user_id = user_id
+        self.interface = interface
+        self.model_path = model_path
         
-        # Inicializar la clase padre NetworkMonitor COMPLETA
-        super().__init__(model_path, interface)
+        # Configuración del servidor
+        self.flask_api_url = "http://localhost:5000"
+        self.local_backup_db = f"detector_backup_user_{user_id}.db"
         
-        # Configuración del cliente federado
-        self.client_id = client_id
-        self.servidor_federado = servidor_federado
+        # Información del usuario (obtenida desde PostgreSQL)
+        self.user_info = None
+        self.computing_device_info = None
+        self.client_id = None
         
-        # Estado del cliente federado
-        self.connected_to_server = False
-        self.server_assigned_id = None
-        self.last_model_update = None
-        self.rounds_participated = 0
+        # Estado del detector
+        self.detector_process = None
+        self.running = False
+        self.detections_sent = 0
+        self.lines_processed = 0
+        self.start_time = None
         
-        # Cola para detecciones BD
-        self.detection_queue = []
-        self.queue_lock = threading.Lock()
-        
-        # Hilos adicionales del cliente federado
-        self.db_thread = None
-        self.federated_thread = None
-        self.stop_events = {
-            'db': threading.Event(),
-            'federated': threading.Event()
+        # Estadísticas
+        self.stats = {
+            'total_packets': 0,
+            'normal_packets': 0,
+            'anomaly_packets': 0,
+            'attacks_detected': 0,
+            'last_detection': None
         }
         
-        # Contadores específicos del cliente federado
-        self.total_detections = 0
-        self.federated_stats = {
-            'messages_sent': 0,
-            'messages_received': 0,
-            'model_updates_received': 0,
-            'connection_attempts': 0,
-            'last_heartbeat': None
-        }
+        # Inicializar base de datos local
+        self.inicializar_respaldo_local()
         
-        # Configurar cliente en BD local si está disponible
-        if DB_AVAILABLE:
-            self.setup_client_in_db()
+        # Configurar manejadores de señales
+        signal.signal(signal.SIGINT, self.signal_handler)
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        
+    def signal_handler(self, signum, frame):
+        """Manejador de señales para cierre limpio"""
+        print(f"\n🛑 Señal recibida ({signum}). Cerrando detector...")
+        self.detener()
+        sys.exit(0)
     
-    def setup_client_in_db(self):
-        """Configura este cliente en la BD local"""
+    def inicializar_respaldo_local(self):
+        """Inicializa la base de datos local de respaldo"""
         try:
-            conn = obtener_conexion()
-            if not conn:
-                logger.warning("No se pudo conectar a BD local")
-                return
+            conn = sqlite3.connect(self.local_backup_db)
+            cursor = conn.cursor()
             
-            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                # Crear tabla de clientes federados con estructura CORRECTA
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS federated_clients (
-                        client_id INTEGER PRIMARY KEY,
-                        name VARCHAR(255),
-                        description TEXT,
-                        ip_address VARCHAR(45),
-                        port INTEGER DEFAULT 8080,
-                        status VARCHAR(50) DEFAULT 'active',
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        model_version VARCHAR(50),
-                        total_detections INTEGER DEFAULT 0,
-                        total_rounds INTEGER DEFAULT 0,
-                        api_key VARCHAR(255),
-                        last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                """)
-                
-                # Insertar o actualizar cliente con orden CORRECTO
-                cursor.execute("""
-                    INSERT INTO federated_clients 
-                    (client_id, name, description, ip_address, port, status, 
-                     created_at, model_version, total_detections, total_rounds, 
-                     api_key, last_seen)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (client_id) DO UPDATE SET
-                        status = 'active',
-                        last_seen = CURRENT_TIMESTAMP,
-                        description = EXCLUDED.description
-                """, (
-                    self.client_id,  # client_id PRIMERO
-                    f'Cliente-Detector-{self.client_id}',
-                    f'Cliente federado detector local - Servidor: {self.servidor_federado}',
-                    '192.168.18.14',
-                    8080,
-                    'active',
-                    datetime.now(),
-                    'v1.0',
-                    0,
-                    0,
-                    f'cliente_key_{self.client_id}_{int(time.time())}',
-                    datetime.now()
-                ))
-                conn.commit()
-                logger.info(f"Cliente {self.client_id} configurado en BD local")
-                
+            # Tabla de detecciones de respaldo
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS detections_backup (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    detection_id TEXT UNIQUE,
+                    user_id INTEGER,
+                    client_id TEXT,
+                    timestamp TEXT,
+                    anomaly_type TEXT,
+                    severity TEXT,
+                    confidence_score REAL,
+                    source_ip TEXT,
+                    destination_ip TEXT,
+                    source_port INTEGER,
+                    destination_port INTEGER,
+                    protocol TEXT,
+                    raw_data TEXT,
+                    sent_to_server BOOLEAN DEFAULT 0,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
+            # Tabla de estadísticas de sesión
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS session_stats (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    session_start TEXT,
+                    session_end TEXT,
+                    total_packets INTEGER DEFAULT 0,
+                    detections_sent INTEGER DEFAULT 0,
+                    status TEXT DEFAULT 'running'
+                )
+            ''')
+            
+            conn.commit()
+            conn.close()
+            
+            logger.info(f"✅ Base de datos local inicializada: {self.local_backup_db}")
+            
         except Exception as e:
-            logger.error(f"Error configurando cliente en BD: {e}")
-        finally:
-            if conn:
-                conn.close()
+            logger.error(f"❌ Error inicializando respaldo local: {e}")
     
-    def start_capture(self):
-        """Inicia todos los componentes del cliente federado"""
-        logger.info("=== INICIANDO CLIENTE FEDERADO DETECTOR ===")
-        
-        # Registrar tiempo de inicio
-        self.start_time = time.time()
-        
-        # Limpiar eventos de parada
-        for event in self.stop_events.values():
-            event.clear()
-        
-        # Iniciar hilo BD solo si está disponible
-        if DB_AVAILABLE:
-            self.db_thread = threading.Thread(target=self._db_worker, daemon=True)
-            self.db_thread.start()
-            logger.info("[BD] Hilo BD iniciado")
-        else:
-            logger.warning("[BD] BD no disponible, omitiendo hilo BD")
-        
-        # Iniciar hilo federado
-        self.federated_thread = threading.Thread(target=self._federated_worker, daemon=True)
-        self.federated_thread.start()
-        logger.info("[FL] Hilo federado iniciado")
-        
-        # Iniciar captura de red usando TODA la lógica del detector padre
+    def obtener_informacion_usuario(self):
+        """Obtiene información completa del usuario desde PostgreSQL"""
         try:
-            logger.info("[DETECTOR] Iniciando detector de red completo...")
-            super().start_capture()  # Esto inicia TODA la lógica de detector.py
-        except Exception as e:
-            logger.error(f"[ERROR] Error iniciando captura: {e}")
-            raise
-    
-    def stop_capture_threads(self):
-        """Detiene todos los hilos incluyendo los del cliente federado"""
-        logger.info("=== DETENIENDO CLIENTE FEDERADO ===")
-        
-        # Detener hilos específicos del cliente federado
-        for event in self.stop_events.values():
-            event.set()
-        
-        # Guardar detecciones pendientes en BD
-        if DB_AVAILABLE:
-            self._flush_detection_queue()
-        
-        # Detener hilos del detector padre
-        super().stop_capture_threads()
-        
-        # Esperar hilos específicos
-        if self.db_thread and self.db_thread.is_alive():
-            self.db_thread.join(timeout=3.0)
-        
-        if self.federated_thread and self.federated_thread.is_alive():
-            self.federated_thread.join(timeout=3.0)
-        
-        logger.info("[STOP] Cliente federado detenido completamente")
-    
-    def _print_detection(self, status, flow, probability, attack_type=None, pattern_scores=None):
-        """
-        Sobrescribe solo el método de impresión para añadir registro BD
-        MANTIENE toda la lógica original del detector.py
-        """
-        # Llamar al método original del detector padre
-        super()._print_detection(status, flow, probability, attack_type, pattern_scores)
-        
-        # Añadir SOLO la funcionalidad BD sin alterar la lógica de detección
-        if status != 'normal' and DB_AVAILABLE:
-            self.total_detections += 1
+            print(f"\n📋 Obteniendo información del usuario ID: {self.user_id}")
+            print("🔗 Conectando con el servidor PostgreSQL...")
             
-            # Crear registro para BD
-            detection_record = {
-                'detection_id': str(uuid.uuid4()),
-                'client_id': self.client_id,
-                'timestamp': datetime.now(),
-                'source_ip': flow.src_ip,
-                'destination_ip': flow.dst_ip,
-                'source_port': str(flow.src_port),
-                'destination_port': str(flow.dst_port),
-                'protocol': flow.protocol,
-                'anomaly_type': attack_type or 'unknown',
-                'severity': 'high' if status == 'attack' else 'medium' if status == 'suspicious' else 'low',
-                'confidence_score': float(probability),
-                'raw_data': json.dumps({
-                    'status': status,
-                    'ml_probability': float(probability),
-                    'attack_type': attack_type or 'none',
-                    'pattern_scores': dict(pattern_scores) if pattern_scores else {},
-                    'flow_stats': {
-                        'packets': len(flow.packets),
-                        'duration': getattr(flow, 'flow_duration', 0),
-                        'bytes': sum(getattr(flow, 'packet_lengths', []))
-                    },
-                    'client_info': {
-                        'client_id': self.client_id,
-                        'server_connected': self.connected_to_server,
-                        'timestamp': time.time()
-                    }
-                }),
-                'is_confirmed': None,
-                'false_positive': False
-            }
+            response = requests.get(
+                f"{self.flask_api_url}/api/users/{self.user_id}/complete-info",
+                timeout=15,
+                headers={'Content-Type': 'application/json'}
+            )
             
-            # Agregar a cola BD
-            with self.queue_lock:
-                self.detection_queue.append(detection_record)
-    
-    # === MÉTODOS DE BASE DE DATOS ===
-    
-    def _db_worker(self):
-        """Hilo para guardar detecciones en BD local"""
-        logger.info("[BD] Trabajador BD iniciado")
-        
-        while not self.stop_events['db'].is_set():
-            try:
-                # Recoger detecciones pendientes
-                detections_to_save = []
-                with self.queue_lock:
-                    if self.detection_queue:
-                        # Procesar en lotes pequeños
-                        detections_to_save = self.detection_queue[:5]
-                        self.detection_queue = self.detection_queue[5:]
+            if response.status_code == 200:
+                data = response.json()
                 
-                # Guardar en BD
-                if detections_to_save:
-                    self._save_detections_to_db(detections_to_save)
-                
-                # Esperar antes del siguiente ciclo
-                time.sleep(5)
-                
-            except Exception as e:
-                logger.error(f"[BD] Error en trabajador BD: {e}")
-                time.sleep(10)
-    
-    def _save_detections_to_db(self, detections):
-        """Guarda detecciones en BD local"""
-        if not DB_AVAILABLE:
-            return
-            
-        conn = None
-        try:
-            conn = obtener_conexion()
-            if not conn:
-                # Devolver a cola si no hay conexión
-                with self.queue_lock:
-                    self.detection_queue = detections + self.detection_queue
-                return
-            
-            with conn.cursor() as cursor:
-                # Crear tabla de detecciones con PRIMARY KEY
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS detections (
-                        detection_id VARCHAR(255) PRIMARY KEY,
-                        client_id INTEGER,
-                        timestamp TIMESTAMP,
-                        source_ip VARCHAR(45),
-                        destination_ip VARCHAR(45),
-                        source_port VARCHAR(10),
-                        destination_port VARCHAR(10),
-                        protocol VARCHAR(10),
-                        anomaly_type VARCHAR(100),
-                        severity VARCHAR(20),
-                        confidence_score REAL,
-                        raw_data TEXT,
-                        is_confirmed BOOLEAN,
-                        false_positive BOOLEAN DEFAULT FALSE,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                """)
-                
-                # Insertar detecciones usando INSERT ... ON CONFLICT
-                for detection in detections:
-                    cursor.execute("""
-                        INSERT INTO detections (
-                            detection_id, client_id, timestamp, source_ip, destination_ip,
-                            source_port, destination_port, protocol, anomaly_type,
-                            severity, confidence_score, raw_data, is_confirmed, false_positive
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (detection_id) DO NOTHING
-                    """, (
-                        detection['detection_id'], detection['client_id'],
-                        detection['timestamp'], detection['source_ip'],
-                        detection['destination_ip'], detection['source_port'],
-                        detection['destination_port'], detection['protocol'],
-                        detection['anomaly_type'], detection['severity'],
-                        detection['confidence_score'], detection['raw_data'],
-                        detection['is_confirmed'], detection['false_positive']
-                    ))
-                
-                conn.commit()
-                logger.debug(f"[BD] Guardadas {len(detections)} detecciones")
-                
-        except Exception as e:
-            logger.error(f"[BD] Error guardando: {e}")
-            # Devolver a cola para reintento
-            with self.queue_lock:
-                self.detection_queue = detections + self.detection_queue
-        finally:
-            if conn:
-                conn.close()
-    
-    def _flush_detection_queue(self):
-        """Guarda todas las detecciones pendientes"""
-        if not DB_AVAILABLE:
-            return
-            
-        with self.queue_lock:
-            if self.detection_queue:
-                logger.info(f"[BD] Guardando {len(self.detection_queue)} detecciones pendientes...")
-                self._save_detections_to_db(self.detection_queue)
-                self.detection_queue.clear()
-    
-    # === MÉTODOS DE APRENDIZAJE FEDERADO ===
-    
-    def _federated_worker(self):
-        """Hilo para comunicación con servidor federado"""
-        logger.info("[FL] Trabajador federado iniciado")
-        
-        while not self.stop_events['federated'].is_set():
-            try:
-                self.federated_stats['connection_attempts'] += 1
-                
-                # Intentar conectar y mantener conexión
-                asyncio.run(self._federated_connection())
-                
-            except Exception as e:
-                logger.error(f"[FL] Error en conexión federada: {e}")
-                
-                # Esperar antes de reintentar (backoff exponencial)
-                retry_delay = min(30, self.federated_stats['connection_attempts'] * 5)
-                logger.info(f"[FL] Reintentando conexión en {retry_delay}s...")
-                
-                for _ in range(retry_delay):
-                    if self.stop_events['federated'].is_set():
-                        break
-                    time.sleep(1)
-    
-    async def _federated_connection(self):
-        """Mantiene conexión WebSocket con servidor federado"""
-        try:
-            logger.info(f"[FL] Conectando a servidor: {self.servidor_federado}")
-            
-            async with websockets.connect(
-                self.servidor_federado,
-                ping_interval=30,
-                ping_timeout=10,
-                close_timeout=10,
-                open_timeout=15
-            ) as websocket:
-                
-                # Registrar cliente
-                if not await self.register_client(websocket):
-                    logger.error("[FL] No se pudo registrar en el servidor")
-                    return
-                
-                self.connected_to_server = True
-                self.federated_stats['connection_attempts'] = 0
-                logger.info("[FL] Conectado al servidor federado")
-                
-                # Iniciar tareas asíncronas
-                heartbeat_task = asyncio.create_task(self._heartbeat_worker(websocket))
-                stats_task = asyncio.create_task(self._stats_sender(websocket))
-                
-                try:
-                    # Bucle principal de comunicación
-                    async for message in websocket:
-                        if self.stop_events['federated'].is_set():
-                            break
+                if data.get('success'):
+                    self.user_info = data.get('user')
+                    self.computing_device_info = data.get('computing_device')
+                    
+                    if self.user_info and self.computing_device_info:
+                        self.client_id = str(self.computing_device_info.get('id'))
                         
-                        try:
-                            data = json.loads(message)
-                            self.federated_stats['messages_received'] += 1
-                            await self._handle_federated_message(data, websocket)
-                        except json.JSONDecodeError:
-                            logger.error("[FL] Mensaje con formato JSON inválido")
-                        except Exception as e:
-                            logger.error(f"[FL] Error procesando mensaje: {e}")
-                            
-                finally:
-                    # Cancelar tareas
-                    heartbeat_task.cancel()
-                    stats_task.cancel()
-                    
-                    try:
-                        await heartbeat_task
-                        await stats_task
-                    except asyncio.CancelledError:
-                        pass
-                    
-        except websockets.exceptions.ConnectionClosedError:
-            logger.warning("[FL] Conexión cerrada por el servidor")
-        except (OSError, ConnectionRefusedError) as e:
-            logger.warning(f"[FL] No se pudo conectar: {e}")
-        except asyncio.TimeoutError:
-            logger.warning("[FL] Timeout conectando al servidor")
-        except Exception as e:
-            logger.error(f"[FL] Error en conexión: {e}")
-        finally:
-            self.connected_to_server = False
-    
-    async def register_client(self, websocket):
-        """Registra el cliente con el servidor federado"""
-        try:
-            registration_message = {
-                'type': 'register',
-                'client_info': {
-                    'id': self.client_id,
-                    'name': f'Cliente-Detector-{self.client_id}',
-                    'location': 'PC Windows - Cliente Federado',
-                    'interface': self.interface,
-                    'capabilities': ['detection', 'learning', 'real_time'],
-                    'version': '2.0',
-                    'os': 'Windows',
-                    'python_version': sys.version.split()[0],
-                    'model_info': {
-                        'type': type(self.model).__name__,
-                        'features': len(self.selected_features) if self.selected_features else 'auto'
-                    }
-                }
-            }
-            
-            await websocket.send(json.dumps(registration_message))
-            self.federated_stats['messages_sent'] += 1
-            logger.info("[FL] Mensaje de registro enviado")
-            
-            # Esperar confirmación
-            response = await asyncio.wait_for(websocket.recv(), timeout=30)
-            data = json.loads(response)
-            
-            if data.get('type') == 'registration_confirmed':
-                self.server_assigned_id = data.get('client_id')
-                server_info = data.get('server_info', {})
-                
-                logger.info(f"[FL] Registro confirmado - ID: {self.server_assigned_id}")
-                logger.info(f"[FL] Servidor - Ronda: {server_info.get('current_round', 0)}, "
-                           f"Clientes: {server_info.get('total_clients', 0)}")
-                
-                return True
+                        print("\n" + "="*70)
+                        print("📋 INFORMACIÓN DEL USUARIO OBTENIDA DESDE POSTGRESQL")
+                        print("="*70)
+                        print(f"🆔 ID Usuario: {self.user_info.get('id')}")
+                        print(f"👤 Nombre: {self.user_info.get('first_name')} {self.user_info.get('last_name')}")
+                        print(f"🏷️ Username: {self.user_info.get('username')}")
+                        print(f"📧 Email: {self.user_info.get('email')}")
+                        print(f"👔 Rol: {self.user_info.get('role_display_name')}")
+                        print(f"🔲 Estado: {'Activo' if self.user_info.get('is_active') else 'Inactivo'}")
+                        print("─" * 70)
+                        print("💻 DISPOSITIVO DE CÓMPUTO ASIGNADO:")
+                        print(f"🆔 Device ID: {self.computing_device_info.get('id')}")
+                        print(f"🏷️ Tipo: {self.computing_device_info.get('type')}")
+                        print(f"🖥️ Marca: {self.computing_device_info.get('brand')}")
+                        print(f"📦 Modelo: {self.computing_device_info.get('model')}")
+                        print(f"🔢 Serial: {self.computing_device_info.get('serial_number')}")
+                        print(f"🔧 Estado: {self.computing_device_info.get('status')}")
+                        print(f"🎯 Client ID: {self.client_id}")
+                        print("="*70)
+                        
+                        return True
+                    else:
+                        print(f"❌ Usuario {self.user_id} no tiene dispositivo de cómputo asignado")
+                        print("💡 Verifica la configuración en PostgreSQL")
+                        return False
+                else:
+                    error_msg = data.get('error', 'Error desconocido')
+                    print(f"❌ Error del servidor: {error_msg}")
+                    return False
             else:
-                logger.error(f"[FL] Registro rechazado: {data.get('message', 'Razón desconocida')}")
+                print(f"❌ Error HTTP {response.status_code}: {response.text}")
                 return False
                 
-        except asyncio.TimeoutError:
-            logger.error("[FL] Timeout esperando confirmación de registro")
+        except requests.exceptions.ConnectionError:
+            print("❌ No se puede conectar con el servidor Flask")
+            print("💡 Asegúrate de que main_prueba.py esté ejecutándose en localhost:5000")
+            print("💡 Comando: python main_prueba.py")
+            return False
+        except requests.exceptions.Timeout:
+            print("❌ Timeout conectando con el servidor")
             return False
         except Exception as e:
-            logger.error(f"[FL] Error en registro: {e}")
+            print(f"❌ Error obteniendo información del usuario: {e}")
             return False
     
-    async def _heartbeat_worker(self, websocket):
-        """Envía heartbeats periódicos al servidor"""
-        try:
-            while not self.stop_events['federated'].is_set():
-                heartbeat_msg = {
-                    'type': 'heartbeat',
-                    'client_id': self.server_assigned_id,
-                    'status': 'active',
-                    'timestamp': time.time(),
-                    'stats': {
-                        'uptime': time.time() - getattr(self, 'start_time', time.time()),
-                        'packets_processed': getattr(self, 'performance_metrics', {}).get('packets_processed', 0),
-                        'flows_analyzed': getattr(self, 'performance_metrics', {}).get('flows_analyzed', 0),
-                        'detections_total': self.total_detections,
-                        'detections_queue': len(self.detection_queue),
-                        'alert_counts': getattr(self, 'alert_counts', {}),
-                        'connected_to_db': DB_AVAILABLE
-                    }
-                }
-                
-                await websocket.send(json.dumps(heartbeat_msg))
-                self.federated_stats['messages_sent'] += 1
-                self.federated_stats['last_heartbeat'] = time.time()
-                
-                await asyncio.sleep(30)  # Heartbeat cada 30 segundos
-                
-        except asyncio.CancelledError:
-            logger.debug("[FL] Heartbeat worker cancelado")
-        except Exception as e:
-            logger.error(f"[FL] Error en heartbeat: {e}")
+    def generar_detection_id(self):
+        """Genera un ID único para la detección"""
+        timestamp = int(datetime.now().timestamp() * 1000)
+        return f"user_{self.user_id}_dev_{self.client_id}_{timestamp}_{self.detections_sent}"
     
-    async def _stats_sender(self, websocket):
-        """Envía estadísticas detalladas periódicamente"""
+    def enviar_deteccion_servidor(self, deteccion_data):
+        """Envía detección al servidor PostgreSQL"""
+        detection_id = self.generar_detection_id()
+        
+        # Siempre guardar en respaldo local primero
+        self.guardar_respaldo_local(detection_id, deteccion_data)
+        
+        # Intentar enviar al servidor
         try:
-            while not self.stop_events['federated'].is_set():
-                await asyncio.sleep(300)  # Estadísticas cada 5 minutos
-                
-                # Usar estadísticas del detector padre
-                perf_metrics = getattr(self, 'performance_metrics', {})
-                current_stats = {
-                    'packets_processed': perf_metrics.get('packets_processed', 0),
-                    'flows_analyzed': perf_metrics.get('flows_analyzed', 0),
-                    'total_detections': self.total_detections,
-                    'alert_distribution': getattr(self, 'alert_counts', {}),
-                    'attack_types': getattr(self, 'attack_types', {}),
-                    'uptime': time.time() - getattr(self, 'start_time', time.time()),
-                    'active_flows': len(getattr(self, 'flows', {})),
-                    'performance': {
-                        'cpu_percent': psutil.cpu_percent(),
-                        'memory_percent': psutil.virtual_memory().percent,
-                        'interface': self.interface
+            url = f"{self.flask_api_url}/api/buffer/add-detection"
+            
+            # Preparar payload completo
+            payload = {
+                'detection_id': detection_id,
+                'user_id': self.user_id,
+                'client_id': int(self.client_id),
+                'timestamp': datetime.now().isoformat(),
+                'source_ip': deteccion_data.get('source_ip', '192.168.1.100'),
+                'destination_ip': deteccion_data.get('destination_ip', '192.168.1.1'),
+                'source_port': deteccion_data.get('source_port', 80),
+                'destination_port': deteccion_data.get('destination_port', 443),
+                'protocol': deteccion_data.get('protocol', 'TCP'),
+                'anomaly_type': deteccion_data.get('anomaly_type', 'Network Anomaly'),
+                'severity': deteccion_data.get('severity', 'medium'),
+                'confidence_score': float(deteccion_data.get('confidence_score', 0.75)),
+                'raw_data': {
+                    'user_info': {
+                        'user_id': self.user_id,
+                        'username': self.user_info.get('username'),
+                        'full_name': f"{self.user_info.get('first_name')} {self.user_info.get('last_name')}",
+                        'role': self.user_info.get('role_display_name'),
+                        'email': self.user_info.get('email'),
+                        'is_active': self.user_info.get('is_active')
                     },
-                    'federated_stats': self.federated_stats.copy()
+                    'computing_device_info': {
+                        'id': self.computing_device_info.get('id'),
+                        'type': self.computing_device_info.get('type'),
+                        'brand': self.computing_device_info.get('brand'),
+                        'model': self.computing_device_info.get('model'),
+                        'serial_number': self.computing_device_info.get('serial_number'),
+                        'status': self.computing_device_info.get('status')
+                    },
+                    'session_info': {
+                        'session_start': self.start_time.isoformat() if self.start_time else None,
+                        'interface': self.interface,
+                        'model_path': self.model_path,
+                        'client_id': self.client_id
+                    },
+                    'detector_output': deteccion_data,
+                    'statistics': self.stats.copy()
                 }
+            }
+            
+            response = requests.post(
+                url, 
+                json=payload, 
+                timeout=10,
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    self.detections_sent += 1
+                    self.stats['last_detection'] = datetime.now().isoformat()
+                    
+                    # Marcar como enviado en respaldo
+                    self.marcar_enviado_respaldo(detection_id)
+                    
+                    print(f"📤 [ENVIADO #{self.detections_sent:03d}] {deteccion_data.get('anomaly_type')} | Severidad: {deteccion_data.get('severity')} | Confianza: {deteccion_data.get('confidence_score', 0):.2f}")
+                    return True
+                else:
+                    print(f"⚠️ [ERROR SERVIDOR] {result.get('message', 'Error desconocido')}")
+                    return False
+            else:
+                print(f"⚠️ [ERROR HTTP] {response.status_code} - Guardado en respaldo local")
+                return False
                 
-                stats_msg = {
-                    'type': 'stats_update',
-                    'client_id': self.server_assigned_id,
-                    'stats': current_stats,
-                    'timestamp': time.time()
-                }
-                
-                await websocket.send(json.dumps(stats_msg))
-                self.federated_stats['messages_sent'] += 1
-                logger.debug("[FL] Estadísticas enviadas al servidor")
-                
-        except asyncio.CancelledError:
-            logger.debug("[FL] Stats sender cancelado")
+        except requests.exceptions.ConnectionError:
+            print(f"⚠️ [SIN CONEXIÓN] Guardado en respaldo local")
+            return False
+        except requests.exceptions.Timeout:
+            print(f"⚠️ [TIMEOUT] Guardado en respaldo local")
+            return False
         except Exception as e:
-            logger.error(f"[FL] Error enviando estadísticas: {e}")
+            print(f"⚠️ [ERROR] {e} - Guardado en respaldo local")
+            return False
     
-    async def _handle_federated_message(self, data: Dict[str, Any], websocket):
-        """Maneja mensajes del servidor federado"""
-        msg_type = data.get('type')
-        
-        if msg_type == 'heartbeat_ack':
-            logger.debug("[FL] Heartbeat confirmado")
-            
-        elif msg_type == 'global_model_update':
-            logger.info("[FL] Recibiendo actualización de modelo global")
-            self.federated_stats['model_updates_received'] += 1
-            
-        elif msg_type == 'client_joined':
-            client_info = data.get('client_info', {})
-            logger.info(f"[FL] Nuevo cliente: {client_info.get('name', 'Unknown')}")
-            
-        elif msg_type == 'client_left':
-            client_name = data.get('client_name', 'Unknown')
-            logger.info(f"[FL] Cliente desconectado: {client_name}")
-            
-        elif msg_type == 'critical_alert':
-            alert = data.get('alert', {})
-            logger.warning(f"[ALERT] {alert.get('src_ip')} -> {alert.get('dst_ip')}")
-            
-        elif msg_type == 'aggregation_request':
-            logger.info("[FL] Servidor solicita participación en agregación")
-            self.rounds_participated += 1
-            
-        elif msg_type == 'server_message':
-            message = data.get('message', '')
-            logger.info(f"[FL] Mensaje del servidor: {message}")
-            
-        else:
-            logger.debug(f"[FL] Mensaje desconocido: {msg_type}")
-    
-    def get_status(self):
-        """Retorna estado completo del cliente federado"""
-        return {
-            'client_id': self.client_id,
-            'server_assigned_id': self.server_assigned_id,
-            'connected_to_server': self.connected_to_server,
-            'servidor_federado': self.servidor_federado,
-            'last_model_update': self.last_model_update,
-            'rounds_participated': self.rounds_participated,
-            'detections_pending': len(self.detection_queue),
-            'total_detections': self.total_detections,
-            'db_available': DB_AVAILABLE,
-            'federated_stats': self.federated_stats.copy(),
-            'detection_counts': getattr(self, 'alert_counts', {'normal': 0, 'suspicious': 0, 'attack': 0}),
-            'performance_metrics': getattr(self, 'performance_metrics', {}),
-            'uptime': time.time() - getattr(self, 'start_time', time.time())
-        }
-
-
-def run_cliente_federado(model_path, interface, client_id=1, servidor_federado="ws://192.168.1.100:8765"):
-    """Ejecuta el cliente federado detector"""
-    try:
-        print("=" * 70)
-        print("CLIENTE FEDERADO DETECTOR DE INTRUSIONES")
-        print("=" * 70)
-        
-        # Configurar logging para Windows
-        setup_windows_logging()
-        
-        # Verificar modelo
-        if not os.path.exists(model_path):
-            print(f"ERROR: Modelo no encontrado: {model_path}")
-            print("Verifique que el archivo modelo_rf.pkl existe")
-            return
-        
-        # Verificar conectividad BD
-        if DB_AVAILABLE:
-            try:
-                conn = obtener_conexion()
-                if conn:
-                    conn.close()
-                    print("Base de datos: CONECTADA")
-                else:
-                    print("Base de datos: NO DISPONIBLE (continuará sin BD)")
-            except:
-                print("Base de datos: ERROR DE CONEXIÓN (continuará sin BD)")
-        else:
-            print("Base de datos: MÓDULO NO DISPONIBLE")
-        
-        # Crear cliente
-        cliente = ClienteFederadoDetector(
-            model_path=model_path,
-            interface=interface, 
-            client_id=client_id,
-            servidor_federado=servidor_federado
-        )
-        
-        # Mostrar información
-        print(f"Cliente ID: {client_id}")
-        print(f"Interfaz de red: {interface}")
-        print(f"Modelo ML: {model_path}")
-        print(f"Servidor Federado: {servidor_federado}")
-        print("-" * 70)
-        print("Iniciando cliente... (Ctrl+C para detener)")
-        print("-" * 70)
-        
-        # Iniciar
-        cliente.start_capture()
-        
-        # Ejecutar hasta interrupción
+    def guardar_respaldo_local(self, detection_id, deteccion_data):
+        """Guarda la detección en respaldo local SQLite"""
         try:
-            start_time = time.time()
-            update_interval = 30  # Actualizar estado cada 30 segundos
+            conn = sqlite3.connect(self.local_backup_db)
+            cursor = conn.cursor()
             
-            while True:
-                time.sleep(update_interval)
+            cursor.execute('''
+                INSERT OR REPLACE INTO detections_backup 
+                (detection_id, user_id, client_id, timestamp, anomaly_type, 
+                 severity, confidence_score, source_ip, destination_ip, 
+                 source_port, destination_port, protocol, raw_data, sent_to_server)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                detection_id,
+                self.user_id,
+                self.client_id,
+                datetime.now().isoformat(),
+                deteccion_data.get('anomaly_type'),
+                deteccion_data.get('severity'),
+                deteccion_data.get('confidence_score'),
+                deteccion_data.get('source_ip'),
+                deteccion_data.get('destination_ip'),
+                deteccion_data.get('source_port'),
+                deteccion_data.get('destination_port'),
+                deteccion_data.get('protocol'),
+                json.dumps(deteccion_data, ensure_ascii=False),
+                False
+            ))
+            
+            conn.commit()
+            conn.close()
+            
+        except Exception as e:
+            logger.error(f"Error guardando en respaldo local: {e}")
+    
+    def marcar_enviado_respaldo(self, detection_id):
+        """Marca una detección como enviada en el respaldo"""
+        try:
+            conn = sqlite3.connect(self.local_backup_db)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                UPDATE detections_backup 
+                SET sent_to_server = ? 
+                WHERE detection_id = ?
+            ''', (True, detection_id))
+            
+            conn.commit()
+            conn.close()
+            
+        except Exception as e:
+            logger.error(f"Error marcando como enviado: {e}")
+    
+    def parsear_salida_detector(self, linea):
+        """
+        Parsea la salida del detector.py para extraer información de detecciones
+        Maneja múltiples formatos de salida
+        """
+        try:
+            # Limpiar códigos ANSI y espacios
+            linea_limpia = re.sub(r'\x1b\[[0-9;]*m', '', linea.strip())
+            
+            if not linea_limpia:
+                return None
+            
+            # Actualizar estadísticas básicas
+            self.stats['total_packets'] += 1
+            
+            # Patrón principal: timestamp [status] IP:port -> IP:port (protocol) - Prob: X.XX
+            patron_principal = r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+\[(.*?)\]\s+(\d+\.\d+\.\d+\.\d+):(\d+)\s+->\s+(\d+\.\d+\.\d+\.\d+):(\d+)\s+\((\w+)\)\s+-\s+Prob:\s+([\d\.]+)'
+            
+            match = re.search(patron_principal, linea_limpia)
+            
+            if match:
+                timestamp_str, status, src_ip, src_port, dst_ip, dst_port, protocol, probability = match.groups()
                 
-                # Obtener y mostrar estado
-                status = cliente.get_status()
-                uptime = int(time.time() - start_time)
+                # Clasificar el estado
+                status_upper = status.upper()
+                confidence = float(probability)
                 
-                # Indicador de conexión
-                if status['connected_to_server']:
-                    connection_status = f"CONECTADO (ID: {status['server_assigned_id']})"
+                # Solo procesar anomalías (no-normal)
+                if 'NORMAL' in status_upper:
+                    self.stats['normal_packets'] += 1
+                    return None
+                
+                # Es una anomalía
+                self.stats['anomaly_packets'] += 1
+                
+                # Determinar tipo de anomalía y severidad
+                anomaly_type = 'Unknown Anomaly'
+                severity = 'medium'
+                
+                if any(word in status_upper for word in ['ATAQUE', 'ATTACK']):
+                    self.stats['attacks_detected'] += 1
+                    severity = 'high'
+                    
+                    if 'SCAN' in status_upper or 'PORT' in status_upper:
+                        anomaly_type = 'Port Scan Attack'
+                    elif any(word in status_upper for word in ['DOS', 'DDOS']):
+                        anomaly_type = 'DDoS Attack'
+                        severity = 'critical'
+                    elif 'WEB' in status_upper:
+                        anomaly_type = 'Web Attack'
+                    elif 'SQL' in status_upper:
+                        anomaly_type = 'SQL Injection Attack'
+                        severity = 'critical'
+                    elif any(word in status_upper for word in ['BRUTE', 'FORCE']):
+                        anomaly_type = 'Brute Force Attack'
+                    elif 'INFILTRACION' in status_upper:
+                        anomaly_type = 'Infiltration Attack'
+                        severity = 'critical'
+                    else:
+                        anomaly_type = 'Generic Attack'
+                        
+                elif any(word in status_upper for word in ['SOSPECHOSO', 'SUSPICIOUS']):
+                    anomaly_type = 'Suspicious Activity'
+                    severity = 'medium'
+                elif 'ANOMALIA' in status_upper:
+                    anomaly_type = 'Network Anomaly'
+                    severity = 'low'
+                
+                # Ajustar severidad según confianza
+                if confidence >= 0.9:
+                    if severity == 'low':
+                        severity = 'medium'
+                    elif severity == 'medium':
+                        severity = 'high'
+                elif confidence < 0.5 and severity == 'high':
+                    severity = 'medium'
+                
+                return {
+                    'source_ip': src_ip,
+                    'destination_ip': dst_ip,
+                    'source_port': int(src_port),
+                    'destination_port': int(dst_port),
+                    'protocol': protocol,
+                    'anomaly_type': anomaly_type,
+                    'severity': severity,
+                    'confidence_score': confidence,
+                    'original_status': status,
+                    'timestamp_original': timestamp_str,
+                    'raw_line': linea_limpia
+                }
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error parseando línea del detector: {e}")
+            return None
+    
+    def mostrar_estadisticas_periodicas(self):
+        """Muestra estadísticas cada cierto tiempo"""
+        if self.lines_processed > 0 and self.lines_processed % 50 == 0:
+            tiempo_transcurrido = (datetime.now() - self.start_time).total_seconds()
+            pps = self.stats['total_packets'] / tiempo_transcurrido if tiempo_transcurrido > 0 else 0
+            
+            print(f"\n📊 [ESTADÍSTICAS] Líneas: {self.lines_processed} | Paquetes: {self.stats['total_packets']} | " + 
+                  f"Anomalías: {self.stats['anomaly_packets']} | Enviadas: {self.detections_sent} | " + 
+                  f"PPS: {pps:.1f}")
+    
+    def enviar_deteccion_inicial(self):
+        """Envía una detección inicial indicando el inicio de sesión"""
+        deteccion_inicial = {
+            'anomaly_type': 'User Session Started',
+            'severity': 'low',
+            'confidence_score': 1.0,
+            'source_ip': '127.0.0.1',
+            'destination_ip': '127.0.0.1',
+            'source_port': 0,
+            'destination_port': 0,
+            'protocol': 'SYSTEM',
+            'original_status': 'SESSION_START',
+            'timestamp_original': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'raw_line': f'Sistema iniciado para usuario {self.user_info.get("username")}'
+        }
+        
+        success = self.enviar_deteccion_servidor(deteccion_inicial)
+        if success:
+            print("✅ Detección inicial enviada correctamente")
+        else:
+            print("⚠️ Detección inicial guardada en respaldo local")
+    
+    def iniciar_detector_proceso(self):
+        """Inicia el proceso detector.py y procesa su salida en tiempo real"""
+        try:
+            # 1. Obtener información del usuario desde PostgreSQL
+            print("🔄 Paso 1: Obteniendo información del usuario...")
+            if not self.obtener_informacion_usuario():
+                raise Exception("No se pudo obtener la información del usuario desde PostgreSQL")
+            
+            # 2. Verificar archivos necesarios
+            print("🔄 Paso 2: Verificando archivos...")
+            if not os.path.exists('detector.py'):
+                raise FileNotFoundError("El archivo detector.py no se encuentra en el directorio actual")
+            
+            if not os.path.exists(self.model_path):
+                raise FileNotFoundError(f"El modelo ML no se encuentra: {self.model_path}")
+            
+            # 3. Registrar inicio de sesión
+            self.start_time = datetime.now()
+            
+            # 4. Enviar detección inicial
+            print("🔄 Paso 3: Enviando detección inicial...")
+            self.enviar_deteccion_inicial()
+            
+            # 5. Mostrar información de inicio
+            print("\n" + "="*80)
+            print("🚀 INICIANDO DETECTOR DE TRÁFICO DE RED")
+            print("="*80)
+            print(f"👤 Usuario: {self.user_info.get('first_name')} {self.user_info.get('last_name')} (@{self.user_info.get('username')})")
+            print(f"💻 Dispositivo: {self.computing_device_info.get('brand')} {self.computing_device_info.get('model')}")
+            print(f"🔢 Serial: {self.computing_device_info.get('serial_number')}")
+            print(f"🌐 Interfaz de red: {self.interface}")
+            print(f"🤖 Modelo ML: {self.model_path}")
+            print(f"🎯 Client ID: {self.client_id}")
+            print(f"🕐 Inicio: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            print("="*80)
+            print("📡 SALIDA DEL DETECTOR EN TIEMPO REAL:")
+            print("="*80)
+            
+            # 6. Preparar comando del detector
+            cmd = [
+                sys.executable, 'detector.py',
+                '--model', self.model_path,
+                '--interface', self.interface,
+                '--duration', '0',  # Duración infinita
+                '--verbose'
+            ]
+            
+            print(f"🔧 Ejecutando: {' '.join(cmd)}\n")
+            
+            # 7. Iniciar el proceso detector.py
+            self.detector_process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                universal_newlines=True
+            )
+            
+            self.running = True
+            
+            # 8. Procesar salida en tiempo real
+            try:
+                while self.running and self.detector_process.poll() is None:
+                    linea = self.detector_process.stdout.readline()
+                    
+                    if not linea:
+                        break
+                    
+                    linea = linea.strip()
+                    if linea:
+                        self.lines_processed += 1
+                        
+                        # MOSTRAR TODA LA SALIDA DEL DETECTOR (PRINCIPAL FUNCIONALIDAD)
+                        print(f"[DETECTOR] {linea}")
+                        
+                        # Intentar parsear y procesar detecciones
+                        deteccion = self.parsear_salida_detector(linea)
+                        if deteccion:
+                            # Solo enviar anomalías significativas
+                            if deteccion.get('confidence_score', 0) >= 0.3:
+                                self.enviar_deteccion_servidor(deteccion)
+                        
+                        # Mostrar estadísticas periódicamente
+                        self.mostrar_estadisticas_periodicas()
+                        
+            except KeyboardInterrupt:
+                print("\n🛑 Interrupción por teclado detectada...")
+                self.detener()
+                return
+                
+            # 9. Proceso terminado naturalmente
+            if self.detector_process.poll() is not None:
+                exit_code = self.detector_process.returncode
+                if exit_code == 0:
+                    print(f"\n✅ Detector terminado normalmente")
                 else:
-                    connection_status = "DESCONECTADO"
+                    print(f"\n⚠️ Detector terminado con código de error: {exit_code}")
                 
-                # Mostrar estado
-                print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Estado del Cliente:")
-                print(f"  Tiempo activo: {uptime}s")
-                print(f"  Servidor federado: {connection_status}")
-                print(f"  Rondas FL participadas: {status['rounds_participated']}")
-                print(f"  Detecciones totales: {status['total_detections']}")
-                print(f"  Cola BD: {status['detections_pending']} pendientes")
-                print(f"  Distribución alertas: {status['detection_counts']}")
+        except FileNotFoundError as e:
+            print(f"\n❌ Archivo no encontrado: {e}")
+            print("💡 Verifica que detector.py y el modelo estén en las rutas correctas")
+        except Exception as e:
+            print(f"\n❌ Error iniciando detector: {e}")
+            raise
+    
+    def detener(self):
+        """Detiene el detector y muestra estadísticas finales"""
+        try:
+            print(f"\n🛑 Deteniendo detector...")
+            self.running = False
+            
+            # Detener proceso si está corriendo
+            if self.detector_process and self.detector_process.poll() is None:
+                print("🔄 Terminando proceso detector.py...")
+                self.detector_process.terminate()
                 
-                # Estadísticas federadas
-                fed_stats = status['federated_stats']
-                print(f"  Msgs enviados/recibidos: {fed_stats['messages_sent']}/{fed_stats['messages_received']}")
-                print(f"  Actualizaciones modelo: {fed_stats['model_updates_received']}")
-                
-        except KeyboardInterrupt:
-            print("\n" + "=" * 70)
-            print("DETENIENDO CLIENTE FEDERADO...")
-            print("=" * 70)
+                # Esperar que termine
+                try:
+                    self.detector_process.wait(timeout=15)
+                    print("✅ Proceso detector.py terminado correctamente")
+                except subprocess.TimeoutExpired:
+                    print("⚠️ Timeout esperando terminación, forzando cierre...")
+                    self.detector_process.kill()
+                    self.detector_process.wait()
+                    print("✅ Proceso forzado a terminar")
             
-            # Obtener estadísticas finales
-            final_status = cliente.get_status()
+            # Calcular tiempo total
+            if self.start_time:
+                tiempo_total = datetime.now() - self.start_time
+                tiempo_str = str(tiempo_total).split('.')[0]  # Sin microsegundos
+            else:
+                tiempo_str = "Desconocido"
             
-            print("ESTADÍSTICAS FINALES:")
-            print(f"  Tiempo total activo: {int(final_status['uptime'])}s")
-            print(f"  Detecciones procesadas: {final_status['total_detections']}")
-            print(f"  Rondas FL participadas: {final_status['rounds_participated']}")
-            print(f"  Mensajes federados enviados: {final_status['federated_stats']['messages_sent']}")
+            # Mostrar estadísticas finales
+            print("\n" + "="*70)
+            print("📊 ESTADÍSTICAS FINALES DE LA SESIÓN")
+            print("="*70)
+            print(f"👤 Usuario: {self.user_info.get('username') if self.user_info else 'N/A'}")
+            print(f"💻 Dispositivo: {self.computing_device_info.get('brand') if self.computing_device_info else 'N/A'} " + 
+                  f"{self.computing_device_info.get('model') if self.computing_device_info else ''}")
+            print(f"⏱️ Tiempo de ejecución: {tiempo_str}")
+            print(f"📝 Líneas procesadas: {self.lines_processed:,}")
+            print(f"📦 Total de paquetes: {self.stats['total_packets']:,}")
+            print(f"✅ Paquetes normales: {self.stats['normal_packets']:,}")
+            print(f"⚠️ Anomalías detectadas: {self.stats['anomaly_packets']:,}")
+            print(f"🚨 Ataques identificados: {self.stats['attacks_detected']:,}")
+            print(f"📤 Detecciones enviadas: {self.detections_sent:,}")
+            print(f"💾 Respaldo local: {self.local_backup_db}")
             
-            # Detener cliente
-            cliente.stop_capture_threads()
-        
-        print("Cliente federado detenido correctamente")
-        
-    except Exception as e:
-        print(f"ERROR ejecutando cliente federado: {e}")
-        import traceback
-        traceback.print_exc()
+            if self.stats['last_detection']:
+                print(f"🕐 Última detección: {self.stats['last_detection']}")
+            
+            print("="*70)
+            print("✅ Sesión finalizada correctamente")
+                    
+        except Exception as e:
+            print(f"❌ Error durante la detención: {e}")
 
-
-if __name__ == "__main__":
+def main():
+    """Función principal del detector integrado"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Cliente Federado Detector de Intrusiones")
-    parser.add_argument("--model", default="model/modelo_rf.pkl", 
-                       help="Ruta del modelo ML")
-    parser.add_argument("--interface", default="Ethernet", 
-                       help="Interfaz de red")
-    parser.add_argument("--client-id", type=int, default=1, 
-                       help="ID único del cliente")
-    parser.add_argument("--server", default="ws://192.168.1.100:8765", 
-                       help="URL del servidor federado")
+    # Configurar argumentos de línea de comandos
+    parser = argparse.ArgumentParser(
+        description='Detector Integrado Federado - Versión Completa',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Ejemplos de uso:
+  python detector_integrado.py --user-id 1 --interface "Wi-Fi" --model "model/modelo_rf.pkl"
+  python detector_integrado.py --user-id 2 --interface "Ethernet" --model "model/modelo_rf.pkl"
+  
+Requisitos:
+  - main_prueba.py ejecutándose en localhost:5000
+  - PostgreSQL con datos del usuario
+  - detector.py en el directorio actual
+  - Modelo ML en la ruta especificada
+        """
+    )
+    
+    parser.add_argument('--user-id', type=int, required=True, 
+                       help='ID del usuario en PostgreSQL')
+    parser.add_argument('--interface', required=True, 
+                       help='Interfaz de red a monitorear (ej: "Wi-Fi", "Ethernet")')
+    parser.add_argument('--model', required=True, 
+                       help='Ruta al modelo de Machine Learning')
     
     args = parser.parse_args()
     
-    run_cliente_federado(args.model, args.interface, args.client_id, args.server)
+    # Mostrar información inicial
+    print("🛡️ DETECTOR INTEGRADO FEDERADO - VERSIÓN COMPLETA")
+    print("=" * 60)
+    print(f"🆔 User ID: {args.user_id}")
+    print(f"🌐 Interfaz: {args.interface}")
+    print(f"🤖 Modelo: {args.model}")
+    print("=" * 60)
+    print("⚠️ REQUISITOS:")
+    print("   • main_prueba.py ejecutándose en localhost:5000")
+    print("   • PostgreSQL configurado con datos del usuario")
+    print("   • detector.py en el directorio actual")
+    print("   • Modelo ML disponible")
+    print("=" * 60)
+    print("🚀 Iniciando detector...")
+    print("=" * 60)
+    
+    # Crear instancia del detector
+    detector = DetectorFederado(
+        user_id=args.user_id,
+        interface=args.interface,
+        model_path=args.model
+    )
+    
+    try:
+        # Iniciar el detector
+        detector.iniciar_detector_proceso()
+        
+    except KeyboardInterrupt:
+        print("\n🛑 Detenido por el usuario (Ctrl+C)")
+        detector.detener()
+    except Exception as e:
+        print(f"\n❌ Error fatal: {e}")
+        detector.detener()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

@@ -587,3 +587,41 @@ SELECT 'Configuraciones insertadas: ' || COUNT(*) as info FROM system_config;
 -- Mostrar información de conexión
 SELECT 'Base de datos IDS Federado creada exitosamente' as status;
 SELECT 'Usuario admin creado - Username: admin, Password: admin123' as default_user;
+CREATE TABLE medical_devices (
+    id SERIAL PRIMARY KEY,
+    device_type VARCHAR(100) NOT NULL, -- Ej: Rayos X, Resonancia, Monitoreo Cardíaco
+    brand VARCHAR(100),
+    model VARCHAR(100),
+    serial_number VARCHAR(100) UNIQUE,
+    location VARCHAR(255), -- Ej: Sala de Radiología, UCIP, Consultorio 3
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'in_maintenance', 'decommissioned')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE computing_devices (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL CHECK (type IN ('laptop', 'desktop', 'tablet')), -- Tipo de dispositivo
+    brand VARCHAR(100),
+    model VARCHAR(100),
+    serial_number VARCHAR(100) UNIQUE,
+    assigned_to INTEGER REFERENCES users(id), -- Dispositivo asignado a un usuario
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'in_repair', 'decommissioned')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE device_connections (
+    id SERIAL PRIMARY KEY,
+    medical_device_id INTEGER NOT NULL REFERENCES medical_devices(id),
+    computing_device_id INTEGER NOT NULL REFERENCES computing_devices(id),
+    connected_by INTEGER REFERENCES users(id), -- Usuario que conectó el equipo
+    connection_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    disconnected_date TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'connected' CHECK (status IN ('connected', 'disconnected')),
+    notes TEXT,
+    UNIQUE(medical_device_id, computing_device_id)
+);
+
+
+
+ALTER TABLE users ADD COLUMN allowed_computing_device_id INTEGER REFERENCES computing_devices(id);

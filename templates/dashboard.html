@@ -1,7 +1,6 @@
 {% extends "maestra.html" %}
 
 {% block title %}Dashboard - IDS Federado{% endblock %}
-
 {% block page_title %}Dashboard{% endblock %}
 
 {% block page_actions %}
@@ -433,1030 +432,1145 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>
-/* Control groups spacing */
-.control-group {
-    margin-bottom: 0.5rem;
-}
-
-.control-group .btn-group {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-radius: 6px;
-}
-
-.control-group .btn {
-    border-radius: 6px !important;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: all 0.2s ease;
-}
-
-.control-group .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* Dropdown improvements */
-.dropdown-menu {
-    border: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    border-radius: 8px;
-    padding: 0.75rem;
-}
-
-.dropdown-header {
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding-bottom: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.dropdown-item {
-    border-radius: 4px;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.25rem;
-    transition: all 0.2s ease;
-}
-
-.dropdown-item:hover {
-    background-color: rgba(0,123,255,0.1);
-    color: #0056b3;
-}
-
-/* Form controls in dropdowns */
-.dropdown-menu .form-control,
-.dropdown-menu .form-select {
-    font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-}
-
-.dropdown-menu .form-control:focus,
-.dropdown-menu .form-select:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-}
-
-/* Status indicators */
-#connection-indicator {
-    font-size: 0.875rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-}
-
-#last-update-time {
-    font-size: 0.8rem;
-    padding: 0.375rem 0.625rem;
-    border-radius: 15px;
-}
-
-/* Dashboard cards */
-.dashboard-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-}
-
-.dashboard-card .card-header {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 15px 15px 0 0;
-    backdrop-filter: blur(10px);
-}
-
-.dashboard-card .card-body {
-    background: rgba(255,255,255,0.05);
-    border-radius: 0 0 15px 15px;
-    backdrop-filter: blur(5px);
-}
-
-.system-status-panel {
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.system-log {
-    background: #1e1e1e;
-    color: #00ff00;
-    font-family: 'Courier New', monospace;
-    padding: 15px;
-    border-radius: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    font-size: 0.85rem;
-}
-
-.log-entry {
-    margin-bottom: 3px;
-    animation: logFadeIn 0.5s ease-in;
-}
-
-@keyframes logFadeIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.counter-updating {
-    animation: counterPulse 0.6s ease-in-out;
-}
-
-@keyframes counterPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); color: #ffc107; }
-    100% { transform: scale(1); }
-}
-
-.chart-container {
-    position: relative;
-    height: 300px;
-}
-
-.detection-row-new {
-    animation: slideInRight 0.5s ease-out;
-}
-
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-#connection-status, #last-update {
-    position: fixed;
-    right: 20px;
-    z-index: 1050;
-}
-
-#connection-status { top: 20px; }
-#last-update { 
-    bottom: 20px; 
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-}
-
-/* Page actions responsive */
-@media (max-width: 768px) {
-    .control-group {
-        width: 100%;
-        margin-bottom: 0.75rem;
-    }
-    
-    .control-group .btn-group {
-        width: 100%;
-    }
-    
-    .control-group .btn {
-        flex: 1;
-    }
-}
-
-/* Animation for button state changes */
-.btn-state-change {
-    animation: buttonPulse 0.3s ease;
-}
-
-@keyframes buttonPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-</style>
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-// ========================================
-// SISTEMA DE ACTUALIZACIONES AUTOMÁTICAS
-// ========================================
-
-// Variables globales
-let detectorState = { running: false, interface: 'Wi-Fi', stats: {}, status: 'stopped' };
-let federadoState = { running: false, server: 'ws://localhost:8765', stats: {}, status: 'stopped' };
-let updateInterval = null;
-let lastUpdate = new Date();
-
-// Inicializar dashboard
-function initializeDashboard() {
-    cargarInterfaces();
-    updateServiceStatus();
-    updateDashboardCounters();
-    updateRecentDetections();
-    startAutoUpdate();
-    updateSystemLog('Dashboard IDS Federado iniciado', 'success');
-    updateLastUpdateTime();
-}
-
-// Iniciar actualizaciones automáticas
-function startAutoUpdate() {
-    if (updateInterval) {
-        clearInterval(updateInterval);
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<style>
+        /* ========================================
+       DASHBOARD STYLES - SISTEMA IDS FEDERADO
+       ======================================== */
+    
+    /* Control groups spacing */
+    .control-group {
+        margin-bottom: 0.5rem;
     }
     
-    // Actualización más frecuente: cada 10 segundos
-    updateInterval = setInterval(() => {
-        console.log('🔄 Ejecutando actualización automática...');
+    .control-group .btn-group {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border-radius: 6px;
+    }
+    
+    .control-group .btn {
+        border-radius: 6px !important;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .control-group .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    
+    /* Dropdown improvements */
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        padding: 0.5rem 0;
+    }
+    
+    .dropdown-header {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: inherit !important;
+        padding: 0.5rem 1rem;
+    }
+    
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:hover {
+        background-color: rgba(0,0,0,0.05);
+        transform: translateX(3px);
+    }
+    
+    .dropdown-item i {
+        width: 18px;
+        text-align: center;
+    }
+    
+    /* Dashboard cards */
+    .dashboard-card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+    }
+    
+    .dashboard-card .card-header {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        border-radius: 15px 15px 0 0;
+        backdrop-filter: blur(10px);
+    }
+    
+    .dashboard-card .card-body {
+        background: rgba(255,255,255,0.05);
+        border-radius: 0 0 15px 15px;
+        backdrop-filter: blur(5px);
+    }
+    
+    /* System status panel */
+    .system-status-panel {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    /* System log */
+    .system-log {
+        background: #1e1e1e;
+        color: #00ff00;
+        font-family: 'Courier New', monospace;
+        padding: 15px;
+        border-radius: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-size: 0.85rem;
+    }
+    
+    .log-entry {
+        margin-bottom: 3px;
+        animation: logFadeIn 0.5s ease-in;
+    }
+    
+    @keyframes logFadeIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* Counter animations */
+    .counter-updating {
+        animation: counterPulse 0.6s ease-in-out;
+    }
+    
+    @keyframes counterPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); color: #ffc107; }
+        100% { transform: scale(1); }
+    }
+    
+    /* Chart container */
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+    
+    /* Detection row animation */
+    .detection-row-new {
+        animation: slideInRight 0.5s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    /* Fixed status indicators */
+    #connection-status, #last-update {
+        position: fixed;
+        right: 20px;
+        z-index: 1050;
+    }
+    
+    #connection-status { top: 20px; }
+    #last-update { 
+        bottom: 20px; 
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+    
+    /* Status info styling */
+    .status-info {
+        font-size: 0.9rem;
+    }
+    
+    .status-info .d-flex {
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Badge improvements */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+        border-radius: 0.375rem;
+    }
+    
+    /* Table improvements */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table th {
+        background-color: rgba(0,0,0,0.05);
+        border-top: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .table td {
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.025);
+    }
+    
+    /* Form controls in dropdowns */
+    .dropdown-menu .form-control,
+    .dropdown-menu .form-select {
+        font-size: 0.85rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+    }
+    
+    /* Text size utilities */
+    .text-xs {
+        font-size: 0.75rem;
+    }
+    
+    .font-weight-bold {
+        font-weight: 700;
+    }
+    
+    /* H3 styling for counters */
+    .h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .control-group {
+            width: 100%;
+            margin-bottom: 0.75rem;
+        }
+        
+        .control-group .btn-group {
+            width: 100%;
+        }
+        
+        .control-group .btn {
+            flex: 1;
+        }
+        
+        .dashboard-card {
+            margin-bottom: 1rem;
+        }
+        
+        .chart-container {
+            height: 250px;
+        }
+        
+        .system-log {
+            max-height: 200px;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Button state changes animation */
+    .btn-state-change {
+        animation: buttonPulse 0.3s ease;
+    }
+    
+    @keyframes buttonPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Success/Error/Warning colors for logs */
+    .text-success { color: #28a745 !important; }
+    .text-danger { color: #dc3545 !important; }
+    .text-warning { color: #ffc107 !important; }
+    .text-info { color: #17a2b8 !important; }
+    
+    /* Loading states */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    
+    .loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin-top: -10px;
+        margin-left: -10px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Notification positioning */
+    .alert.position-fixed {
+        z-index: 9999;
+        max-width: 400px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border: none;
+        border-radius: 8px;
+    }
+    
+    /* Custom scrollbar for system log */
+    .system-log::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .system-log::-webkit-scrollbar-track {
+        background: #2a2a2a;
+        border-radius: 4px;
+    }
+    
+    .system-log::-webkit-scrollbar-thumb {
+        background: #00ff00;
+        border-radius: 4px;
+    }
+    
+    .system-log::-webkit-scrollbar-thumb:hover {
+        background: #00cc00;
+    }
+    
+    /* Icon improvements */
+    .fa-2x {
+        font-size: 1.5em;
+    }
+    
+    /* Card body padding */
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    /* Form improvements in dropdowns */
+    .dropdown-menu .mb-3:last-child {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Connection indicator pulse */
+    #connection-indicator.bg-success {
+        animation: pulse-success 2s infinite;
+    }
+    
+    @keyframes pulse-success {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+    
+    #connection-indicator.bg-danger {
+        animation: pulse-danger 1s infinite;
+    }
+    
+    @keyframes pulse-danger {
+        0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+</style>
+<script>
+        // filepath: c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\static\js\dashboard.js
+    
+    // ========================================
+    // DASHBOARD JAVASCRIPT - SISTEMA IDS FEDERADO
+    // ========================================
+    
+    // Variables globales
+    let detectorState = { running: false, interface: 'Wi-Fi', stats: {}, status: 'stopped' };
+    let federadoState = { running: false, server: 'ws://localhost:8765', stats: {}, status: 'stopped' };
+    let updateInterval = null;
+    let lastUpdate = new Date();
+    
+    // ========================================
+    // INICIALIZACIÓN
+    // ========================================
+    
+    // Inicializar dashboard
+    function initializeDashboard() {
+        cargarInterfaces();
+        updateServiceStatus();
+        updateDashboardCounters();
+        updateRecentDetections();
+        startAutoUpdate();
+        updateSystemLog('Dashboard IDS Federado iniciado', 'success');
+        updateLastUpdateTime();
+    }
+    
+    // Iniciar actualizaciones automáticas
+    function startAutoUpdate() {
+        if (updateInterval) {
+            clearInterval(updateInterval);
+        }
+        
+        updateInterval = setInterval(() => {
+            console.log('🔄 Ejecutando actualización automática...');
+            updateServiceStatus();
+            updateDashboardCounters();
+            updateRecentDetections();
+            updateLastUpdateTime();
+        }, 10000); // 10 segundos
+        
+        updateSystemLog('Auto-actualización activada (10s)', 'info');
+        
+        // Primera actualización inmediata
+        setTimeout(() => {
+            console.log('🚀 Primera actualización inmediata...');
+            updateDashboardCounters();
+        }, 1000);
+    }
+    
+    // ========================================
+    // ACTUALIZACIÓN DE CONTADORES
+    // ========================================
+    
+    // Actualizar contadores del dashboard
+    async function updateDashboardCounters() {
+        try {
+            updateSystemLog('Actualizando contadores...', 'info');
+            
+            const response = await fetch('/api/dashboard/counters', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('📊 Datos de contadores recibidos:', data);
+            
+            if (data.success && data.counters) {
+                const counters = data.counters;
+                
+                // Actualizar contadores con animación
+                updateCounterWithAnimation('total-detecciones', counters.total_detecciones);
+                updateCounterWithAnimation('detecciones-24h', counters.detecciones_24h);
+                updateCounterWithAnimation('alertas-criticas', counters.alertas_criticas);
+                
+                const clientesText = `${counters.clientes_activos}/${counters.total_clientes}`;
+                updateCounterWithAnimation('clientes-activos', clientesText);
+                
+                updateSystemLog(`Contadores actualizados: ${counters.total_detecciones} total, ${counters.detecciones_24h} (24h), ${counters.alertas_criticas} críticas, ${clientesText} clientes`, 'success');
+                
+                updateConnectionStatus(true);
+                
+            } else {
+                throw new Error(data.error || 'Respuesta inválida del servidor');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error actualizando contadores:', error);
+            updateSystemLog(`Error actualizando contadores: ${error.message}`, 'error');
+            updateConnectionStatus(false);
+            
+            // Mostrar contadores en 0 si hay error
+            updateCounterWithAnimation('total-detecciones', 0);
+            updateCounterWithAnimation('detecciones-24h', 0);
+            updateCounterWithAnimation('alertas-criticas', 0);
+            updateCounterWithAnimation('clientes-activos', '0/0');
+        }
+    }
+    
+    // Actualizar contador con animación
+    function updateCounterWithAnimation(elementId, newValue) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+            console.warn(`⚠️ Elemento no encontrado: ${elementId}`);
+            return;
+        }
+        
+        const currentValue = element.textContent.trim();
+        const newValueStr = String(newValue);
+        
+        console.log(`🔄 Actualizando ${elementId}: "${currentValue}" -> "${newValueStr}"`);
+        
+        if (currentValue !== newValueStr) {
+            // Animación de actualización
+            element.classList.add('counter-updating');
+            element.style.transform = 'scale(1.05)';
+            element.style.transition = 'all 0.3s ease';
+            element.style.color = '#ffc107';
+            element.style.fontWeight = 'bold';
+            
+            // Actualizar valor después de la animación
+            setTimeout(() => {
+                element.textContent = newValueStr;
+                element.style.transform = 'scale(1)';
+                element.style.color = '';
+                element.style.fontWeight = '';
+                element.classList.remove('counter-updating');
+            }, 150);
+            
+            console.log(`✅ Contador ${elementId} actualizado a: ${newValueStr}`);
+        }
+    }
+    
+    // ========================================
+    // DETECCIONES RECIENTES
+    // ========================================
+    
+    // Actualizar detecciones recientes
+    async function updateRecentDetections() {
+        try {
+            const response = await fetch('/api/dashboard/recent-detections?limit=5');
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.success && data.detections) {
+                    const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
+                    
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                        
+                        if (data.detections.length === 0) {
+                            tbody.innerHTML = `
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        No hay detecciones recientes
+                                    </td>
+                                </tr>
+                            `;
+                        } else {
+                            data.detections.forEach(detection => {
+                                const row = createDetectionRow(detection);
+                                tbody.appendChild(row);
+                            });
+                        }
+                    }
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error actualizando detecciones recientes:', error);
+        }
+    }
+    
+    // Crear fila de detección
+    function createDetectionRow(detection) {
+        const row = document.createElement('tr');
+        row.className = 'detection-row-new';
+        
+        const timestamp = detection.timestamp ? 
+            new Date(detection.timestamp).toLocaleString('es-ES') : 
+            'N/A';
+        
+        const severityBadge = getSeverityBadge(detection.severity);
+        
+        row.innerHTML = `
+            <td><small class="text-muted">${detection.client_name}</small></td>
+            <td>${severityBadge}</td>
+            <td><code>${detection.source_ip}:${detection.source_port}</code></td>
+            <td><code>${detection.destination_ip}:${detection.destination_port}</code></td>
+            <td><span class="badge bg-secondary">${detection.anomaly_type}</span></td>
+            <td><small class="text-muted">${timestamp}</small></td>
+        `;
+        
+        return row;
+    }
+    
+    // Obtener badge de severidad
+    function getSeverityBadge(severity) {
+        const badges = {
+            'critical': '<span class="badge bg-danger">Crítica</span>',
+            'high': '<span class="badge bg-warning">Alta</span>',
+            'medium': '<span class="badge bg-info">Media</span>',
+            'low': '<span class="badge bg-success">Baja</span>'
+        };
+        return badges[severity] || '<span class="badge bg-secondary">Desconocida</span>';
+    }
+    
+    // ========================================
+    // CONTROL DE SERVICIOS
+    // ========================================
+    
+    // Actualizar estado de servicios
+    async function updateServiceStatus() {
+        try {
+            const [detectorResponse, federadoResponse] = await Promise.all([
+                fetch('/api/detector/status').catch(() => ({ ok: false })),
+                fetch('/api/federado/status').catch(() => ({ ok: false }))
+            ]);
+            
+            if (detectorResponse.ok) {
+                const detectorData = await detectorResponse.json();
+                if (detectorData.stats) {
+                    detectorState = {...detectorState, ...detectorData.stats };
+                    detectorState.status = detectorData.stats.status || 'stopped';
+                }
+                updateDetectorUI();
+            } else{
+                detectorState.status = 'stopped';
+                updateDetectorUI();
+            }
+            
+            if (federadoResponse.ok) {
+                const federadoData = await federadoResponse.json();
+                if (federadoData.stats) {
+                    federadoState = {...federadoState, ...federadoData.stats };
+                    federadoState.status = federadoData.stats.status || 'stopped';
+                }
+                updateFederadoUI();
+            } else{
+                federadoState.status = 'stopped';
+                updateFederadoUI();
+            }
+            
+            updateConnectionStatus(true);
+            
+        } catch (error) {
+            console.error('Error actualizando estado de servicios:', error);
+            updateConnectionStatus(false);
+            
+            detectorState.status = 'stopped';
+            federadoState.status = 'stopped';
+            updateDetectorUI();
+            updateFederadoUI();
+        }
+    }
+    
+    // Actualizar interfaz del detector
+    function updateDetectorUI() {
+        const btn = document.getElementById('btn-detector');
+        const icon = document.getElementById('icon-detector');
+        const text = document.getElementById('text-detector');
+        const status = document.getElementById('detector-status');
+        
+        if (!btn || !icon || !text) return;
+        
+        if (detectorState.status === 'running') {
+            btn.className = 'btn btn-danger';
+            icon.className = 'fas fa-stop';
+            text.textContent = 'Detener Detector';
+            
+            if (status) {
+                status.innerHTML = '<span class="badge bg-success">EJECUTÁNDOSE</span>';
+            }
+        } else {
+            btn.className = 'btn btn-success';
+            icon.className = 'fas fa-play';
+            text.textContent = 'Iniciar Detector';
+            
+            if (status) {
+                status.innerHTML = '<span class="badge bg-secondary">DETENIDO</span>';
+            }
+        }
+    }
+    
+    // Actualizar interfaz del federado
+    function updateFederadoUI() {
+        const btn = document.getElementById('btn-federado');
+        const icon = document.getElementById('icon-federado');
+        const text = document.getElementById('text-federado');
+        const status = document.getElementById('federado-status');
+        
+        if (!btn || !icon || !text) return;
+        
+        if (federadoState.status === 'running') {
+            btn.className = 'btn btn-danger';
+            icon.className = 'fas fa-stop';
+            text.textContent = 'Detener Federado';
+            
+            if (status) {
+                status.innerHTML = '<span class="badge bg-success">EJECUTÁNDOSE</span>';
+            }
+        } else {
+            btn.className = 'btn btn-primary';
+            icon.className = 'fas fa-network-wired';
+            text.textContent = 'Iniciar Federado';
+            
+            if (status) {
+                status.innerHTML = '<span class="badge bg-secondary">DETENIDO</span>';
+            }
+        }
+    }
+    
+    // Toggle detector
+    async function toggleDetector() {
+        const isRunning = detectorState.status === 'running';
+        const action = isRunning ? 'stop' : 'start';
+        
+        try {
+            updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} detector...`, 'info');
+            
+            const config = {
+                interface: document.getElementById('interface-select')?.value || 'Wi-Fi',
+                client_id: parseInt(document.getElementById('client-id')?.value) || 1,
+                servidor_federado: document.getElementById('servidor-federado')?.value || 'ws://192.168.18.88:8765'
+            };
+            
+            const response = await fetch(`/api/detector/${action}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(config)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                updateSystemLog(data.message, 'success');
+                showNotification('success', data.message, 3000);
+                
+                // Actualizar estado inmediatamente
+                setTimeout(updateServiceStatus, 1000);
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error: ${error.message}`, 'error');
+            showNotification('error', `Error: ${error.message}`, 5000);
+        }
+    }
+    
+    // Toggle federado
+    async function toggleFederado() {
+        const isRunning = federadoState.status === 'running';
+        const action = isRunning ? 'stop' : 'start';
+        
+        try {
+            updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} servidor federado...`, 'info');
+            
+            const config = {
+                host: document.getElementById('federado-host')?.value || '0.0.0.0',
+                port: parseInt(document.getElementById('federado-puerto')?.value) || 8765,
+                min_clients: parseInt(document.getElementById('min-clientes')?.value) || 1
+            };
+            
+            const response = await fetch(`/api/federado/${action}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(config)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                updateSystemLog(data.message, 'success');
+                showNotification('success', data.message, 3000);
+                
+                // Actualizar estado inmediatamente
+                setTimeout(updateServiceStatus, 1000);
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error: ${error.message}`, 'error');
+            showNotification('error', `Error: ${error.message}`, 5000);
+        }
+    }
+    
+    // ========================================
+    // FUNCIONES DE HERRAMIENTAS
+    // ========================================
+    
+    // Cargar interfaces de red
+    async function cargarInterfaces() {
+        try {
+            updateSystemLog('Detectando interfaces de red...', 'info');
+            
+            const response = await fetch('/api/system/interfaces');
+            const data = await response.json();
+            
+            if (data.success) {
+                const select = document.getElementById('interface-select');
+                if (select) {
+                    select.innerHTML = '';
+                    
+                    data.interfaces.forEach(iface => {
+                        const option = document.createElement('option');
+                        option.value = iface.name;
+                        option.textContent = iface.display_name;
+                        
+                        if (!iface.is_up) {
+                            option.disabled = true;
+                            option.textContent += ' (Inactiva)';
+                        }
+                        
+                        select.appendChild(option);
+                    });
+                    
+                    updateSystemLog(`Detectadas ${data.interfaces.length} interfaces`, 'success');
+                }
+            } else {
+                throw new Error(data.error || 'Error detectando interfaces');
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error cargando interfaces: ${error.message}`, 'error');
+            
+            // Fallback con interfaces por defecto
+            const select = document.getElementById('interface-select');
+            if (select) {
+                select.innerHTML = `
+                    <option value="Wi-Fi">Wi-Fi (Adaptador inalámbrico)</option>
+                    <option value="Ethernet">Ethernet (Conexión de área local)</option>
+                `;
+            }
+        }
+    }
+    
+    // Verificar conexión
+    async function verificarConexion() {
+        try {
+            updateSystemLog('Verificando conectividad del sistema...', 'info');
+            showNotification('info', 'Verificando conexiones...', 2000);
+            
+            const response = await fetch('/api/dashboard/verify-connection', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const results = data.results;
+                let message = 'Resultados de conectividad:\n';
+                message += `• Base de datos: ${results.database ? '✅ Conectada' : '❌ Sin conexión'}\n`;
+                message += `• Detector: ${results.detector ? '✅ Activo' : '❌ Inactivo'}\n`;
+                message += `• Federado: ${results.federado ? '✅ Activo' : '❌ Inactivo'}\n`;
+                message += `• Red: ${results.network ? '✅ Conectada' : '❌ Sin conexión'}`;
+                
+                updateSystemLog(message, 'info');
+                
+                const status = Object.values(results).every(Boolean) ? 'success' : 'warning';
+                showNotification(status, 'Verificación de conectividad completada', 5000);
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error verificando conexión: ${error.message}`, 'error');
+            showNotification('error', 'Error verificando conexión', 3000);
+        }
+    }
+    
+    // Verificar rendimiento
+    async function verificarRendimiento() {
+        try {
+            updateSystemLog('Analizando rendimiento del sistema...', 'info');
+            showNotification('info', 'Analizando rendimiento...', 2000);
+            
+            const response = await fetch('/api/dashboard/performance-check', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const perf = data.performance;
+                let message = 'Métricas de rendimiento:\n';
+                message += `• CPU: ${perf.cpu_percent.toFixed(1)}%\n`;
+                message += `• Memoria: ${perf.memory_percent.toFixed(1)}%\n`;
+                message += `• Disco: ${perf.disk_percent.toFixed(1)}%\n`;
+                message += `• Procesos: ${perf.process_count}`;
+                
+                if (data.issues.length > 0) {
+                    message += `\n⚠️ Problemas detectados: ${data.issues.join(', ')}`;
+                }
+                
+                updateSystemLog(message, data.status === 'good' ? 'success' : 'warning');
+                
+                const notificationType = data.status === 'good' ? 'success' : 
+                                       data.status === 'warning' ? 'warning' : 'error';
+                showNotification(notificationType, `Rendimiento: ${data.status}`, 4000);
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error verificando rendimiento: ${error.message}`, 'error');
+            showNotification('error', 'Error verificando rendimiento', 3000);
+        }
+    }
+    
+    // Ejecutar diagnósticos
+    async function ejecutarDiagnosticos() {
+        try {
+            updateSystemLog('Ejecutando diagnósticos completos...', 'info');
+            showNotification('info', 'Ejecutando diagnósticos...', 3000);
+            
+            const response = await fetch('/api/dashboard/diagnostics', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const diag = data.diagnostics;
+                let message = 'Diagnósticos del sistema:\n';
+                message += `• Python: ${diag.system_info.python_version.split(' ')[0]}\n`;
+                message += `• Plataforma: ${diag.system_info.platform}\n`;
+                message += `• Archivos críticos: ${Object.values(diag.files_check).every(Boolean) ? '✅' : '❌'}\n`;
+                message += `• Procesos activos: Detector(${diag.processes.detector_running ? '✅' : '❌'}) Federado(${diag.processes.federado_running ? '✅' : '❌'})`;
+                
+                if (data.problems.length > 0) {
+                    message += `\n🔧 Problemas: ${data.problems.join(', ')}`;
+                }
+                
+                updateSystemLog(message, data.status === 'healthy' ? 'success' : 'warning');
+                showNotification(data.status === 'healthy' ? 'success' : 'warning', 
+                               'Diagnósticos completados', 4000);
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error en diagnósticos: ${error.message}`, 'error');
+            showNotification('error', 'Error ejecutando diagnósticos', 3000);
+        }
+    }
+    
+    // ========================================
+    // GESTIÓN DE DATOS
+    // ========================================
+    
+    // Insertar datos de prueba
+    async function insertTestData() {
+        try {
+            updateSystemLog('Insertando datos de prueba...', 'info');
+            showNotification('info', 'Generando datos de prueba...', 2000);
+            
+            const response = await fetch('/api/dashboard/test-data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                updateSystemLog(`✅ ${data.inserted} registros de prueba insertados`, 'success');
+                showNotification('success', `${data.inserted} registros insertados`, 3000);
+                
+                // Actualizar inmediatamente
+                setTimeout(() => {
+                    updateDashboardCounters();
+                    updateRecentDetections();
+                }, 500);
+                
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`❌ Error: ${error.message}`, 'error');
+            showNotification('error', 'Error insertando datos', 3000);
+        }
+    }
+    
+    // Limpiar datos
+    async function limpiarDatos() {
+        if (!confirm('¿Está seguro de que desea limpiar todos los datos? Esta acción no se puede deshacer.')) {
+            return;
+        }
+        
+        try {
+            updateSystemLog('Limpiando datos del sistema...', 'warning');
+            showNotification('warning', 'Limpiando datos...', 3000);
+            
+            const response = await fetch('/api/dashboard/clear-data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                updateSystemLog('Datos limpiados exitosamente', 'success');
+                showNotification('success', 'Datos limpiados', 3000);
+                
+                // Actualizar interfaz
+                setTimeout(() => {
+                    updateDashboardCounters();
+                    updateRecentDetections();
+                }, 1000);
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            updateSystemLog(`Error limpiando datos: ${error.message}`, 'error');
+            showNotification('error', 'Error limpiando datos', 3000);
+        }
+    }
+    
+    // ========================================
+    // UTILIDADES
+    // ========================================
+    
+    // Actualizar tiempo de última actualización
+    function updateLastUpdateTime() {
+        const timeElement = document.getElementById('last-update-time');
+        if (timeElement) {
+            const now = new Date();
+            timeElement.innerHTML = `<i class="fas fa-clock me-1"></i>${now.toLocaleTimeString('es-ES')}`;
+            lastUpdate = now;
+        }
+    }
+    
+    // Actualizar indicador de conexión
+    function updateConnectionStatus(connected = true) {
+        const indicator = document.getElementById('connection-indicator');
+        if (indicator) {
+            if (connected) {
+                indicator.className = 'badge bg-success me-2';
+                indicator.innerHTML = '<i class="fas fa-circle me-1"></i>Sistema Activo';
+            } else {
+                indicator.className = 'badge bg-danger me-2';
+                indicator.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Error de Conexión';
+            }
+        }
+    }
+    
+    // Actualizar dashboard completo
+    function actualizarDashboard() {
+        updateSystemLog('Actualizando dashboard completo...', 'info');
+        showNotification('info', 'Actualizando dashboard...', 2000);
+        
         updateServiceStatus();
         updateDashboardCounters();
         updateRecentDetections();
         updateLastUpdateTime();
-    }, 10000); // 10 segundos en lugar de 30
-    
-    updateSystemLog('Auto-actualización activada (10s)', 'info');
-    
-    // Primera actualización inmediata
-    setTimeout(() => {
-        console.log('🚀 Primera actualización inmediata...');
-        updateDashboardCounters();
-    }, 1000);
-}
-// Actualizar tiempo de última actualización
-function updateLastUpdateTime() {
-    const timeElement = document.getElementById('last-update-time');
-    if (timeElement) {
-        const now = new Date();
-        timeElement.innerHTML = `<i class="fas fa-clock me-1"></i>${now.toLocaleTimeString('es-ES')}`;
-        lastUpdate = now;
+        
+        updateSystemLog('Dashboard actualizado completamente', 'success');
+        showNotification('success', 'Dashboard actualizado', 2000);
     }
-}
-
-// Actualizar indicador de conexión
-function updateConnectionStatus(connected = true) {
-    const indicator = document.getElementById('connection-indicator');
-    if (indicator) {
-        if (connected) {
-            indicator.className = 'badge bg-success me-2';
-            indicator.innerHTML = '<i class="fas fa-circle me-1"></i>Sistema Activo';
-        } else {
-            indicator.className = 'badge bg-danger me-2';
-            indicator.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Error de Conexión';
-        }
-    }
-}
-
-// Actualizar dashboard completo
-function actualizarDashboard() {
-    updateSystemLog('Actualizando dashboard completo...', 'info');
-    showNotification('info', 'Actualizando dashboard...', 2000);
     
-    updateServiceStatus();
-    updateDashboardCounters();
-    updateRecentDetections();
-    updateLastUpdateTime();
-    
-    updateSystemLog('Dashboard actualizado completamente', 'success');
-    showNotification('success', 'Dashboard actualizado', 2000);
-}
-
-// ========================================
-// FUNCIONES DE CONTROL DE SERVICIOS
-// ========================================
-
-// Actualizar estado de servicios
-async function updateServiceStatus() {
-    try {
-        const [detectorResponse, federadoResponse] = await Promise.all([
-            fetch('/api/detector/status').catch(() => ({ ok: false })),
-            fetch('/api/federado/status').catch(() => ({ ok: false }))
-        ]);
-        
-        if (detectorResponse.ok) {
-            const detectorData = await detectorResponse.json();
-            if (detectorData.stats) {
-                detectorState = {...detectorState, ...detectorData.stats };
-                detectorState.status = detectorData.stats.status || 'stopped';
-            }
-            updateDetectorUI();
-        } else{
-            detectorState.status = 'stopped';
-            updateDetectorUI();
-        }
-        
-        if (federadoResponse.ok) {
-            const federadoData = await federadoResponse.json();
-            if (federadoData.stats) {
-                federadoState = {...federadoState, ...federadoData.stats };
-                federadoState.status = federadoData.stats.status || 'stopped';
-            }
-            updateFederadoUI();
-        } else{
-            federadoState.status = 'stopped';
-            updateFederadoUI();
-        }
-        
-        updateConnectionStatus(true);
-        
-    } catch (error) {
-        console.error('Error actualizando estado de servicios:', error);
-        updateConnectionStatus(false);
-    }
-}
-
-// Actualizar interfaz del detector
-function updateDetectorUI() {
-    const btn = document.getElementById('btn-detector');
-    const icon = document.getElementById('icon-detector');
-    const text = document.getElementById('text-detector');
-    const status = document.getElementById('detector-status');
-    if (!btn || !icon || !text) return;
-    if (detectorState.status === 'running') {
-        btn.className = 'btn btn-danger';
-        icon.className = 'fas fa-stop';
-        text.textContent = 'Detener Detector';
-        
-        if (status) {
-            status.innerHTML = '<span class="badge bg-success">EJECUTÁNDOSE</span>';
-        }
-    } else {
-        btn.className = 'btn btn-success';
-        icon.className = 'fas fa-play';
-        text.textContent = 'Iniciar Detector';
-        
-        if (status) {
-            status.innerHTML = '<span class="badge bg-secondary">DETENIDO</span>';
-        }
-    }
-}
-
-// Actualizar interfaz del federado
-function updateFederadoUI() {
-    const btn = document.getElementById('btn-federado');
-    const icon = document.getElementById('icon-federado');
-    const text = document.getElementById('text-federado');
-    const status = document.getElementById('federado-status');
-    
-    if (federadoState.status === 'running') {
-        btn.className = 'btn btn-danger';
-        icon.className = 'fas fa-stop';
-        text.textContent = 'Detener Federado';
-        
-        if (status) {
-            status.innerHTML = '<span class="badge bg-success">EJECUTÁNDOSE</span>';
-        }
-    } else {
-        btn.className = 'btn btn-primary';
-        icon.className = 'fas fa-network-wired';
-        text.textContent = 'Iniciar Federado';
-        
-        if (status) {
-            status.innerHTML = '<span class="badge bg-secondary">DETENIDO</span>';
-        }
-    }
-}
-
-// Toggle detector
-async function toggleDetector() {
-    const isRunning = detectorState.status === 'running';
-    const action = isRunning ? 'stop' : 'start';
-    
-    try {
-        updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} detector...`, 'info');
-        
-        const config = {
-            interface: document.getElementById('interface-select')?.value || 'Wi-Fi',
-            client_id: parseInt(document.getElementById('client-id')?.value) || 1,
-            servidor_federado: document.getElementById('servidor-federado')?.value || 'ws://192.168.18.88:8765'
-        };
-        
-        const response = await fetch(`/api/detector/${action}`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(config)
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            updateSystemLog(data.message, 'success');
-            showNotification('success', data.message, 3000);
+    // Sistema de log del sistema
+    function updateSystemLog(message, level = 'info') {
+        try {
+            const logContainer = document.getElementById('system-log');
+            if (!logContainer) return;
             
-            // Actualizar estado inmediatamente
-            setTimeout(updateServiceStatus, 1000);
-        } else {
-            throw new Error(data.error);
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error: ${error.message}`, 'error');
-        showNotification('error', `Error: ${error.message}`, 5000);
-    }
-}
-
-// Toggle federado
-async function toggleFederado() {
-    const isRunning = federadoState.status === 'running';
-    const action = isRunning ? 'stop' : 'start';
-    
-    try {
-        updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} servidor federado...`, 'info');
-        
-        const config = {
-            host: document.getElementById('federado-host')?.value || '0.0.0.0',
-            port: parseInt(document.getElementById('federado-puerto')?.value) || 8765,
-            min_clients: parseInt(document.getElementById('min-clientes')?.value) || 1
-        };
-        
-        const response = await fetch(`/api/federado/${action}`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(config)
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            updateSystemLog(data.message, 'success');
-            showNotification('success', data.message, 3000);
+            const timestamp = new Date().toLocaleTimeString();
+            const levelClass = {
+                'info': 'text-info', 'success': 'text-success', 
+                'warning': 'text-warning', 'error': 'text-danger'
+            }[level] || 'text-info';
             
-            // Actualizar estado inmediatamente
-            setTimeout(updateServiceStatus, 1000);
-        } else {
-            throw new Error(data.error);
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error: ${error.message}`, 'error');
-        showNotification('error', `Error: ${error.message}`, 5000);
-    }
-}
-
-// ========================================
-// FUNCIONES DE GESTIÓN DE DATOS
-// ========================================
-
-// Cargar interfaces de red
-async function cargarInterfaces() {
-    try {
-        updateSystemLog('Detectando interfaces de red...', 'info');
-        
-        const response = await fetch('/api/system/interfaces');
-        const data = await response.json();
-        
-        if (data.success) {
-            const select = document.getElementById('interface-select');
-            if (select) {
-                select.innerHTML = '';
-                
-                data.interfaces.forEach(iface => {
-                    const option = document.createElement('option');
-                    option.value = iface.name;
-                    option.textContent = iface.display_name;
-                    
-                    if (!iface.is_up) {
-                        option.disabled = true;
-                        option.textContent += ' (Inactiva)';
-                    }
-                    
-                    select.appendChild(option);
-                });
-                
-                updateSystemLog(`Detectadas ${data.interfaces.length} interfaces`, 'success');
-            }
-        } else {
-            throw new Error(data.error || 'Error detectando interfaces');
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error cargando interfaces: ${error.message}`, 'error');
-        
-        // Fallback con interfaces por defecto
-        const select = document.getElementById('interface-select');
-        if (select) {
-            select.innerHTML = `
-                <option value="Wi-Fi">Wi-Fi (Adaptador inalámbrico)</option>
-                <option value="Ethernet">Ethernet (Conexión de área local)</option>
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry mb-1';
+            logEntry.innerHTML = `
+                <small class="text-muted">[${timestamp}]</small>
+                <span class="${levelClass}">${message}</span>
             `;
-        }
-    }
-}
-
-// Actualizar contadores del dashboard
-// Reemplazar la función updateDashboardCounters():
-
-// Actualizar contadores del dashboard
-async function updateDashboardCounters() {
-    try {
-        updateSystemLog('Actualizando contadores...', 'info');
-        
-        const response = await fetch('/api/dashboard/counters', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('📊 Datos de contadores recibidos:', data);
-        
-        if (data.success && data.counters) {
-            const counters = data.counters;
             
-            // Actualizar contadores con animación y logging
-            updateCounterWithAnimation('total-detecciones', counters.total_detecciones);
-            updateCounterWithAnimation('detecciones-24h', counters.detecciones_24h);
-            updateCounterWithAnimation('alertas-criticas', counters.alertas_criticas);
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
             
-            const clientesText = `${counters.clientes_activos}/${counters.total_clientes}`;
-            updateCounterWithAnimation('clientes-activos', clientesText);
-            
-            // Log detallado para debug
-            updateSystemLog(`Contadores actualizados: ${counters.total_detecciones} total, ${counters.detecciones_24h} (24h), ${counters.alertas_criticas} críticas, ${clientesText} clientes`, 'success');
-            
-            // Actualizar indicador de conexión
-            updateConnectionStatus(true);
-            
-        } else {
-            throw new Error(data.error || 'Respuesta inválida del servidor');
-        }
-        
-    } catch (error) {
-        console.error('❌ Error actualizando contadores:', error);
-        updateSystemLog(`Error actualizando contadores: ${error.message}`, 'error');
-        updateConnectionStatus(false);
-        
-        // Mostrar contadores en 0 si hay error
-        updateCounterWithAnimation('total-detecciones', 0);
-        updateCounterWithAnimation('detecciones-24h', 0);
-        updateCounterWithAnimation('alertas-criticas', 0);
-        updateCounterWithAnimation('clientes-activos', '0/0');
-    }
-}
-
-// Actualizar contador con animación mejorada
-function updateCounterWithAnimation(elementId, newValue) {
-    const element = document.getElementById(elementId);
-    if (!element) {
-        console.warn(`⚠️ Elemento no encontrado: ${elementId}`);
-        return;
-    }
-    
-    const currentValue = element.textContent.trim();
-    const newValueStr = String(newValue);
-    
-    console.log(`🔄 Actualizando ${elementId}: "${currentValue}" -> "${newValueStr}"`);
-    
-    if (currentValue !== newValueStr) {
-        // Animación de actualización
-        element.classList.add('counter-updating');
-        element.style.transform = 'scale(1.05)';
-        element.style.transition = 'all 0.3s ease';
-        element.style.color = '#ffc107';
-        element.style.fontWeight = 'bold';
-        
-        // Actualizar valor después de la animación
-        setTimeout(() => {
-            element.textContent = newValueStr;
-            element.style.transform = 'scale(1)';
-            element.style.color = '';
-            element.style.fontWeight = '';
-            element.classList.remove('counter-updating');
-        }, 150);
-        
-        console.log(`✅ Contador ${elementId} actualizado a: ${newValueStr}`);
-    }
-}
-// Actualizar contador con animación
-
-// Actualizar detecciones recientes
-async function updateRecentDetections() {
-    try {
-        const response = await fetch('/api/dashboard/recent-detections?limit=5');
-        
-        if (response.ok) {
-            const data = await response.json();
-            
-            if (data.success && data.detections) {
-                const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
-                
-                if (tbody) {
-                    tbody.innerHTML = '';
-                    
-                    if (data.detections.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    No hay detecciones recientes
-                                </td>
-                            </tr>
-                        `;
-                    } else {
-                        data.detections.forEach(detection => {
-                            const row = createDetectionRow(detection);
-                            tbody.appendChild(row);
-                        });
-                    }
+            const entries = logContainer.querySelectorAll('.log-entry');
+            if (entries.length > 50) {
+                for (let i = 50; i < entries.length; i++) {
+                    entries[i].remove();
                 }
             }
+        } catch (error) {
+            console.error('Error actualizando log:', error);
         }
-    } catch (error) {
-        console.error('Error actualizando detecciones recientes:', error);
-    }
-}
-
-// Crear fila de detección
-function createDetectionRow(detection) {
-    const row = document.createElement('tr');
-    row.className = 'detection-row-new';
-    
-    const timestamp = detection.timestamp ? 
-        new Date(detection.timestamp).toLocaleString('es-ES') : 
-        'N/A';
-    
-    const severityBadge = getSeverityBadge(detection.severity);
-    
-    row.innerHTML = `
-        <td><small class="text-muted">${detection.client_name}</small></td>
-        <td>${severityBadge}</td>
-        <td><code>${detection.source_ip}:${detection.source_port}</code></td>
-        <td><code>${detection.destination_ip}:${detection.destination_port}</code></td>
-        <td><span class="badge bg-secondary">${detection.anomaly_type}</span></td>
-        <td><small class="text-muted">${timestamp}</small></td>
-    `;
-    
-    return row;
-}
-
-// Obtener badge de severidad
-function getSeverityBadge(severity) {
-    const badges = {
-        'critical': '<span class="badge bg-danger">Crítica</span>',
-        'high': '<span class="badge bg-warning">Alta</span>',
-        'medium': '<span class="badge bg-info">Media</span>',
-        'low': '<span class="badge bg-success">Baja</span>'
-    };
-    return badges[severity] || '<span class="badge bg-secondary">Desconocida</span>';
-}
-
-// ========================================
-// FUNCIONES DE HERRAMIENTAS DEL SISTEMA
-// ========================================
-
-// Verificar conexión
-async function verificarConexion() {
-    try {
-        updateSystemLog('Verificando conectividad del sistema...', 'info');
-        showNotification('info', 'Verificando conexiones...', 2000);
-        
-        const response = await fetch('/api/dashboard/verify-connection', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const results = data.results;
-            let message = 'Resultados de conectividad:\n';
-            message += `• Base de datos: ${results.database ? '✅ Conectada' : '❌ Sin conexión'}\n`;
-            message += `• Detector: ${results.detector ? '✅ Activo' : '❌ Inactivo'}\n`;
-            message += `• Federado: ${results.federado ? '✅ Activo' : '❌ Inactivo'}\n`;
-            message += `• Red: ${results.network ? '✅ Conectada' : '❌ Sin conexión'}`;
-            
-            updateSystemLog(message, 'info');
-            
-            const status = Object.values(results).every(Boolean) ? 'success' : 'warning';
-            showNotification(status, 'Verificación de conectividad completada', 5000);
-        } else {
-            throw new Error(data.error);
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error verificando conexión: ${error.message}`, 'error');
-        showNotification('error', 'Error verificando conexión', 3000);
-    }
-}
-
-// Verificar rendimiento
-async function verificarRendimiento() {
-    try {
-        updateSystemLog('Analizando rendimiento del sistema...', 'info');
-        showNotification('info', 'Analizando rendimiento...', 2000);
-        
-        const response = await fetch('/api/dashboard/performance-check', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const perf = data.performance;
-            let message = 'Métricas de rendimiento:\n';
-            message += `• CPU: ${perf.cpu_percent.toFixed(1)}%\n`;
-            message += `• Memoria: ${perf.memory_percent.toFixed(1)}%\n`;
-            message += `• Disco: ${perf.disk_percent.toFixed(1)}%\n`;
-            message += `• Procesos: ${perf.process_count}`;
-            
-            if (data.issues.length > 0) {
-                message += `\n⚠️ Problemas detectados: ${data.issues.join(', ')}`;
-            }
-            
-            updateSystemLog(message, data.status === 'good' ? 'success' : 'warning');
-            
-            const notificationType = data.status === 'good' ? 'success' : 
-                                   data.status === 'warning' ? 'warning' : 'error';
-            showNotification(notificationType, `Rendimiento: ${data.status}`, 4000);
-        } else {
-            throw new Error(data.error);
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error verificando rendimiento: ${error.message}`, 'error');
-        showNotification('error', 'Error verificando rendimiento', 3000);
-    }
-}
-
-// Ejecutar diagnósticos
-async function ejecutarDiagnosticos() {
-    try {
-        updateSystemLog('Ejecutando diagnósticos completos...', 'info');
-        showNotification('info', 'Ejecutando diagnósticos...', 3000);
-        
-        const response = await fetch('/api/dashboard/diagnostics', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const diag = data.diagnostics;
-            let message = 'Diagnósticos del sistema:\n';
-            message += `• Python: ${diag.system_info.python_version.split(' ')[0]}\n`;
-            message += `• Plataforma: ${diag.system_info.platform}\n`;
-            message += `• Archivos críticos: ${Object.values(diag.files_check).every(Boolean) ? '✅' : '❌'}\n`;
-            message += `• Procesos activos: Detector(${diag.processes.detector_running ? '✅' : '❌'}) Federado(${diag.processes.federado_running ? '✅' : '❌'})`;
-            
-            if (data.problems.length > 0) {
-                message += `\n🔧 Problemas: ${data.problems.join(', ')}`;
-            }
-            
-            updateSystemLog(message, data.status === 'healthy' ? 'success' : 'warning');
-            showNotification(data.status === 'healthy' ? 'success' : 'warning', 
-                           'Diagnósticos completados', 4000);
-        } else {
-            throw new Error(data.error);
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error en diagnósticos: ${error.message}`, 'error');
-        showNotification('error', 'Error ejecutando diagnósticos', 3000);
-    }
-}
-
-// Exportar configuración
-async function exportarConfiguracion() {
-    try {
-        updateSystemLog('Exportando configuración del sistema...', 'info');
-        
-        const response = await fetch('/api/dashboard/export-config', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            // Crear y descargar archivo JSON
-            const blob = new Blob([JSON.stringify(data.config, null, 2)], {
-                type: 'application/json'
-            });
-            
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = data.filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            updateSystemLog('Configuración exportada exitosamente', 'success');
-            showNotification('success', 'Configuración exportada', 3000);
-        } else {
-            throw new Error(data.error);
-        }
-        
-    } catch (error) {
-        updateSystemLog(`Error exportando configuración: ${error.message}`, 'error');
-        showNotification('error', 'Error exportando configuración', 3000);
-    }
-}
-
-// Importar configuración
-async function importarConfiguracion(event) {
-    try {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        updateSystemLog('Importando configuración...', 'info');
-        
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const config = JSON.parse(e.target.result);
-                
-                const response = await fetch('/api/dashboard/import-config', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({config: config})
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    updateSystemLog('Configuración importada exitosamente', 'success');
-                    showNotification('success', 'Configuración importada', 3000);
-                    
-                    // Actualizar interfaz
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                } else {
-                    throw new Error(data.error);
-                }
-                
-            } catch (parseError) {
-                throw new Error('Archivo de configuración inválido');
-            }
-        };
-        
-        reader.readAsText(file);
-        
-    } catch (error) {
-        updateSystemLog(`Error importando configuración: ${error.message}`, 'error');
-        showNotification('error', 'Error importando configuración', 3000);
     }
     
-    // Limpiar input
-    event.target.value = '';
-}
-
-// ========================================
-// FUNCIONES DE GESTIÓN DE DATOS
-// ========================================
-
-// Insertar datos de prueba
-async function insertTestData() {
-    try {
-        updateSystemLog('Insertando datos de prueba...', 'info');
-        showNotification('info', 'Insertando datos de prueba...', 2000);
-        
-        const response = await fetch('/api/dashboard/test-data', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            updateSystemLog(`Datos de prueba insertados: ${data.inserted} registros`, 'success');
-            showNotification('success', 'Datos de prueba insertados', 3000);
+    // Sistema de notificaciones
+    function showNotification(type, message, duration = 5000) {
+        try {
+            const alertClass = {
+                'success': 'alert-success', 'error': 'alert-danger', 
+                'warning': 'alert-warning', 'info': 'alert-info'
+            }[type] || 'alert-info';
             
-            // Actualizar contadores inmediatamente
-            setTimeout(() => {
-                updateDashboardCounters();
-                updateRecentDetections();
-            }, 1000);
-        } else {
-            throw new Error(data.error);
+            const notification = document.createElement('div');
+            notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), duration);
+        } catch (error) {
+            console.error('Error mostrando notificación:', error);
         }
-        
-    } catch (error) {
-        updateSystemLog(`Error insertando datos de prueba: ${error.message}`, 'error');
-        showNotification('error', 'Error insertando datos de prueba', 3000);
-    }
-}
-
-// Limpiar datos
-async function limpiarDatos() {
-    if (!confirm('¿Está seguro de que desea limpiar todos los datos? Esta acción no se puede deshacer.')) {
-        return;
     }
     
-    try {
-        updateSystemLog('Limpiando datos del sistema...', 'warning');
-        showNotification('warning', 'Limpiando datos...', 3000);
-        
-        const response = await fetch('/api/dashboard/clear-data', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            updateSystemLog('Datos limpiados exitosamente', 'success');
-            showNotification('success', 'Datos limpiados', 3000);
-            
-            // Actualizar interfaz
-            setTimeout(() => {
-                updateDashboardCounters();
-                updateRecentDetections();
-            }, 1000);
-        } else {
-            throw new Error(data.error);
+    // Exportar/Importar configuración (funciones placeholder)
+    async function exportarConfiguracion() {
+        updateSystemLog('Función de exportar configuración', 'info');
+        showNotification('info', 'Exportando configuración...', 2000);
+    }
+    
+    async function importarConfiguracion(event) {
+        updateSystemLog('Función de importar configuración', 'info');
+        showNotification('info', 'Importando configuración...', 2000);
+        event.target.value = '';
+    }
+    
+    // ========================================
+    // EVENTOS Y INICIALIZACIÓN
+    // ========================================
+    
+    // Inicialización cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDashboard();
+    });
+    
+    // Cleanup al salir
+    window.addEventListener('beforeunload', function() {
+        if (updateInterval) {
+            clearInterval(updateInterval);
         }
-        
-    } catch (error) {
-        updateSystemLog(`Error limpiando datos: ${error.message}`, 'error');
-        showNotification('error', 'Error limpiando datos', 3000);
-    }
-}
-
-// ========================================
-// FUNCIONES AUXILIARES
-// ========================================
-
-// Sistema de log del sistema
-function updateSystemLog(message, level = 'info') {
-    try {
-        const logContainer = document.getElementById('system-log');
-        if (!logContainer) return;
-        
-        const timestamp = new Date().toLocaleTimeString();
-        const levelClass = {
-            'info': 'text-info', 'success': 'text-success', 
-            'warning': 'text-warning', 'error': 'text-danger'
-        }[level] || 'text-info';
-        
-        const logEntry = document.createElement('div');
-        logEntry.className = 'log-entry mb-1';
-        logEntry.innerHTML = `
-            <small class="text-muted">[${timestamp}]</small>
-            <span class="${levelClass}">${message}</span>
-        `;
-        
-        logContainer.insertBefore(logEntry, logContainer.firstChild);
-        
-        const entries = logContainer.querySelectorAll('.log-entry');
-        if (entries.length > 50) {
-            for (let i = 50; i < entries.length; i++) {
-                entries[i].remove();
-            }
-        }
-    } catch (error) {
-        console.error('Error actualizando log:', error);
-    }
-}
-
-// Sistema de notificaciones
-function showNotification(type, message, duration = 5000) {
-    try {
-        const alertClass = {
-            'success': 'alert-success', 'error': 'alert-danger', 
-            'warning': 'alert-warning', 'info': 'alert-info'
-        }[type] || 'alert-info';
-        
-        const notification = document.createElement('div');
-        notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
-        notification.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
-        notification.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), duration);
-    } catch (error) {
-        console.error('Error mostrando notificación:', error);
-    }
-}
-
-// ========================================
-// INICIALIZACIÓN
-// ========================================
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    initializeDashboard();
-});
-
-// Cleanup al salir
-window.addEventListener('beforeunload', function() {
-    if (updateInterval) {
-        clearInterval(updateInterval);
-    }
-});
+    });
+    
+    // Hacer funciones globalmente accesibles
+    window.toggleDetector = toggleDetector;
+    window.toggleFederado = toggleFederado;
+    window.cargarInterfaces = cargarInterfaces;
+    window.verificarConexion = verificarConexion;
+    window.verificarRendimiento = verificarRendimiento;
+    window.ejecutarDiagnosticos = ejecutarDiagnosticos;
+    window.insertTestData = insertTestData;
+    window.limpiarDatos = limpiarDatos;
+    window.actualizarDashboard = actualizarDashboard;
+    window.updateServiceStatus = updateServiceStatus;
+    window.updateRecentDetections = updateRecentDetections;
+    window.exportarConfiguracion = exportarConfiguracion;
+    window.importarConfiguracion = importarConfiguracion;
 </script>
 {% endblock %}

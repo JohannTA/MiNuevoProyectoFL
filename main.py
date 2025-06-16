@@ -2,11 +2,12 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from functools import wraps
 from db.db import obtener_conexion
 from psycopg2.extras import RealDictCursor
+from collections import deque
+import datetime
 import psutil
 import numpy as np  
 import os
 import jwt
-import datetime
 import logging
 import hashlib
 import logging
@@ -17,6 +18,7 @@ import time
 import json
 import socket
 import threading
+
 detector_output_queue = []
 federado_output_queue = []
 detector_output_lock = threading.Lock()
@@ -47,7 +49,10 @@ from controladores.controlador_roles import (
     actualizar_rol, eliminar_rol, asignar_permisos_rol, crear_permiso, eliminar_permiso,
     verificar_permiso_usuario, inicializar_permisos_sistema
 )
-
+from controladores.controlador_detector import (
+    DetectionBuffer, procesar_deteccion_entrante, obtener_usuario_completo_con_dispositivo,
+    obtener_mapeo_usuarios_dispositivos, obtener_health_check_extendido
+)
 # Configurar logging
 logging.basicConfig(
     level=logging.INFO,
@@ -94,18 +99,166 @@ federado_stats = {
     'received': 0,
     'accuracy': 0
 }
+# ========================================
+# SISTEMA DE BUFFER TEMPORAL
+# ========================================
 
+# Instancia global del buffer de detecciones
+detection_buffer = DetectionBuffer(max_size=1000, flush_interval=30)  # Flush cada 30 segundos
+@app.route('/api/users/<int:user_id>/complete-info', methods=['GET'])
+def get_user_complete_info(user_id):
+    """Endpoint para obtener información completa del usuario con dispositivo"""
+    try:
+        user_data = obtener_usuario_completo_con_dispositivo(user_id)
+        
+        if user_data and user_data['user']:
+            if user_data['computing_device']:
+                logger.info(f"Usuario encontrado: {user_data['user']['username']} con dispositivo asignado")
+                return jsonify({"success": True, **user_data})
+            else:
+                return jsonify({"success": False, "error": f"Usuario no tiene dispositivo de cómputo asignado"}), 400
+        else:
+            return jsonify({"success": False, "error": f"Usuario ID {user_id} no encontrado"}), 404
+            
+    except Exception as e:
+        logger.error(f"Error obteniendo info completa del usuario: {e}")
+        return jsonify({"success": False, "error": "Error interno del servidor"}), 500
+
+
+    """Recibe detecciones del detector_integrado con manejo robusto"""
+    try:
+        detection_data = request.get_json()
+        
+        if not detection_data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        
+        # Procesar detección
+        result = procesar_deteccion_entrante(detection_data)
+        
+        if result['success']:
+            # Agregar al buffer temporal
+            detection_buffer.add_detection(detection_data)
+            
+            result.update({
+                'buffer_size': len(detection_buffer.buffer),
+                'saved_to_buffer': True
+            })
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error procesando detección: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mapping/info', methods=['GET'])
+def mapping_info():
+    """Endpoint para ver el mapeo de usuarios-dispositivos-federated_clients"""
+    result = obtener_mapeo_usuarios_dispositivos()
+    
+    if "error" in result:
+        return jsonify(result), 500
+    
+    return jsonify(result)
+
+@app.route('/health-extended', methods=['GET'])
+def health_check_extended():
+    """Endpoint de salud extendido del servidor"""
+    result = obtener_health_check_extendido()
+    
+    # Agregar info de procesos locales
+    detector_running = detector_process is not None and detector_process.poll() is None
+    federado_running = federado_process is not None and federado_process.poll() is None
+    
+    result.update({
+        "processes": {
+            "detector_running": detector_running,
+            "federado_running": federado_running
+        },
+        "buffer": detection_buffer.get_stats()
+    })
+    
+    if "error" in result:
+        return jsonify(result), 500
+    
+    return jsonify(result)
+# ========================================
+# BUFFER PARA ESTADÍSTICAS EN TIEMPO REAL
+# ========================================
+
+class StatsBuffer:
+    """Buffer para estadísticas en tiempo real (no persistentes)"""
+    
+    def __init__(self):
+        self.stats = {
+            'detections_count': 0,
+            'detections_by_severity': {'low': 0, 'medium': 0, 'high': 0, 'critical': 0},
+            'detections_by_type': {},
+            'recent_detections': deque(maxlen=50),  # Últimas 50 detecciones
+            'hourly_stats': {},
+            'start_time': time.time()
+        }
+        self.stats_lock = threading.Lock()
+    
+    def add_detection(self, detection):
+        """Actualiza estadísticas en tiempo real"""
+        with self.stats_lock:
+            # Contador total
+            self.stats['detections_count'] += 1
+            
+            # Por severidad
+            severity = detection.get('severity', 'medium')
+            if severity in self.stats['detections_by_severity']:
+                self.stats['detections_by_severity'][severity] += 1
+            
+            # Por tipo
+            anomaly_type = detection.get('anomaly_type', 'Unknown')
+            if anomaly_type not in self.stats['detections_by_type']:
+                self.stats['detections_by_type'][anomaly_type] = 0
+            self.stats['detections_by_type'][anomaly_type] += 1
+            
+            # Detecciones recientes
+            detection['display_time'] = datetime.datetime.now().isoformat()
+            self.stats['recent_detections'].appendleft(detection)
+            
+            # Estadísticas por hora
+            current_hour = datetime.now().hour
+            if current_hour not in self.stats['hourly_stats']:
+                self.stats['hourly_stats'][current_hour] = 0
+            self.stats['hourly_stats'][current_hour] += 1
+    
+    def get_stats(self):
+        """Obtiene estadísticas actuales"""
+        with self.stats_lock:
+            return {
+                'total_detections': self.stats['detections_count'],
+                'detections_by_severity': dict(self.stats['detections_by_severity']),
+                'detections_by_type': dict(self.stats['detections_by_type']),
+                'recent_detections': list(self.stats['recent_detections'])[:10],  # Solo últimas 10
+                'uptime_seconds': time.time() - self.stats['start_time'],
+                'hourly_stats': dict(self.stats['hourly_stats'])
+            }
+    
+    def reset_stats(self):
+        """Reinicia estadísticas (útil para testing)"""
+        with self.stats_lock:
+            self.stats['detections_count'] = 0
+            self.stats['detections_by_severity'] = {'low': 0, 'medium': 0, 'high': 0, 'critical': 0}
+            self.stats['detections_by_type'] = {}
+            self.stats['recent_detections'].clear()
+            self.stats['hourly_stats'] = {}
+
+# Instancia global del buffer de estadísticas
+stats_buffer = StatsBuffer()
 #---------------------------------------------------------
 # Decoradores para protección de rutas
 #---------------------------------------------------------
 
 def login_required(f):
+    """Decorador para requerir login"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Verificar si el usuario está en sesión
         if 'user_id' not in session:
-            flash('Por favor inicie sesión para acceder a esta página.', 'warning')
-            return redirect(url_for('login', next=request.url))
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -628,14 +781,13 @@ def capture_detector_output(process):
 @app.route('/api/detector/start', methods=['POST'])
 @login_required
 def start_detector():
-    """Inicia el detector de flujos"""
+    """Inicia el detector de flujos REAL"""
     global detector_process, detector_output_queue
     
     try:
         data = request.get_json() or {}
         interface = data.get('interface', 'Wi-Fi')
         client_id = data.get('client_id', 1)
-        servidor_federado = data.get('servidor_federado', 'ws://192.168.18.88:8765')
         
         if detector_process and detector_process.poll() is None:
             return jsonify({'error': 'El detector ya está ejecutándose'}), 400
@@ -647,69 +799,80 @@ def start_detector():
         if not os.path.exists(model_path):
             return jsonify({'error': 'Archivo de modelo no encontrado'}), 500
         
+        # Comando para detector REAL integrado
         cmd = [
             sys.executable, 'detector_integrado.py',
             '--model', model_path,
             '--interface', interface,
             '--client-id', str(client_id),
-            '--server', servidor_federado
+            '--flask-url', 'http://localhost:5000',
+            '--real'  # Flag para usar detector real
         ]
         
-        logger.info(f"Ejecutando comando: {' '.join(cmd)}")
+        logger.info(f"🚀 Ejecutando detector REAL: {' '.join(cmd)}")
         
         # Limpiar cola anterior
         with detector_output_lock:
             detector_output_queue.clear()
             detector_output_queue.append({
                 'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-                'raw': f"Iniciando detector: {' '.join(cmd)}",
+                'raw': f"Iniciando detector REAL: {' '.join(cmd)}",
                 'type': 'info'
             })
         
-        # Crear proceso con captura de salida
+        # Crear proceso del detector real
         detector_process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,  # Redirigir stderr a stdout
+            stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1,  # Línea por línea
+            bufsize=1,
             universal_newlines=True,
             cwd=os.getcwd()
         )
         
-        # Iniciar hilo para capturar salida
-        output_thread = threading.Thread(
-            target=capture_detector_output, 
-            args=(detector_process,),
-            daemon=True,
-            name="DetectorOutputCapture"
-        )
-        output_thread.start()
+        # Iniciar hilo para capturar salida del detector real
+        def capture_detector_output():
+            try:
+                for line in iter(detector_process.stdout.readline, ''):
+                    if line.strip():
+                        with detector_output_lock:
+                            detector_output_queue.append({
+                                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
+                                'raw': line.strip(),
+                                'type': 'output'
+                            })
+                            
+                            # Mantener solo las últimas 100 líneas
+                            if len(detector_output_queue) > 100:
+                                detector_output_queue.pop(0)
+                                
+            except Exception as e:
+                logger.error(f"Error capturando salida del detector: {e}")
         
-        detector_stats['status'] = 'running'
+        threading.Thread(target=capture_detector_output, daemon=True).start()
+        
+        # Actualizar estadísticas del detector
+        detector_stats['status'] = 'starting'
         detector_stats['interface'] = interface
         detector_stats['client_id'] = client_id
-        detector_stats['servidor_federado'] = servidor_federado
-        detector_stats['start_time'] = time.time()
+        detector_stats['start_time'] = datetime.datetime.now().isoformat()
+        detector_stats['real_mode'] = True
         
-        logger.info(f"Detector iniciado en interfaz {interface} con cliente ID {client_id}")
+        logger.info(f"Detector REAL iniciado exitosamente en interfaz {interface}")
         
         return jsonify({
             'success': True,
-            'message': f'Detector iniciado en {interface} (Cliente {client_id})',
+            'message': f'Detector REAL iniciado en interfaz {interface}',
             'pid': detector_process.pid,
-            'config': {
-                'interface': interface,
-                'client_id': client_id,
-                'servidor_federado': servidor_federado
-            },
-            'stats': detector_stats
+            'interface': interface,
+            'client_id': client_id,
+            'mode': 'real'
         })
         
     except Exception as e:
-        logger.error(f"Error iniciando detector: {e}")
-        return jsonify({'error': f'Error iniciando detector: {str(e)}'}), 500
-    
+        logger.error(f"Error iniciando detector REAL: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 @app.route('/api/detector/stop', methods=['POST'])
 @login_required
 def stop_detector():
@@ -1814,116 +1977,99 @@ app_start_time = time.time()
 @app.route('/api/dashboard/counters')
 @login_required
 def get_dashboard_counters():
-    """Obtiene los contadores principales del dashboard en tiempo real"""
+    """Obtiene contadores combinando buffer temporal + BD"""
     try:
-        conn = obtener_conexion()
+        # Obtener estadísticas del buffer (tiempo real)
+        buffer_stats = stats_buffer.get_stats()
         
-        # Contadores por defecto
-        counters = {
+        # Contadores base desde BD
+        conn = obtener_conexion()
+        db_counters = {
             'total_detecciones': 0,
             'detecciones_24h': 0,
             'alertas_criticas': 0,
             'clientes_activos': 0,
-            'total_clientes': 0,
-            'clientes_conectados': 0
+            'total_clientes': 0
         }
         
-        if not conn:
-            logger.warning("Sin conexión BD - usando contadores por defecto")
-            
-            # Si hay detector corriendo, simular algunos datos
-            if detector_process and detector_process.poll() is None:
-                counters['clientes_activos'] = 1
-                counters['total_clientes'] = 1
-                counters['total_detecciones'] = detector_stats.get('detections', {}).get('total', 0)
-                counters['detecciones_24h'] = detector_stats.get('detections', {}).get('last_24h', 0)
-                counters['alertas_criticas'] = detector_stats.get('detections', {}).get('critical', 0)
-            
-            return jsonify({
-                'success': True,
-                'counters': counters,
-                'timestamp': datetime.datetime.now().isoformat(),
-                'source': 'fallback'
-            })
-
-        try:
-            with conn.cursor() as cursor:
-                # 1. Total de detecciones
-                cursor.execute("SELECT COUNT(*) FROM detections")
-                total_detecciones = cursor.fetchone()[0] or 0
-
-                # 2. Detecciones últimas 24 horas
-                cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM detections 
-                    WHERE timestamp >= NOW() - INTERVAL '24 hours'
-                """)
-                detecciones_24h = cursor.fetchone()[0] or 0
-
-                # 3. Alertas críticas pendientes
-                cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM detections 
-                    WHERE severity IN ('high', 'critical') 
-                    AND (is_confirmed IS NULL OR is_confirmed = FALSE)
-                """)
-                alertas_criticas = cursor.fetchone()[0] or 0
-
-                # 4. Total de clientes federados
-                cursor.execute("SELECT COUNT(*) FROM federated_clients")
-                total_clientes = cursor.fetchone()[0] or 0
-
-                # 5. Clientes activos (últimos 5 minutos)
-                cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM federated_clients 
-                    WHERE status = 'active' 
-                    AND last_seen >= NOW() - INTERVAL '5 minutes'
-                """)
-                clientes_activos = cursor.fetchone()[0] or 0
-
-                # 6. Clientes conectados (cualquier estado activo)
-                cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM federated_clients 
-                    WHERE status IN ('active', 'connected')
-                """)
-                clientes_conectados = cursor.fetchone()[0] or 0
-
-                # Actualizar contadores
-                counters.update({
-                    'total_detecciones': total_detecciones,
-                    'detecciones_24h': detecciones_24h,
-                    'alertas_criticas': alertas_criticas,
-                    'clientes_activos': clientes_activos,
-                    'total_clientes': total_clientes,
-                    'clientes_conectados': clientes_conectados
-                })
-
-        except Exception as e:
-            logger.error(f"Error ejecutando consultas de contadores: {e}")
-            raise
-
-        finally:
-            conn.close()
-
-        # Si no hay clientes en BD pero detector está corriendo, simular
-        if counters['total_clientes'] == 0 and detector_process and detector_process.poll() is None:
-            counters['clientes_activos'] = 1
-            counters['total_clientes'] = 1
-            logger.info("Simulando cliente activo para detector local")
-
-        logger.debug(f"Contadores actualizados: {counters}")
-
+        if conn:
+            try:
+                with conn.cursor() as cursor:
+                    # Total desde BD
+                    cursor.execute("SELECT COUNT(*) FROM detections")
+                    db_total = cursor.fetchone()[0] or 0
+                    
+                    # Últimas 24h desde BD
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM detections 
+                        WHERE timestamp >= NOW() - INTERVAL '24 hours'
+                    """)
+                    db_24h = cursor.fetchone()[0] or 0
+                    
+                    # Alertas críticas desde BD
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM detections 
+                        WHERE severity IN ('high', 'critical') 
+                        AND timestamp >= NOW() - INTERVAL '24 hours'
+                    """)
+                    db_critical = cursor.fetchone()[0] or 0
+                    
+                    # Clientes desde BD
+                    cursor.execute("SELECT COUNT(*) FROM federated_clients")
+                    total_clients = cursor.fetchone()[0] or 0
+                    
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM federated_clients 
+                        WHERE status = 'active' 
+                        AND last_seen >= NOW() - INTERVAL '5 minutes'
+                    """)
+                    active_clients = cursor.fetchone()[0] or 0
+                    
+                    db_counters.update({
+                        'total_detecciones': db_total,
+                        'detecciones_24h': db_24h,
+                        'alertas_criticas': db_critical,
+                        'clientes_activos': active_clients,
+                        'total_clientes': total_clients
+                    })
+                    
+            except Exception as e:
+                logger.error(f"Error consultando BD para contadores: {e}")
+            finally:
+                conn.close()
+        
+        # Combinar estadísticas BD + buffer temporal
+        combined_counters = {
+            'total_detecciones': db_counters['total_detecciones'] + buffer_stats['total_detections'],
+            'detecciones_24h': db_counters['detecciones_24h'] + buffer_stats['total_detections'],  # Buffer es reciente
+            'alertas_criticas': db_counters['alertas_criticas'] + buffer_stats['detections_by_severity'].get('critical', 0) + buffer_stats['detections_by_severity'].get('high', 0),
+            'clientes_activos': max(db_counters['clientes_activos'], 1 if detector_process and detector_process.poll() is None else 0),
+            'total_clientes': max(db_counters['total_clientes'], 1 if detector_process and detector_process.poll() is None else 0),
+            'clientes_conectados': db_counters['clientes_activos']
+        }
+        
+        # Información adicional del sistema
+        buffer_info = detection_buffer.get_stats()
+        
         return jsonify({
             'success': True,
-            'counters': counters,
+            'counters': combined_counters,
             'timestamp': datetime.datetime.now().isoformat(),
-            'source': 'database'
+            'source': 'combined',
+            'buffer_info': {
+                'detections_pending': buffer_info['buffer_size'],
+                'save_rate': f"{buffer_info['save_rate']:.1f}%",
+                'total_processed': buffer_info['total_buffered']
+            },
+            'real_time_stats': {
+                'uptime': f"{buffer_stats['uptime_seconds']:.0f}s",
+                'recent_activity': len(buffer_stats['recent_detections']),
+                'types_detected': len(buffer_stats['detections_by_type'])
+            }
         })
 
     except Exception as e:
-        logger.error(f"Error obteniendo contadores del dashboard: {e}")
+        logger.error(f"Error obteniendo contadores combinados: {e}")
         return jsonify({
             'success': False, 
             'error': str(e),
@@ -1936,80 +2082,168 @@ def get_dashboard_counters():
                 'clientes_conectados': 0
             }
         }), 500
-
 @app.route('/api/dashboard/recent-detections')
 @login_required
 def get_recent_detections():
-    """Obtiene las detecciones más recientes para la tabla"""
+    """Obtiene detecciones recientes desde buffer + BD"""
     try:
         limit = request.args.get('limit', 10, type=int)
         
+        # Obtener del buffer temporal (más recientes)
+        buffer_stats = stats_buffer.get_stats()
+        recent_from_buffer = buffer_stats['recent_detections'][:limit//2]  # Mitad del buffer
+        
+        # Obtener de BD (persistentes)
+        recent_from_db = []
         conn = obtener_conexion()
-        if not conn:
-            return jsonify({
-                'success': True,
-                'detections': [],
-                'message': 'Sin conexión a BD'
+        
+        if conn:
+            try:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT 
+                            d.id,
+                            d.timestamp,
+                            d.source_ip,
+                            d.destination_ip,
+                            d.source_port,
+                            d.destination_port,
+                            d.protocol,
+                            d.anomaly_type,
+                            d.severity,
+                            d.confidence_score,
+                            COALESCE(fc.name, 'Cliente ' || d.client_id) as client_name
+                        FROM detections d
+                        LEFT JOIN federated_clients fc ON d.client_id = fc.id
+                        ORDER BY d.timestamp DESC
+                        LIMIT %s
+                    """, (limit - len(recent_from_buffer),))
+                    
+                    recent_from_db = [dict(row) for row in cursor.fetchall()]
+                    
+            except Exception as e:
+                logger.error(f"Error obteniendo detecciones de BD: {e}")
+            finally:
+                conn.close()
+        
+        # Combinar y formatear
+        all_detections = []
+        
+        # Agregar del buffer (más recientes)
+        for detection in recent_from_buffer:
+            all_detections.append({
+                'id': f"buf_{len(all_detections)}",
+                'timestamp': detection.get('display_time', datetime.datetime.now().isoformat()),
+                'source_ip': detection.get('source_ip', '0.0.0.0'),
+                'destination_ip': detection.get('destination_ip', '0.0.0.0'),
+                'source_port': detection.get('source_port', 0),
+                'destination_port': detection.get('destination_port', 0),
+                'protocol': detection.get('protocol', 'TCP'),
+                'anomaly_type': detection.get('anomaly_type', 'Unknown'),
+                'severity': detection.get('severity', 'medium'),
+                'confidence_score': detection.get('confidence_score', 0.5),
+                'client_name': f"Cliente {detection.get('client_id', 1)}"
             })
-
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                SELECT 
-                    d.detection_id,
-                    d.timestamp,
-                    COALESCE(d.source_ip, '0.0.0.0') as source_ip,
-                    COALESCE(d.destination_ip, '0.0.0.0') as destination_ip,
-                    COALESCE(d.source_port, 0) as source_port,
-                    COALESCE(d.destination_port, 0) as destination_port,
-                    COALESCE(d.protocol, 'TCP') as protocol,
-                    COALESCE(d.anomaly_type, 'Desconocido') as anomaly_type,
-                    COALESCE(d.severity, 'medium') as severity,
-                    COALESCE(d.confidence_score, 0.5) as confidence_score,
-                    COALESCE(fc.name, 'Cliente ' || CAST(d.client_id AS TEXT)) as client_name,
-                    d.is_confirmed,
-                    COALESCE(d.false_positive, false) as false_positive
-                FROM detections d
-                LEFT JOIN federated_clients fc ON CAST(d.client_id AS TEXT) = CAST(fc.client_id AS TEXT)
-                ORDER BY d.timestamp DESC
-                LIMIT %s
-            """, (limit,))
-            
-            detections = []
-            for row in cursor.fetchall():
-                detection = {
-                    'id': row[0],
-                    'timestamp': row[1].isoformat() if row[1] else None,
-                    'source_ip': row[2],
-                    'destination_ip': row[3],
-                    'source_port': row[4],
-                    'destination_port': row[5],
-                    'protocol': row[6],
-                    'anomaly_type': row[7],
-                    'severity': row[8],
-                    'confidence_score': row[9],
-                    'client_name': row[10],
-                    'is_confirmed': row[11],
-                    'false_positive': row[12]
-                }
-                detections.append(detection)
-
-        conn.close()
+        
+        # Agregar de BD
+        for detection in recent_from_db:
+            detection_dict = dict(detection)
+            if detection_dict.get('timestamp'):
+                detection_dict['timestamp'] = detection_dict['timestamp'].isoformat()
+            all_detections.append(detection_dict)
+        
+        # Ordenar por timestamp y limitar
+        all_detections.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+        all_detections = all_detections[:limit]
         
         return jsonify({
             'success': True,
-            'detections': detections,
-            'count': len(detections)
+            'detections': all_detections,
+            'source_info': {
+                'from_buffer': len(recent_from_buffer),
+                'from_database': len(recent_from_db),
+                'total_returned': len(all_detections)
+            }
         })
 
     except Exception as e:
         logger.error(f"Error obteniendo detecciones recientes: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# AGREGAR después de las otras rutas API:
+
+# ENCONTRAR LA FUNCIÓN EXISTENTE add_detection_to_buffer Y REEMPLAZARLA CON:
+
+@app.route('/api/buffer/add-detection', methods=['POST'])
+def add_detection_to_buffer():
+    """Recibe detecciones del detector_integrado con manejo robusto"""
+    try:
+        detection_data = request.get_json()
+        
+        if not detection_data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        
+        # Normalizar severity antes del procesamiento
+        original_severity = detection_data.get('severity')
+        normalized_severity = normalizar_severity(original_severity)
+        detection_data['severity'] = normalized_severity
+        
+        # Log de recepción mejorado
+        logger.info(f"🎯 Detección recibida: {detection_data.get('anomaly_type')} | " +
+                   f"Severity: {original_severity} -> {normalized_severity} | " +
+                   f"User: {detection_data.get('user_id')} | " +
+                   f"Confianza: {detection_data.get('confidence_score', 0):.2f}")
+        
+        # Agregar al buffer temporal (si existe)
+        if 'detection_buffer' in globals():
+            with detection_buffer_lock:
+                detection_data['received_at'] = datetime.datetime.now().isoformat()
+                detection_buffer.add_detection(detection_data)
+        
+        # Agregar a estadísticas en tiempo real (si existe)
+        if 'stats_buffer' in globals():
+            stats_buffer.add_detection(detection_data)
+        
         return jsonify({
-            'success': False,
-            'error': str(e),
-            'detections': []
-        }), 500
+            'success': True,
+            'message': 'Detección procesada exitosamente',
+            'detection_id': detection_data.get('detection_id'),
+            'severity_mapping': {
+                'original': original_severity,
+                'normalized': normalized_severity
+            },
+            'buffer_size': len(detection_buffer.buffer) if 'detection_buffer' in globals() else 0,
+            'saved_to_buffer': True
+        })
+        
+    except Exception as e:
+        logger.error(f"Error procesando detección: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-
+@app.route('/api/buffer/status')
+@login_required
+def get_buffer_status():
+    """Obtiene estado detallado del sistema de buffer"""
+    try:
+        buffer_stats = detection_buffer.get_stats()
+        realtime_stats = stats_buffer.get_stats()
+        
+        return jsonify({
+            'success': True,
+            'buffer_stats': buffer_stats,
+            'realtime_stats': realtime_stats,
+            'system_status': {
+                'detector_running': detector_process is not None and detector_process.poll() is None,
+                'federado_running': federado_process is not None and federado_process.poll() is None,
+                'database_connected': obtener_conexion() is not None,
+                'buffer_health': 'healthy' if buffer_stats['buffer_size'] < 800 else 'warning'
+            },
+            'timestamp': datetime.datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo estado del buffer: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 @app.route('/api/dashboard/test-data', methods=['POST'])
 @login_required
 def insert_test_data():
