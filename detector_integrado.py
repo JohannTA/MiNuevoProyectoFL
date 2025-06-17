@@ -1,44 +1,39 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Detector Integrado Completo - Versión Final
---------------------------------------------
-Muestra TODA la salida de detector.py + integración completa con PostgreSQL
-"""
-
 import sys
-import os
-import json
+import requests
+import subprocess
 import threading
 import time
-import subprocess
-import requests
-import re
-import sqlite3
-from datetime import datetime
-import logging
-import uuid
+import datetime
 import signal
+import json
+import sqlite3
+import os
+from pathlib import Path
+import logging
 
 # Configurar logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class DetectorFederado:
-    """Detector federado que muestra toda la salida del detector.py"""
+    """Detector integrado que se conecta al servidor federado"""
     
-    def __init__(self, user_id, interface, model_path):
+        # BUSCAR el constructor __init__ (línea ~25) Y CORREGIR línea 63:
+    
+    def __init__(self, user_id, interface, model_path, flask_url="http://localhost:5000"):
         # Parámetros básicos
         self.user_id = user_id
         self.interface = interface
         self.model_path = model_path
+        self.flask_api_url = flask_url.rstrip('/')
         
-        # Configuración del servidor
-        self.flask_api_url = "http://localhost:5000"
-        self.local_backup_db = f"detector_backup_user_{user_id}.db"
+        # Configuración del servidor federado (desde main.py)
+        self.servidor_federado_url = None  # Se obtiene desde main.py
         
-        # Información del usuario (obtenida desde PostgreSQL)
+        # Información del usuario
         self.user_info = None
         self.computing_device_info = None
         self.client_id = None
@@ -46,473 +41,175 @@ class DetectorFederado:
         # Estado del detector
         self.detector_process = None
         self.running = False
-        self.detections_sent = 0
-        self.lines_processed = 0
         self.start_time = None
         
         # Estadísticas
         self.stats = {
+            'lines_processed': 0,
             'total_packets': 0,
             'normal_packets': 0,
-            'anomaly_packets': 0,
+            'anomalies_detected': 0,
             'attacks_detected': 0,
+            'detections_sent': 0,
             'last_detection': None
         }
         
-        # Inicializar base de datos local
+        # Base de datos local para respaldo
+        self.local_backup_db = f"detector_backup_user_{user_id}.db"
         self.inicializar_respaldo_local()
         
-        # Configurar manejadores de señales
+        # Configurar señales
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
         
-    def signal_handler(self, signum, frame):
-        """Manejador de señales para cierre limpio"""
-        print(f"\n🛑 Señal recibida ({signum}). Cerrando detector...")
-        self.detener()
-        sys.exit(0)
-    
+        #    CAMBIAR ESTAS LÍNEAS (líneas 63-64):
+        print(f"[CONFIG] Detector configurado para usuario {user_id}")
+        print(f"[CONFIG] Conectara con: {self.flask_api_url}")
+
     def inicializar_respaldo_local(self):
         """Inicializa la base de datos local de respaldo"""
         try:
             conn = sqlite3.connect(self.local_backup_db)
             cursor = conn.cursor()
             
-            # Tabla de detecciones de respaldo
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS detections_backup (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    detection_id TEXT UNIQUE,
-                    user_id INTEGER,
-                    client_id TEXT,
-                    timestamp TEXT,
-                    anomaly_type TEXT,
-                    severity TEXT,
-                    confidence_score REAL,
-                    source_ip TEXT,
-                    destination_ip TEXT,
-                    source_port INTEGER,
-                    destination_port INTEGER,
-                    protocol TEXT,
-                    raw_data TEXT,
-                    sent_to_server BOOLEAN DEFAULT 0,
-                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
-                )
-            ''')
-            
-            # Tabla de estadísticas de sesión
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS session_stats (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    session_start TEXT,
-                    session_end TEXT,
-                    total_packets INTEGER DEFAULT 0,
-                    detections_sent INTEGER DEFAULT 0,
-                    status TEXT DEFAULT 'running'
-                )
+            CREATE TABLE IF NOT EXISTS detecciones (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                detection_id TEXT,
+                timestamp TEXT,
+                anomaly_type TEXT,
+                severity TEXT,
+                confidence_score REAL,
+                source_ip TEXT,
+                destination_ip TEXT,
+                source_port INTEGER,
+                destination_port INTEGER,
+                protocol TEXT,
+                enviado_servidor BOOLEAN DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
             ''')
             
             conn.commit()
             conn.close()
-            
-            logger.info(f"✅ Base de datos local inicializada: {self.local_backup_db}")
+            #    CAMBIAR ESTA LÍNEA:
+            print(f"[DB] Base de datos local inicializada: {self.local_backup_db}")
             
         except Exception as e:
-            logger.error(f"❌ Error inicializando respaldo local: {e}")
-    
-    def obtener_informacion_usuario(self):
-        """Obtiene información completa del usuario desde PostgreSQL"""
+            #    CAMBIAR ESTA LÍNEA:
+            print(f"[WARNING] Error inicializando respaldo local: {e}")
+    def obtener_info_usuario(self):
+        """Obtiene información del usuario desde el servidor Flask"""
         try:
-            print(f"\n📋 Obteniendo información del usuario ID: {self.user_id}")
-            print("🔗 Conectando con el servidor PostgreSQL...")
-            
-            response = requests.get(
-                f"{self.flask_api_url}/api/users/{self.user_id}/complete-info",
-                timeout=15,
-                headers={'Content-Type': 'application/json'}
-            )
+            url = f"{self.flask_api_url}/api/users/{self.user_id}/complete-info"
+            response = requests.get(url, timeout=10)
             
             if response.status_code == 200:
-                data = response.json()
-                
-                if data.get('success'):
-                    self.user_info = data.get('user')
-                    self.computing_device_info = data.get('computing_device')
-                    
-                    if self.user_info and self.computing_device_info:
-                        self.client_id = str(self.computing_device_info.get('id'))
-                        
-                        print("\n" + "="*70)
-                        print("📋 INFORMACIÓN DEL USUARIO OBTENIDA DESDE POSTGRESQL")
-                        print("="*70)
-                        print(f"🆔 ID Usuario: {self.user_info.get('id')}")
-                        print(f"👤 Nombre: {self.user_info.get('first_name')} {self.user_info.get('last_name')}")
-                        print(f"🏷️ Username: {self.user_info.get('username')}")
-                        print(f"📧 Email: {self.user_info.get('email')}")
-                        print(f"👔 Rol: {self.user_info.get('role_display_name')}")
-                        print(f"🔲 Estado: {'Activo' if self.user_info.get('is_active') else 'Inactivo'}")
-                        print("─" * 70)
-                        print("💻 DISPOSITIVO DE CÓMPUTO ASIGNADO:")
-                        print(f"🆔 Device ID: {self.computing_device_info.get('id')}")
-                        print(f"🏷️ Tipo: {self.computing_device_info.get('type')}")
-                        print(f"🖥️ Marca: {self.computing_device_info.get('brand')}")
-                        print(f"📦 Modelo: {self.computing_device_info.get('model')}")
-                        print(f"🔢 Serial: {self.computing_device_info.get('serial_number')}")
-                        print(f"🔧 Estado: {self.computing_device_info.get('status')}")
-                        print(f"🎯 Client ID: {self.client_id}")
-                        print("="*70)
-                        
-                        return True
-                    else:
-                        print(f"❌ Usuario {self.user_id} no tiene dispositivo de cómputo asignado")
-                        print("💡 Verifica la configuración en PostgreSQL")
-                        return False
-                else:
-                    error_msg = data.get('error', 'Error desconocido')
-                    print(f"❌ Error del servidor: {error_msg}")
-                    return False
+                return response.json()
             else:
-                print(f"❌ Error HTTP {response.status_code}: {response.text}")
-                return False
+                print(f"  Error obteniendo info usuario: HTTP {response.status_code}")
+                return None
                 
-        except requests.exceptions.ConnectionError:
-            print("❌ No se puede conectar con el servidor Flask")
-            print("💡 Asegúrate de que main_prueba.py esté ejecutándose en localhost:5000")
-            print("💡 Comando: python main_prueba.py")
-            return False
-        except requests.exceptions.Timeout:
-            print("❌ Timeout conectando con el servidor")
-            return False
         except Exception as e:
-            print(f"❌ Error obteniendo información del usuario: {e}")
-            return False
-    
-    def generar_detection_id(self):
-        """Genera un ID único para la detección"""
-        timestamp = int(datetime.now().timestamp() * 1000)
-        return f"user_{self.user_id}_dev_{self.client_id}_{timestamp}_{self.detections_sent}"
-    
-    def enviar_deteccion_servidor(self, deteccion_data):
-        """Envía detección al servidor PostgreSQL"""
-        detection_id = self.generar_detection_id()
-        
-        # Siempre guardar en respaldo local primero
-        self.guardar_respaldo_local(detection_id, deteccion_data)
-        
-        # Intentar enviar al servidor
+            print(f"  Error conectando con servidor: {e}")
+            return None
+
+    def obtener_config_servidor_federado(self):
+        """Obtiene la configuración del servidor federado desde main.py"""
         try:
-            url = f"{self.flask_api_url}/api/buffer/add-detection"
-            
-            # Preparar payload completo
-            payload = {
-                'detection_id': detection_id,
-                'user_id': self.user_id,
-                'client_id': int(self.client_id),
-                'timestamp': datetime.now().isoformat(),
-                'source_ip': deteccion_data.get('source_ip', '192.168.1.100'),
-                'destination_ip': deteccion_data.get('destination_ip', '192.168.1.1'),
-                'source_port': deteccion_data.get('source_port', 80),
-                'destination_port': deteccion_data.get('destination_port', 443),
-                'protocol': deteccion_data.get('protocol', 'TCP'),
-                'anomaly_type': deteccion_data.get('anomaly_type', 'Network Anomaly'),
-                'severity': deteccion_data.get('severity', 'medium'),
-                'confidence_score': float(deteccion_data.get('confidence_score', 0.75)),
-                'raw_data': {
-                    'user_info': {
-                        'user_id': self.user_id,
-                        'username': self.user_info.get('username'),
-                        'full_name': f"{self.user_info.get('first_name')} {self.user_info.get('last_name')}",
-                        'role': self.user_info.get('role_display_name'),
-                        'email': self.user_info.get('email'),
-                        'is_active': self.user_info.get('is_active')
-                    },
-                    'computing_device_info': {
-                        'id': self.computing_device_info.get('id'),
-                        'type': self.computing_device_info.get('type'),
-                        'brand': self.computing_device_info.get('brand'),
-                        'model': self.computing_device_info.get('model'),
-                        'serial_number': self.computing_device_info.get('serial_number'),
-                        'status': self.computing_device_info.get('status')
-                    },
-                    'session_info': {
-                        'session_start': self.start_time.isoformat() if self.start_time else None,
-                        'interface': self.interface,
-                        'model_path': self.model_path,
-                        'client_id': self.client_id
-                    },
-                    'detector_output': deteccion_data,
-                    'statistics': self.stats.copy()
-                }
-            }
-            
-            response = requests.post(
-                url, 
-                json=payload, 
-                timeout=10,
-                headers={'Content-Type': 'application/json'}
-            )
+            url = f"{self.flask_api_url}/api/federado/status"
+            response = requests.get(url, timeout=10)
             
             if response.status_code == 200:
                 result = response.json()
-                if result.get('success'):
-                    self.detections_sent += 1
-                    self.stats['last_detection'] = datetime.now().isoformat()
-                    
-                    # Marcar como enviado en respaldo
-                    self.marcar_enviado_respaldo(detection_id)
-                    
-                    print(f"📤 [ENVIADO #{self.detections_sent:03d}] {deteccion_data.get('anomaly_type')} | Severidad: {deteccion_data.get('severity')} | Confianza: {deteccion_data.get('confidence_score', 0):.2f}")
+                if result.get('running'):
+                    # El servidor federado está corriendo
+                    self.servidor_federado_url = result.get('server_url', 'ws://localhost:8765')
                     return True
                 else:
-                    print(f"⚠️ [ERROR SERVIDOR] {result.get('message', 'Error desconocido')}")
+                    print("  Servidor federado no está corriendo")
                     return False
             else:
-                print(f"⚠️ [ERROR HTTP] {response.status_code} - Guardado en respaldo local")
+                print("  No se pudo obtener estado del servidor federado")
                 return False
                 
-        except requests.exceptions.ConnectionError:
-            print(f"⚠️ [SIN CONEXIÓN] Guardado en respaldo local")
+        except Exception as e:
+            print(f"  Error verificando servidor federado: {e}")
             return False
-        except requests.exceptions.Timeout:
-            print(f"⚠️ [TIMEOUT] Guardado en respaldo local")
-            return False
-        except Exception as e:
-            print(f"⚠️ [ERROR] {e} - Guardado en respaldo local")
-            return False
-    
-    def guardar_respaldo_local(self, detection_id, deteccion_data):
-        """Guarda la detección en respaldo local SQLite"""
-        try:
-            conn = sqlite3.connect(self.local_backup_db)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                INSERT OR REPLACE INTO detections_backup 
-                (detection_id, user_id, client_id, timestamp, anomaly_type, 
-                 severity, confidence_score, source_ip, destination_ip, 
-                 source_port, destination_port, protocol, raw_data, sent_to_server)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                detection_id,
-                self.user_id,
-                self.client_id,
-                datetime.now().isoformat(),
-                deteccion_data.get('anomaly_type'),
-                deteccion_data.get('severity'),
-                deteccion_data.get('confidence_score'),
-                deteccion_data.get('source_ip'),
-                deteccion_data.get('destination_ip'),
-                deteccion_data.get('source_port'),
-                deteccion_data.get('destination_port'),
-                deteccion_data.get('protocol'),
-                json.dumps(deteccion_data, ensure_ascii=False),
-                False
-            ))
-            
-            conn.commit()
-            conn.close()
-            
-        except Exception as e:
-            logger.error(f"Error guardando en respaldo local: {e}")
-    
-    def marcar_enviado_respaldo(self, detection_id):
-        """Marca una detección como enviada en el respaldo"""
-        try:
-            conn = sqlite3.connect(self.local_backup_db)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                UPDATE detections_backup 
-                SET sent_to_server = ? 
-                WHERE detection_id = ?
-            ''', (True, detection_id))
-            
-            conn.commit()
-            conn.close()
-            
-        except Exception as e:
-            logger.error(f"Error marcando como enviado: {e}")
-    
-    def parsear_salida_detector(self, linea):
-        """
-        Parsea la salida del detector.py para extraer información de detecciones
-        Maneja múltiples formatos de salida
-        """
-        try:
-            # Limpiar códigos ANSI y espacios
-            linea_limpia = re.sub(r'\x1b\[[0-9;]*m', '', linea.strip())
-            
-            if not linea_limpia:
-                return None
-            
-            # Actualizar estadísticas básicas
-            self.stats['total_packets'] += 1
-            
-            # Patrón principal: timestamp [status] IP:port -> IP:port (protocol) - Prob: X.XX
-            patron_principal = r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+\[(.*?)\]\s+(\d+\.\d+\.\d+\.\d+):(\d+)\s+->\s+(\d+\.\d+\.\d+\.\d+):(\d+)\s+\((\w+)\)\s+-\s+Prob:\s+([\d\.]+)'
-            
-            match = re.search(patron_principal, linea_limpia)
-            
-            if match:
-                timestamp_str, status, src_ip, src_port, dst_ip, dst_port, protocol, probability = match.groups()
-                
-                # Clasificar el estado
-                status_upper = status.upper()
-                confidence = float(probability)
-                
-                # Solo procesar anomalías (no-normal)
-                if 'NORMAL' in status_upper:
-                    self.stats['normal_packets'] += 1
-                    return None
-                
-                # Es una anomalía
-                self.stats['anomaly_packets'] += 1
-                
-                # Determinar tipo de anomalía y severidad
-                anomaly_type = 'Unknown Anomaly'
-                severity = 'medium'
-                
-                if any(word in status_upper for word in ['ATAQUE', 'ATTACK']):
-                    self.stats['attacks_detected'] += 1
-                    severity = 'high'
-                    
-                    if 'SCAN' in status_upper or 'PORT' in status_upper:
-                        anomaly_type = 'Port Scan Attack'
-                    elif any(word in status_upper for word in ['DOS', 'DDOS']):
-                        anomaly_type = 'DDoS Attack'
-                        severity = 'critical'
-                    elif 'WEB' in status_upper:
-                        anomaly_type = 'Web Attack'
-                    elif 'SQL' in status_upper:
-                        anomaly_type = 'SQL Injection Attack'
-                        severity = 'critical'
-                    elif any(word in status_upper for word in ['BRUTE', 'FORCE']):
-                        anomaly_type = 'Brute Force Attack'
-                    elif 'INFILTRACION' in status_upper:
-                        anomaly_type = 'Infiltration Attack'
-                        severity = 'critical'
-                    else:
-                        anomaly_type = 'Generic Attack'
-                        
-                elif any(word in status_upper for word in ['SOSPECHOSO', 'SUSPICIOUS']):
-                    anomaly_type = 'Suspicious Activity'
-                    severity = 'medium'
-                elif 'ANOMALIA' in status_upper:
-                    anomaly_type = 'Network Anomaly'
-                    severity = 'low'
-                
-                # Ajustar severidad según confianza
-                if confidence >= 0.9:
-                    if severity == 'low':
-                        severity = 'medium'
-                    elif severity == 'medium':
-                        severity = 'high'
-                elif confidence < 0.5 and severity == 'high':
-                    severity = 'medium'
-                
-                return {
-                    'source_ip': src_ip,
-                    'destination_ip': dst_ip,
-                    'source_port': int(src_port),
-                    'destination_port': int(dst_port),
-                    'protocol': protocol,
-                    'anomaly_type': anomaly_type,
-                    'severity': severity,
-                    'confidence_score': confidence,
-                    'original_status': status,
-                    'timestamp_original': timestamp_str,
-                    'raw_line': linea_limpia
-                }
-            
-            return None
-            
-        except Exception as e:
-            logger.error(f"Error parseando línea del detector: {e}")
-            return None
-    
-    def mostrar_estadisticas_periodicas(self):
-        """Muestra estadísticas cada cierto tiempo"""
-        if self.lines_processed > 0 and self.lines_processed % 50 == 0:
-            tiempo_transcurrido = (datetime.now() - self.start_time).total_seconds()
-            pps = self.stats['total_packets'] / tiempo_transcurrido if tiempo_transcurrido > 0 else 0
-            
-            print(f"\n📊 [ESTADÍSTICAS] Líneas: {self.lines_processed} | Paquetes: {self.stats['total_packets']} | " + 
-                  f"Anomalías: {self.stats['anomaly_packets']} | Enviadas: {self.detections_sent} | " + 
-                  f"PPS: {pps:.1f}")
-    
-    def enviar_deteccion_inicial(self):
-        """Envía una detección inicial indicando el inicio de sesión"""
-        deteccion_inicial = {
-            'anomaly_type': 'User Session Started',
-            'severity': 'low',
-            'confidence_score': 1.0,
-            'source_ip': '127.0.0.1',
-            'destination_ip': '127.0.0.1',
-            'source_port': 0,
-            'destination_port': 0,
-            'protocol': 'SYSTEM',
-            'original_status': 'SESSION_START',
-            'timestamp_original': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'raw_line': f'Sistema iniciado para usuario {self.user_info.get("username")}'
-        }
-        
-        success = self.enviar_deteccion_servidor(deteccion_inicial)
-        if success:
-            print("✅ Detección inicial enviada correctamente")
-        else:
-            print("⚠️ Detección inicial guardada en respaldo local")
-    
+
     def iniciar_detector_proceso(self):
-        """Inicia el proceso detector.py y procesa su salida en tiempo real"""
+        """Proceso principal del detector federado"""
         try:
-            # 1. Obtener información del usuario desde PostgreSQL
-            print("🔄 Paso 1: Obteniendo información del usuario...")
-            if not self.obtener_informacion_usuario():
-                raise Exception("No se pudo obtener la información del usuario desde PostgreSQL")
+            print(" INICIANDO DETECTOR FEDERADO")
+            print("=" * 60)
             
-            # 2. Verificar archivos necesarios
-            print("🔄 Paso 2: Verificando archivos...")
-            if not os.path.exists('detector.py'):
-                raise FileNotFoundError("El archivo detector.py no se encuentra en el directorio actual")
+            # Paso 1: Obtener información del usuario
+            print("   Paso 1: Obteniendo información del usuario...")
+            user_data = self.obtener_info_usuario()
+            if not user_data or not user_data.get('success'):
+                print("No se pudo obtener información del usuario")
+                return False
             
+            self.user_info = user_data['user']
+            self.computing_device_info = user_data.get('computing_device')
+            print(f"   Usuario: {self.user_info['username']} ({self.user_info['first_name']} {self.user_info['last_name']})")
+            
+            if self.computing_device_info:
+                print(f" Dispositivo: {self.computing_device_info['brand']} {self.computing_device_info['model']}")
+            
+            # Paso 2: Verificar modelo
+            print("   Paso 2: Verificando modelo...")
             if not os.path.exists(self.model_path):
-                raise FileNotFoundError(f"El modelo ML no se encuentra: {self.model_path}")
+                print(f"Modelo no encontrado: {self.model_path}")
+                return False
+            print(f"   Modelo encontrado: {self.model_path}")
             
-            # 3. Registrar inicio de sesión
-            self.start_time = datetime.now()
+            # Paso 3: Verificar detector.py
+            print("   Paso 3: Verificando detector.py...")
+            if not os.path.exists('detector.py'):
+                print("detector.py no encontrado")
+                return False
+            print("   detector.py encontrado")
             
-            # 4. Enviar detección inicial
-            print("🔄 Paso 3: Enviando detección inicial...")
-            self.enviar_deteccion_inicial()
+            # Paso 4: Verificar conectividad con servidor federado
+            print("   Paso 4: Verificando servidor federado...")
+            federado_disponible = self.obtener_config_servidor_federado()
+            if federado_disponible:
+                print(f"   Servidor federado disponible: {self.servidor_federado_url}")
+            else:
+                print("  Servidor federado no disponible - funcionando en modo local")
             
-            # 5. Mostrar información de inicio
-            print("\n" + "="*80)
-            print("🚀 INICIANDO DETECTOR DE TRÁFICO DE RED")
-            print("="*80)
-            print(f"👤 Usuario: {self.user_info.get('first_name')} {self.user_info.get('last_name')} (@{self.user_info.get('username')})")
-            print(f"💻 Dispositivo: {self.computing_device_info.get('brand')} {self.computing_device_info.get('model')}")
-            print(f"🔢 Serial: {self.computing_device_info.get('serial_number')}")
-            print(f"🌐 Interfaz de red: {self.interface}")
-            print(f"🤖 Modelo ML: {self.model_path}")
-            print(f"🎯 Client ID: {self.client_id}")
-            print(f"🕐 Inicio: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-            print("="*80)
-            print("📡 SALIDA DEL DETECTOR EN TIEMPO REAL:")
-            print("="*80)
+            print("=" * 60)
+            print(" INICIANDO DETECTOR DE TRÁFICO DE RED")
+            print("=" * 60)
             
-            # 6. Preparar comando del detector
+            # Iniciar tiempo
+            self.start_time = datetime.datetime.now()
+            self.running = True
+            
+            # Ejecutar detector
+            return self.ejecutar_detector()
+            
+        except Exception as e:
+            print(f" Error en inicialización: {e}")
+            return False
+
+    def ejecutar_detector(self):
+        """Ejecuta el detector principal con salida a consola"""
+        try:
+            # Comando para ejecutar detector.py
             cmd = [
-                sys.executable, 'detector.py',
-                '--model', self.model_path,
+                'python', 'detector.py',
                 '--interface', self.interface,
-                '--duration', '0',  # Duración infinita
-                '--verbose'
+                '--model', self.model_path
             ]
             
-            print(f"🔧 Ejecutando: {' '.join(cmd)}\n")
+            print(f" Ejecutando: {' '.join(cmd)}")
+            print(" Iniciando captura de tráfico...")
+            print(" Presiona Ctrl+C para detener")
+            print("=" * 60)
             
-            # 7. Iniciar el proceso detector.py
+            # Iniciar proceso del detector
             self.detector_process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
@@ -522,124 +219,253 @@ class DetectorFederado:
                 universal_newlines=True
             )
             
-            self.running = True
+            # Procesar salida línea por línea
+            line_count = 0
+            for linea in iter(self.detector_process.stdout.readline, ''):
+                if linea:
+                    line_count += 1
+                    linea_limpia = linea.rstrip()
+                    
+                    # MOSTRAR TODO EN CONSOLA CON FORMATO
+                    if 'NORMAL' in linea_limpia.upper():
+                        # Tráfico normal - compacto
+                        if line_count % 100 == 0:
+                            print(f"[NORMAL] Procesados {line_count:,} paquetes normales...")
+                    
+                    elif any(keyword in linea_limpia.upper() for keyword in ['ANOMALY', 'ATTACK', 'INTRUSION', 'SUSPICIOUS']):
+                        # Anomalías - destacar
+                        print(f"[ANOMALY] {linea_limpia}")
+                        
+                    elif any(keyword in linea_limpia.upper() for keyword in ['ERROR', 'EXCEPTION', 'FAILED']):
+                        # Errores
+                        print(f"[ERROR] {linea_limpia}")
+                        
+                    elif any(keyword in linea_limpia.upper() for keyword in ['STARTED', 'INITIALIZED', 'LOADING', 'MODEL']):
+                        # Sistema
+                        print(f"[SYSTEM] {linea_limpia}")
+                        
+                    else:
+                        # Otra salida importante
+                        print(f" [OUTPUT] {linea_limpia}")
+                    
+                    # Procesar detecciones
+                    deteccion = self.parsear_salida_detector(linea)
+                    if deteccion:
+                        print(f" [DETECTION] {deteccion.get('anomaly_type')} | "
+                              f"Confianza: {deteccion.get('confidence_score', 0):.3f} | "
+                              f"Severity: {deteccion.get('severity')}")
+                        
+                        # Guardar en respaldo local
+                        self.guardar_respaldo_local(deteccion)
+                        
+                        # Enviar al servidor si supera umbral
+                        if deteccion.get('confidence_score', 0) >= 0.3:
+                            enviado = self.enviar_deteccion_servidor(deteccion)
+                            if enviado:
+                                print(f" [SENT] Detección enviada al servidor")
+                                self.marcar_enviado_respaldo(deteccion.get('detection_id'))
+                            else:
+                                print(f"  [WARNING] Error enviando detección")
+                    
+                    # Actualizar estadísticas
+                    self.actualizar_estadisticas(linea)
+                    
+                    # Mostrar progreso cada 500 líneas
+                    if line_count % 500 == 0:
+                        print(f"  [PROGRESS] Líneas: {line_count:,} | "
+                              f"Anomalías: {self.stats['anomalies_detected']} | "
+                              f"Enviadas: {self.stats['detections_sent']}")
+                
+                # Verificar si el proceso sigue corriendo
+                if self.detector_process.poll() is not None:
+                    break
             
-            # 8. Procesar salida en tiempo real
-            try:
-                while self.running and self.detector_process.poll() is None:
-                    linea = self.detector_process.stdout.readline()
-                    
-                    if not linea:
-                        break
-                    
-                    linea = linea.strip()
-                    if linea:
-                        self.lines_processed += 1
-                        
-                        # MOSTRAR TODA LA SALIDA DEL DETECTOR (PRINCIPAL FUNCIONALIDAD)
-                        print(f"[DETECTOR] {linea}")
-                        
-                        # Intentar parsear y procesar detecciones
-                        deteccion = self.parsear_salida_detector(linea)
-                        if deteccion:
-                            # Solo enviar anomalías significativas
-                            if deteccion.get('confidence_score', 0) >= 0.3:
-                                self.enviar_deteccion_servidor(deteccion)
-                        
-                        # Mostrar estadísticas periódicamente
-                        self.mostrar_estadisticas_periodicas()
-                        
-            except KeyboardInterrupt:
-                print("\n🛑 Interrupción por teclado detectada...")
-                self.detener()
-                return
-                
-            # 9. Proceso terminado naturalmente
-            if self.detector_process.poll() is not None:
-                exit_code = self.detector_process.returncode
-                if exit_code == 0:
-                    print(f"\n✅ Detector terminado normalmente")
-                else:
-                    print(f"\n⚠️ Detector terminado con código de error: {exit_code}")
-                
-        except FileNotFoundError as e:
-            print(f"\n❌ Archivo no encontrado: {e}")
-            print("💡 Verifica que detector.py y el modelo estén en las rutas correctas")
+            # Proceso terminado
+            return_code = self.detector_process.poll()
+            print("=" * 60)
+            print(f"   Detector terminado con código: {return_code}")
+            
+            return return_code == 0
+            
         except Exception as e:
-            print(f"\n❌ Error iniciando detector: {e}")
-            raise
-    
+            print(f"Error ejecutando detector: {e}")
+            return False
+        finally:
+            self.detener()
+
+    def parsear_salida_detector(self, linea):
+        """Parsea la salida del detector para extraer detecciones"""
+        try:
+            # Buscar patrones de detección en la línea
+            if any(keyword in linea.upper() for keyword in ['ATTACK', 'INTRUSION', 'ANOMALY']):
+                # Crear detección básica (en una implementación real, harías parsing más sofisticado)
+                deteccion = {
+                    'detection_id': f"det_{int(time.time() * 1000)}",
+                    'timestamp': datetime.datetime.now().isoformat(),
+                    'anomaly_type': 'Network Anomaly',
+                    'severity': 'medium',
+                    'confidence_score': 0.75,
+                    'source_ip': '192.168.1.100',
+                    'destination_ip': '192.168.1.1',
+                    'source_port': 12345,
+                    'destination_port': 80,
+                    'protocol': 'TCP',
+                    'user_id': self.user_id,
+                    'model_id': 1,
+                    'client_id': self.client_id,
+                    'raw_output': linea.strip()
+                }
+                
+                return deteccion
+            
+            return None
+            
+        except Exception as e:
+            print(f"  Error parseando línea: {e}")
+            return None
+
+    def guardar_respaldo_local(self, deteccion):
+        """Guarda detección en base de datos local"""
+        try:
+            conn = sqlite3.connect(self.local_backup_db)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+            INSERT INTO detecciones 
+            (detection_id, timestamp, anomaly_type, severity, confidence_score,
+             source_ip, destination_ip, source_port, destination_port, protocol)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                deteccion.get('detection_id'),
+                deteccion.get('timestamp'),
+                deteccion.get('anomaly_type'),
+                deteccion.get('severity'),
+                deteccion.get('confidence_score'),
+                deteccion.get('source_ip'),
+                deteccion.get('destination_ip'),
+                deteccion.get('source_port'),
+                deteccion.get('destination_port'),
+                deteccion.get('protocol')
+            ))
+            
+            conn.commit()
+            conn.close()
+            
+        except Exception as e:
+            print(f"  Error guardando respaldo: {e}")
+
+    def enviar_deteccion_servidor(self, deteccion):
+        """Envía detección al servidor Flask"""
+        try:
+            url = f"{self.flask_api_url}/api/buffer/add-detection"
+            
+            response = requests.post(
+                url,
+                json=deteccion,
+                timeout=10,
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    self.stats['detections_sent'] += 1
+                    return True
+            
+            print(f"  Error enviando detección: HTTP {response.status_code}")
+            return False
+            
+        except Exception as e:
+            print(f"  Error enviando detección: {e}")
+            return False
+
+    def marcar_enviado_respaldo(self, detection_id):
+        """Marca detección como enviada en respaldo local"""
+        try:
+            conn = sqlite3.connect(self.local_backup_db)
+            cursor = conn.cursor()
+            
+            cursor.execute(
+                "UPDATE detecciones SET enviado_servidor = 1 WHERE detection_id = ?",
+                (detection_id,)
+            )
+            
+            conn.commit()
+            conn.close()
+            
+        except Exception as e:
+            print(f"  Error marcando como enviado: {e}")
+
+    def actualizar_estadisticas(self, linea):
+        """Actualiza estadísticas locales"""
+        self.stats['lines_processed'] += 1
+        
+        if 'NORMAL' in linea.upper():
+            self.stats['normal_packets'] += 1
+        elif any(keyword in linea.upper() for keyword in ['ANOMALY', 'ATTACK', 'INTRUSION']):
+            self.stats['anomalies_detected'] += 1
+            if 'ATTACK' in linea.upper():
+                self.stats['attacks_detected'] += 1
+        
+        self.stats['total_packets'] = self.stats['normal_packets'] + self.stats['anomalies_detected']
+
+    def signal_handler(self, signum, frame):
+        """Maneja señales del sistema"""
+        print(f"\n Señal {signum} recibida - Deteniendo detector...")
+        self.detener()
+        sys.exit(0)
+
     def detener(self):
         """Detiene el detector y muestra estadísticas finales"""
         try:
-            print(f"\n🛑 Deteniendo detector...")
             self.running = False
             
-            # Detener proceso si está corriendo
-            if self.detector_process and self.detector_process.poll() is None:
-                print("🔄 Terminando proceso detector.py...")
-                self.detector_process.terminate()
-                
-                # Esperar que termine
-                try:
-                    self.detector_process.wait(timeout=15)
-                    print("✅ Proceso detector.py terminado correctamente")
-                except subprocess.TimeoutExpired:
-                    print("⚠️ Timeout esperando terminación, forzando cierre...")
-                    self.detector_process.kill()
-                    self.detector_process.wait()
-                    print("✅ Proceso forzado a terminar")
+            print("\n" + "=" * 60)
+            print("RESUMEN FINAL DE LA SESIÓN")
+            print("=" * 60)
             
-            # Calcular tiempo total
             if self.start_time:
-                tiempo_total = datetime.now() - self.start_time
-                tiempo_str = str(tiempo_total).split('.')[0]  # Sin microsegundos
-            else:
-                tiempo_str = "Desconocido"
+                runtime = datetime.datetime.now() - self.start_time
+                print(f"Tiempo de ejecución: {runtime}")
             
-            # Mostrar estadísticas finales
-            print("\n" + "="*70)
-            print("📊 ESTADÍSTICAS FINALES DE LA SESIÓN")
-            print("="*70)
-            print(f"👤 Usuario: {self.user_info.get('username') if self.user_info else 'N/A'}")
-            print(f"💻 Dispositivo: {self.computing_device_info.get('brand') if self.computing_device_info else 'N/A'} " + 
-                  f"{self.computing_device_info.get('model') if self.computing_device_info else ''}")
-            print(f"⏱️ Tiempo de ejecución: {tiempo_str}")
-            print(f"📝 Líneas procesadas: {self.lines_processed:,}")
-            print(f"📦 Total de paquetes: {self.stats['total_packets']:,}")
-            print(f"✅ Paquetes normales: {self.stats['normal_packets']:,}")
-            print(f"⚠️ Anomalías detectadas: {self.stats['anomaly_packets']:,}")
-            print(f"🚨 Ataques identificados: {self.stats['attacks_detected']:,}")
-            print(f"📤 Detecciones enviadas: {self.detections_sent:,}")
-            print(f"💾 Respaldo local: {self.local_backup_db}")
+            print(f"Líneas procesadas: {self.stats['lines_processed']:,}")
+            print(f"Total de paquetes: {self.stats['total_packets']:,}")
+            print(f"Paquetes normales: {self.stats['normal_packets']:,}")
+            print(f" Anomalías detectadas: {self.stats['anomalies_detected']}")
+            print(f" Ataques detectados: {self.stats['attacks_detected']}")
+            print(f" Detecciones enviadas: {self.stats['detections_sent']}")
+            print(f" Respaldo local: {self.local_backup_db}")
             
-            if self.stats['last_detection']:
-                print(f"🕐 Última detección: {self.stats['last_detection']}")
+            print("=" * 60)
+            print("   Sesión finalizada correctamente")
             
-            print("="*70)
-            print("✅ Sesión finalizada correctamente")
-                    
+            # Terminar proceso si sigue corriendo
+            if self.detector_process and self.detector_process.poll() is None:
+                self.detector_process.terminate()
+                print(" Proceso detector terminado")
+                
         except Exception as e:
-            print(f"❌ Error durante la detención: {e}")
+            print(f"Error en cleanup: {e}")
+
+
+# BUSCAR la función main() (línea ~477) Y REEMPLAZAR:
 
 def main():
     """Función principal del detector integrado"""
     import argparse
     
-    # Configurar argumentos de línea de comandos
     parser = argparse.ArgumentParser(
-        description='Detector Integrado Federado - Versión Completa',
+        description='Detector Integrado Federado',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Ejemplos de uso:
-  python detector_integrado.py --user-id 1 --interface "Wi-Fi" --model "model/modelo_rf.pkl"
-  python detector_integrado.py --user-id 2 --interface "Ethernet" --model "model/modelo_rf.pkl"
+  python detector_integrado.py --user-id 1 --interface "Wi-Fi" --model "model/modelo_rf.pkl" --flask-url "http://localhost:5000"
   
 Requisitos:
-  - main_prueba.py ejecutándose en localhost:5000
-  - PostgreSQL con datos del usuario
+  - main.py ejecutándose en la URL especificada
+  - PostgreSQL configurado con datos del usuario
   - detector.py en el directorio actual
-  - Modelo ML en la ruta especificada
+  - Modelo ML disponible
         """
     )
     
@@ -649,43 +475,41 @@ Requisitos:
                        help='Interfaz de red a monitorear (ej: "Wi-Fi", "Ethernet")')
     parser.add_argument('--model', required=True, 
                        help='Ruta al modelo de Machine Learning')
+    parser.add_argument('--flask-url', required=True,
+                       help='URL del servidor Flask (ej: http://localhost:5000)')
     
     args = parser.parse_args()
     
-    # Mostrar información inicial
-    print("🛡️ DETECTOR INTEGRADO FEDERADO - VERSIÓN COMPLETA")
-    print("=" * 60)
-    print(f"🆔 User ID: {args.user_id}")
-    print(f"🌐 Interfaz: {args.interface}")
-    print(f"🤖 Modelo: {args.model}")
-    print("=" * 60)
-    print("⚠️ REQUISITOS:")
-    print("   • main_prueba.py ejecutándose en localhost:5000")
-    print("   • PostgreSQL configurado con datos del usuario")
-    print("   • detector.py en el directorio actual")
-    print("   • Modelo ML disponible")
-    print("=" * 60)
-    print("🚀 Iniciando detector...")
-    print("=" * 60)
+    #    REEMPLAZAR EMOJIS POR TEXTO SEGURO:
+    print("=" * 50)
+    print("DETECTOR INTEGRADO FEDERADO")  # ← SIN EMOJI
+    print("=" * 50)
+    print(f"User ID: {args.user_id}")
+    print(f"Interfaz: {args.interface}")
+    print(f"Modelo: {args.model}")
+    print(f"Flask URL: {args.flask_url}")
+    print("=" * 50)
     
-    # Crear instancia del detector
+    # Crear detector
     detector = DetectorFederado(
         user_id=args.user_id,
         interface=args.interface,
-        model_path=args.model
+        model_path=args.model,
+        flask_url=args.flask_url
     )
     
     try:
-        # Iniciar el detector
+        # Iniciar detector
         detector.iniciar_detector_proceso()
         
     except KeyboardInterrupt:
-        print("\n🛑 Detenido por el usuario (Ctrl+C)")
+        print("Detenido por el usuario (Ctrl+C)")
         detector.detener()
     except Exception as e:
-        print(f"\n❌ Error fatal: {e}")
+        print(f"Error fatal: {e}")
         detector.detener()
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

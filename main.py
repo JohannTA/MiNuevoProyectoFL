@@ -13,15 +13,25 @@ import hashlib
 import logging
 import subprocess
 import signal
-import sys
 import time
 import json
 import socket
 import threading
-
+import requests
+import sys
+if sys.platform == 'win32':
+    # Configurar UTF-8 para Windows
+    import locale
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
 detector_output_queue = []
 federado_output_queue = []
 detector_output_lock = threading.Lock()
+federado_process = None 
+detection_buffer_lock = threading.Lock()  
+start_time = time.time() 
 # Importaciones de controladores
 from controladores.controlador_usuario import (
     obtener_usuario_por_id, autenticar_usuario, registrar_actividad_usuario, 
@@ -50,7 +60,7 @@ from controladores.controlador_roles import (
     verificar_permiso_usuario, inicializar_permisos_sistema
 )
 from controladores.controlador_detector import (
-    DetectionBuffer, procesar_deteccion_entrante, obtener_usuario_completo_con_dispositivo,
+    DetectionBuffer, normalizar_severity, procesar_deteccion_entrante, obtener_usuario_completo_con_dispositivo,
     obtener_mapeo_usuarios_dispositivos, obtener_health_check_extendido
 )
 # Configurar logging
@@ -58,7 +68,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('app.log'),
+        logging.FileHandler('app.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -99,6 +109,7 @@ federado_stats = {
     'received': 0,
     'accuracy': 0
 }
+
 # ========================================
 # SISTEMA DE BUFFER TEMPORAL
 # ========================================
@@ -125,30 +136,6 @@ def get_user_complete_info(user_id):
         return jsonify({"success": False, "error": "Error interno del servidor"}), 500
 
 
-    """Recibe detecciones del detector_integrado con manejo robusto"""
-    try:
-        detection_data = request.get_json()
-        
-        if not detection_data:
-            return jsonify({'success': False, 'error': 'No data provided'}), 400
-        
-        # Procesar detección
-        result = procesar_deteccion_entrante(detection_data)
-        
-        if result['success']:
-            # Agregar al buffer temporal
-            detection_buffer.add_detection(detection_data)
-            
-            result.update({
-                'buffer_size': len(detection_buffer.buffer),
-                'saved_to_buffer': True
-            })
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        logger.error(f"Error procesando detección: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/mapping/info', methods=['GET'])
 def mapping_info():
@@ -781,98 +768,116 @@ def capture_detector_output(process):
 @app.route('/api/detector/start', methods=['POST'])
 @login_required
 def start_detector():
-    """Inicia el detector de flujos REAL"""
-    global detector_process, detector_output_queue
+    """Inicia el detector integrado federado"""
+    global detector_process
     
     try:
         data = request.get_json() or {}
+        user_id = session.get('client_id', 1)
         interface = data.get('interface', 'Wi-Fi')
-        client_id = data.get('client_id', 1)
-        
+        servidor_federado = data.get('servidor_federado', 'ws://192.168.18.88:8765')
         if detector_process and detector_process.poll() is None:
             return jsonify({'error': 'El detector ya está ejecutándose'}), 400
         
+        # Verificar archivos necesarios
         if not os.path.exists('detector_integrado.py'):
-            return jsonify({'error': 'Archivo detector_integrado.py no encontrado'}), 500
+            return jsonify({'error': 'detector_integrado.py no encontrado'}), 500
         
+        # Buscar modelo disponible
         model_path = 'model/modelo_rf.pkl'
         if not os.path.exists(model_path):
-            return jsonify({'error': 'Archivo de modelo no encontrado'}), 500
+            model_path = 'model/modelo_rf_optimizado.pkl'
+        if not os.path.exists(model_path):
+            return jsonify({'error': 'Modelo no encontrado'}), 500
         
-        # Comando para detector REAL integrado
+        # Comando SIMPLIFICADO para detector integrado
         cmd = [
             sys.executable, 'detector_integrado.py',
-            '--model', model_path,
+            '--user-id', str(user_id),
             '--interface', interface,
-            '--client-id', str(client_id),
-            '--flask-url', 'http://localhost:5000',
-            '--real'  # Flag para usar detector real
+            '--model', model_path,
+            '--flask-url', 'http://localhost:5000'
         ]
         
-        logger.info(f"🚀 Ejecutando detector REAL: {' '.join(cmd)}")
+        # MENSAJE EN CONSOLA
+        print(f"\n{'='*80}")
+        print(f"🚀 INICIANDO DETECTOR INTEGRADO FEDERADO")
+        print(f"{'='*80}")
+        print(f"👤 Usuario ID: {user_id}")
+        print(f"🌐 Interfaz: {interface}")
+        print(f"🤖 Modelo: {model_path}")
+        print(f"🔗 Flask URL: http://localhost:5000")
+        print(f"🔧 Comando: {' '.join(cmd)}")
+        print(f"{'='*80}")
         
-        # Limpiar cola anterior
+        # Limpiar buffer de salida
         with detector_output_lock:
             detector_output_queue.clear()
-            detector_output_queue.append({
-                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-                'raw': f"Iniciando detector REAL: {' '.join(cmd)}",
-                'type': 'info'
-            })
         
-        # Crear proceso del detector real
+        # EJECUTAR SIN CAPTURAR STDOUT (para ver toda la salida)
         detector_process = subprocess.Popen(
             cmd,
-            stdout=subprocess.PIPE,
+            # stdout=None,      # Salida directa a consola
+            # stderr=None,      # Errores directos a consola
+            stdout=subprocess.PIPE,  # Para API también
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1,
+            bufsize=0,  # Sin buffer
             universal_newlines=True,
             cwd=os.getcwd()
         )
         
-        # Iniciar hilo para capturar salida del detector real
-        def capture_detector_output():
+        # Captura EN TIEMPO REAL para API (sin interferir con consola)
+        def capture_for_api():
             try:
                 for line in iter(detector_process.stdout.readline, ''):
                     if line.strip():
+                        # Mostrar en consola principal
+                        print(f"[DETECTOR] {line.rstrip()}")
+                        
+                        # También guardar para API
                         with detector_output_lock:
                             detector_output_queue.append({
                                 'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
                                 'raw': line.strip(),
                                 'type': 'output'
                             })
-                            
-                            # Mantener solo las últimas 100 líneas
-                            if len(detector_output_queue) > 100:
+                            # Limitar tamaño
+                            if len(detector_output_queue) > 500:
                                 detector_output_queue.pop(0)
-                                
             except Exception as e:
-                logger.error(f"Error capturando salida del detector: {e}")
+                print(f"❌ Error en captura: {e}")
         
-        threading.Thread(target=capture_detector_output, daemon=True).start()
+        # Iniciar captura en hilo separado
+        threading.Thread(target=capture_for_api, daemon=True).start()
         
-        # Actualizar estadísticas del detector
-        detector_stats['status'] = 'starting'
+        print(f"✅ Detector iniciado con PID: {detector_process.pid}")
+        print(f"📡 Salida visible en tiempo real en esta consola")
+        print(f"{'='*80}\n")
+        
+        # Actualizar estadísticas
+        detector_stats['status'] = 'running'
         detector_stats['interface'] = interface
-        detector_stats['client_id'] = client_id
-        detector_stats['start_time'] = datetime.datetime.now().isoformat()
-        detector_stats['real_mode'] = True
-        
-        logger.info(f"Detector REAL iniciado exitosamente en interfaz {interface}")
+        detector_stats['user_id'] = user_id
+        detector_stats['start_time'] = time.time()
+        detector_stats['pid'] = detector_process.pid
         
         return jsonify({
             'success': True,
-            'message': f'Detector REAL iniciado en interfaz {interface}',
+            'message': f'Detector federado iniciado - salida en consola',
             'pid': detector_process.pid,
             'interface': interface,
-            'client_id': client_id,
-            'mode': 'real'
+            'user_id': user_id,
+            'model_path': model_path,
+            'flask_url': 'http://localhost:5000'
         })
         
     except Exception as e:
-        logger.error(f"Error iniciando detector REAL: {e}")
+        print(f"❌ Error iniciando detector: {e}")
+        logger.error(f"Error iniciando detector: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/detector/stop', methods=['POST'])
 @login_required
 def stop_detector():
@@ -1088,7 +1093,94 @@ def get_federado_status():
         logger.error(f"Error obteniendo estadísticas del federado: {e}")
     
     return jsonify({'stats': federado_stats})
+# ========================================
+# ENDPOINTS PARA APRENDIZAJE FEDERADO
+# ========================================
 
+@app.route('/api/federado/model-update', methods=['POST'])
+@login_required
+def receive_model_update():
+    """Recibe actualización de modelo de un cliente federado"""
+    try:
+        data = request.get_json()
+        
+        client_id = data.get('client_id')
+        user_id = data.get('user_id') 
+        model_weights = data.get('model_weights')
+        performance_metrics = data.get('performance_metrics')
+        training_samples = data.get('training_samples', 0)
+        device_info = data.get('device_info', {})
+        
+        print(f"📥 [FEDERADO] Actualización modelo recibida:")
+        print(f"   Cliente: {client_id}, Usuario: {user_id}")
+        print(f"   Muestras entrenamiento: {training_samples}")
+        print(f"   Métricas: {performance_metrics}")
+        
+        # Aquí implementarías la lógica de agregación federada
+        # Por ahora solo logueamos
+        
+        logger.info(f"Actualización modelo recibida de cliente {client_id}, usuario {user_id}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Actualización de modelo recibida y procesada',
+            'client_id': client_id,
+            'user_id': user_id,
+            'aggregation_pending': True,
+            'timestamp': datetime.datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error recibiendo actualización modelo: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/federado/global-model', methods=['GET'])
+@login_required
+def send_global_model():
+    """Envía el modelo global actualizado a un cliente"""
+    try:
+        client_id = request.args.get('client_id')
+        user_id = request.args.get('user_id')
+        
+        print(f"📤 [FEDERADO] Enviando modelo global a cliente {client_id}, usuario {user_id}")
+        
+        # Aquí implementarías la lógica para obtener el modelo global
+        # Por ahora devolvemos un modelo mock
+        model_data = {
+            'version': 1,
+            'weights': 'model_weights_serialized',  # Implementar serialización real
+            'performance': {
+                'accuracy': 0.95, 
+                'precision': 0.93,
+                'recall': 0.91,
+                'f1_score': 0.92
+            },
+            'last_updated': datetime.datetime.now().isoformat(),
+            'clients_contributed': 1,  # Contar clientes reales
+            'training_rounds': 1,
+            'metadata': {
+                'model_type': 'RandomForest',
+                'features_count': 78,
+                'classes': ['normal', 'attack']
+            }
+        }
+        
+        logger.info(f"Modelo global enviado a cliente {client_id}, usuario {user_id}")
+        
+        return jsonify({
+            'success': True,
+            'model_data': model_data,
+            'client_id': client_id,
+            'user_id': user_id,
+            'download_timestamp': datetime.datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error enviando modelo global: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+    
 @app.route('/api/system/log')
 @login_required
 def get_system_log():
@@ -2082,94 +2174,87 @@ def get_dashboard_counters():
                 'clientes_conectados': 0
             }
         }), 500
+    
 @app.route('/api/dashboard/recent-detections')
 @login_required
 def get_recent_detections():
-    """Obtiene detecciones recientes desde buffer + BD"""
+    """Obtiene detecciones recientes con manejo de errores corregido"""
     try:
         limit = request.args.get('limit', 10, type=int)
         
-        # Obtener del buffer temporal (más recientes)
-        buffer_stats = stats_buffer.get_stats()
-        recent_from_buffer = buffer_stats['recent_detections'][:limit//2]  # Mitad del buffer
-        
-        # Obtener de BD (persistentes)
-        recent_from_db = []
         conn = obtener_conexion()
+        if not conn:
+            return jsonify({'detections': [], 'error': 'Sin conexión BD'})
         
-        if conn:
-            try:
-                with conn.cursor() as cursor:
-                    cursor.execute("""
-                        SELECT 
-                            d.id,
-                            d.timestamp,
-                            d.source_ip,
-                            d.destination_ip,
-                            d.source_port,
-                            d.destination_port,
-                            d.protocol,
-                            d.anomaly_type,
-                            d.severity,
-                            d.confidence_score,
-                            COALESCE(fc.name, 'Cliente ' || d.client_id) as client_name
-                        FROM detections d
-                        LEFT JOIN federated_clients fc ON d.client_id = fc.id
-                        ORDER BY d.timestamp DESC
-                        LIMIT %s
-                    """, (limit - len(recent_from_buffer),))
-                    
-                    recent_from_db = [dict(row) for row in cursor.fetchall()]
-                    
-            except Exception as e:
-                logger.error(f"Error obteniendo detecciones de BD: {e}")
-            finally:
-                conn.close()
-        
-        # Combinar y formatear
-        all_detections = []
-        
-        # Agregar del buffer (más recientes)
-        for detection in recent_from_buffer:
-            all_detections.append({
-                'id': f"buf_{len(all_detections)}",
-                'timestamp': detection.get('display_time', datetime.datetime.now().isoformat()),
-                'source_ip': detection.get('source_ip', '0.0.0.0'),
-                'destination_ip': detection.get('destination_ip', '0.0.0.0'),
-                'source_port': detection.get('source_port', 0),
-                'destination_port': detection.get('destination_port', 0),
-                'protocol': detection.get('protocol', 'TCP'),
-                'anomaly_type': detection.get('anomaly_type', 'Unknown'),
-                'severity': detection.get('severity', 'medium'),
-                'confidence_score': detection.get('confidence_score', 0.5),
-                'client_name': f"Cliente {detection.get('client_id', 1)}"
-            })
-        
-        # Agregar de BD
-        for detection in recent_from_db:
-            detection_dict = dict(detection)
-            if detection_dict.get('timestamp'):
-                detection_dict['timestamp'] = detection_dict['timestamp'].isoformat()
-            all_detections.append(detection_dict)
-        
-        # Ordenar por timestamp y limitar
-        all_detections.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
-        all_detections = all_detections[:limit]
-        
-        return jsonify({
-            'success': True,
-            'detections': all_detections,
-            'source_info': {
-                'from_buffer': len(recent_from_buffer),
-                'from_database': len(recent_from_db),
-                'total_returned': len(all_detections)
-            }
-        })
-
+        try:
+            # Usar cursor normal en lugar de RealDictCursor para evitar problemas
+            with conn.cursor() as cur:
+                cur.execute("""
+                SELECT 
+                    d.id,
+                    d.detection_id,
+                    d.anomaly_type,
+                    d.severity,
+                    d.confidence_score,
+                    d.source_ip,
+                    d.destination_ip,
+                    d.source_port,
+                    d.destination_port,
+                    d.protocol,
+                    d.timestamp,
+                    d.created_at,
+                    d.is_confirmed,
+                    d.false_positive,
+                    COALESCE(fc.name, fc.client_id, 'Cliente-' || d.client_id::text) as client_name
+                FROM detections d
+                LEFT JOIN federated_clients fc ON d.client_id = fc.id
+                ORDER BY d.created_at DESC
+                LIMIT %s
+                """, (limit,))
+                
+                rows = cur.fetchall()
+                
+                # Construir manualmente los diccionarios
+                detections = []
+                for row in rows:
+                    detection = {
+                        'id': row[0],
+                        'detection_id': row[1] or '',
+                        'anomaly_type': row[2] or 'Unknown',
+                        'severity': row[3] or 'medium',
+                        'confidence_score': float(row[4]) if row[4] is not None else 0.0,
+                        'source_ip': row[5] or '0.0.0.0',
+                        'destination_ip': row[6] or '0.0.0.0',
+                        'source_port': row[7] or 0,
+                        'destination_port': row[8] or 0,
+                        'protocol': row[9] or 'TCP',
+                        'timestamp': row[10].isoformat() if row[10] else '',
+                        'created_at': row[11].isoformat() if row[11] else '',
+                        'is_confirmed': bool(row[12]) if row[12] is not None else False,
+                        'false_positive': bool(row[13]) if row[13] is not None else False,
+                        'client_name': row[14] or 'Desconocido'
+                    }
+                    detections.append(detection)
+                
+                logger.info(f"✅ Detecciones recientes obtenidas: {len(detections)}")
+                
+                return jsonify({
+                    'success': True,
+                    'detections': detections,
+                    'total': len(detections)
+                })
+                
+        except Exception as e:
+            logger.error(f"Error en query detecciones: {e}")
+            return jsonify({'detections': [], 'error': str(e)})
+            
     except Exception as e:
-        logger.error(f"Error obteniendo detecciones recientes: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
+        logger.error(f"Error general en detecciones: {e}")
+        return jsonify({'detections': [], 'error': str(e)})
+        
+    finally:
+        if conn:
+            conn.close()
 # AGREGAR después de las otras rutas API:
 
 # ENCONTRAR LA FUNCIÓN EXISTENTE add_detection_to_buffer Y REEMPLAZARLA CON:
@@ -2196,7 +2281,7 @@ def add_detection_to_buffer():
         
         # Agregar al buffer temporal (si existe)
         if 'detection_buffer' in globals():
-            with detection_buffer_lock:
+            with detector_output_lock:
                 detection_data['received_at'] = datetime.datetime.now().isoformat()
                 detection_buffer.add_detection(detection_data)
         
@@ -2244,63 +2329,102 @@ def get_buffer_status():
     except Exception as e:
         logger.error(f"Error obteniendo estado del buffer: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-@app.route('/api/dashboard/test-data', methods=['POST'])
-@login_required
-def insert_test_data():
-    """Inserta datos de prueba para testing"""
+
+
+# AGREGAR ESTAS FUNCIONES después de marcar_enviado_respaldo:
+
+def enviar_actualizacion_modelo(self, model_weights, performance_metrics):
+    """Envía actualización del modelo para aprendizaje federado"""
     try:
-        conn = obtener_conexion()
-        if not conn:
-            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
-
-        with conn.cursor() as cursor:
-            # Insertar cliente de prueba si no existe
-            cursor.execute("""
-                INSERT INTO federated_clients (client_id, name, status, ip_address, last_seen)
-                VALUES ('1', 'Cliente Prueba', 'active', '192.168.1.100', NOW())
-                ON CONFLICT (client_id) DO UPDATE SET
-                    status = 'active',
-                    last_seen = NOW()
-            """)
-
-            # Insertar detecciones de prueba
-            test_detections = [
-                ('192.168.1.50', '192.168.1.1', 'high', 'scan', 'TCP'),
-                ('10.0.0.25', '10.0.0.1', 'critical', 'dos', 'UDP'),
-                ('172.16.1.100', '172.16.1.10', 'medium', 'web', 'HTTP'),
-                ('192.168.1.75', '8.8.8.8', 'low', 'normal', 'TCP'),
-                ('10.10.10.50', '10.10.10.1', 'high', 'malware', 'TCP')
-            ]
-
-            for src_ip, dst_ip, severity, attack_type, protocol in test_detections:
-                cursor.execute("""
-                    INSERT INTO detections 
-                    (client_id, source_ip, destination_ip, source_port, destination_port, 
-                     protocol, anomaly_type, severity, confidence_score, timestamp)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
-                """, (
-                    1, src_ip, dst_ip, 
-                    np.random.randint(1024, 65535), 
-                    np.random.randint(1, 1024),
-                    protocol, attack_type, severity, 
-                    np.random.uniform(0.6, 0.95)
-                ))
-
-            conn.commit()
-
-        conn.close()
+        url = f"{self.flask_api_url}/api/federated/model-update"
         
-        logger.info("Datos de prueba insertados correctamente")
+        payload = {
+            'client_id': int(self.client_id),
+            'user_id': self.user_id,
+            'model_weights': model_weights,  # Serializado
+            'performance_metrics': performance_metrics,
+            'training_samples': self.stats['total_packets'],
+            'timestamp': datetime.now().isoformat(),
+            'device_info': {
+                'type': self.computing_device_info.get('type'),
+                'model': self.computing_device_info.get('model'),
+                'serial': self.computing_device_info.get('serial_number')
+            }
+        }
         
-        return jsonify({
-            'success': True,
-            'message': 'Datos de prueba insertados',
-            'inserted': len(test_detections) + 1
-        })
-
+        response = requests.post(
+            url,
+            json=payload,
+            timeout=30,
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('success'):
+                self.model_updates_sent += 1
+                print(f"📤 [FEDERADO] Actualización de modelo enviada #{self.model_updates_sent}")
+                return True
+        
+        print(f"⚠️ [FEDERADO] Error enviando actualización: HTTP {response.status_code}")
+        return False
+        
     except Exception as e:
-        logger.error(f"Error insertando datos de prueba: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+        print(f"⚠️ [FEDERADO] Error: {e}")
+        return False
+
+def recibir_modelo_global(self):
+    """Recibe el modelo global actualizado del servidor federado"""
+    try:
+        url = f"{self.flask_api_url}/api/federado/global-model"
+        
+        params = {
+            'client_id': self.client_id,
+            'user_id': self.user_id
+        }
+        
+        response = requests.get(url, params=params, timeout=15)
+        
+        if response.status_code == 200:
+            result = response.json()
+            if result.get('success'):
+                model_data = result.get('model_data')
+                self.model_updates_received += 1
+                print(f"📥 [FEDERADO] Modelo global recibido #{self.model_updates_received}")
+                return model_data
+        
+        return None
+        
+    except Exception as e:
+        print(f"⚠️ [FEDERADO] Error recibiendo modelo: {e}")
+        return None
+
+def verificar_conectividad_federado(self):
+    """Verifica conectividad con el servidor federado"""
+    try:
+        url = f"{self.flask_api_url}/health-extended"
+        
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200:
+            result = response.json()
+            federated_available = result.get('federated_learning', {}).get('enabled', False)
+            
+            if federated_available:
+                print("✅ [FEDERADO] Servidor federado disponible")
+                return True
+            else:
+                print("⚠️ [FEDERADO] Servidor disponible pero aprendizaje federado desactivado")
+                return False
+        else:
+            print(f"⚠️ [FEDERADO] Servidor no disponible: HTTP {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ [FEDERADO] Error verificando conectividad: {e}")
+        return False
+
+
 if __name__ == "__main__":
     inicializar_sistema()
     
