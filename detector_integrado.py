@@ -23,15 +23,14 @@ class DetectorFederado:
     
         # BUSCAR el constructor __init__ (línea ~25) Y CORREGIR línea 63:
     
-    def __init__(self, user_id, interface, model_path, flask_url="http://localhost:5000"):
+    def __init__(self, user_id, interface, model_path, flask_url="http://localhost:5000",servidor_federado_url=None):
         # Parámetros básicos
         self.user_id = user_id
         self.interface = interface
         self.model_path = model_path
         self.flask_api_url = flask_url.rstrip('/')
-        
-        # Configuración del servidor federado (desde main.py)
-        self.servidor_federado_url = None  # Se obtiene desde main.py
+        self.servidor_federado_url = servidor_federado_url  # Para WebSocket federado
+        # Configuración del servidor federado (desde main.py)  # Se obtiene desde main.py
         
         # Información del usuario
         self.user_info = None
@@ -42,7 +41,10 @@ class DetectorFederado:
         self.detector_process = None
         self.running = False
         self.start_time = None
-        
+        # Cliente WebSocket federado
+        self.federado_client = None
+        self.websocket = None
+
         # Estadísticas
         self.stats = {
             'lines_processed': 0,
@@ -136,6 +138,42 @@ class DetectorFederado:
         except Exception as e:
             print(f"  Error verificando servidor federado: {e}")
             return False
+    
+    async def conectar_servidor_federado(self):
+        """Conecta al servidor federado WebSocket"""
+        if not self.servidor_federado_url:
+            print("[WARNING] URL del servidor federado no configurada")
+            return False
+        
+        try:
+            import websockets
+            self.websocket = await websockets.connect(self.servidor_federado_url)
+            
+            # Registrar cliente
+            registration = {
+                'type': 'register',
+                'name': f'Detector-User-{self.user_id}',
+                'location': f'Device-{self.computing_device_info.get("model", "Unknown")}',
+                'interface': self.interface,
+                'capabilities': ['intrusion_detection', 'model_training'],
+                'version': '1.0'
+            }
+            
+            await self.websocket.send(json.dumps(registration))
+            response = await self.websocket.recv()
+            response_data = json.loads(response)
+            
+            if response_data['type'] == 'registration_confirmed':
+                print(f"[OK] Conectado al servidor federado: {self.servidor_federado_url}")
+                self.client_id = response_data.get('client_id')
+                return True
+            else:
+                print(f"[ERROR] Error en registro federado: {response_data.get('message')}")
+                return False
+                
+        except Exception as e:
+            print(f"[ERROR] Error conectando servidor federado: {e}")
+            return False
 
     def iniciar_detector_proceso(self):
         """Proceso principal del detector federado"""
@@ -176,6 +214,24 @@ class DetectorFederado:
             federado_disponible = self.obtener_config_servidor_federado()
             if federado_disponible:
                 print(f"   Servidor federado disponible: {self.servidor_federado_url}")
+                # ✅ AGREGAR CONEXIÓN WEBSOCKET:
+                try:
+                    import asyncio
+                    
+                    # Conectar al servidor federado WebSocket  
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    federado_conectado = loop.run_until_complete(self.conectar_servidor_federado())
+                    loop.close()
+                    
+                    if federado_conectado:
+                        print("   [OK] Conectado al servidor federado via WebSocket")
+                        self.federado_connected = True
+                    else:
+                        print("   [WARNING] No se pudo conectar al servidor federado")
+                        
+                except Exception as e:
+                    print(f"   [WARNING] Error conectando WebSocket federado: {e}")
             else:
                 print("  Servidor federado no disponible - funcionando en modo local")
             
@@ -226,66 +282,38 @@ class DetectorFederado:
                     line_count += 1
                     linea_limpia = linea.rstrip()
                     
-                    # MOSTRAR TODO EN CONSOLA CON FORMATO
-                    if 'NORMAL' in linea_limpia.upper():
-                        # Tráfico normal - compacto
-                        if line_count % 100 == 0:
-                            print(f"[NORMAL] Procesados {line_count:,} paquetes normales...")
+                    # ✅ MOSTRAR TODO - SIN FILTROS NI CATEGORÍAS:
+                    print(linea_limpia)  # ← SALIDA EXACTA COMO VIENE DEL DETECTOR
                     
-                    elif any(keyword in linea_limpia.upper() for keyword in ['ANOMALY', 'ATTACK', 'INTRUSION', 'SUSPICIOUS']):
-                        # Anomalías - destacar
-                        print(f"[ANOMALY] {linea_limpia}")
+                    # Procesamiento en segundo plano (sin afectar la salida)
+                    try:
+                        # Parsear detecciones en silencio
+                        deteccion = self.parsear_salida_detector(linea)
+                        if deteccion:
+                            self.guardar_respaldo_local(deteccion)
+                            
+                            # Enviar al servidor si supera umbral
+                            if deteccion.get('confidence_score', 0) >= 0.3:
+                                enviado = self.enviar_deteccion_servidor(deteccion)
+                                if enviado:
+                                    self.marcar_enviado_respaldo(deteccion.get('detection_id'))
                         
-                    elif any(keyword in linea_limpia.upper() for keyword in ['ERROR', 'EXCEPTION', 'FAILED']):
-                        # Errores
-                        print(f"[ERROR] {linea_limpia}")
+                        # Actualizar estadísticas en silencio
+                        self.actualizar_estadisticas(linea)
                         
-                    elif any(keyword in linea_limpia.upper() for keyword in ['STARTED', 'INITIALIZED', 'LOADING', 'MODEL']):
-                        # Sistema
-                        print(f"[SYSTEM] {linea_limpia}")
-                        
-                    else:
-                        # Otra salida importante
-                        print(f" [OUTPUT] {linea_limpia}")
-                    
-                    # Procesar detecciones
-                    deteccion = self.parsear_salida_detector(linea)
-                    if deteccion:
-                        print(f" [DETECTION] {deteccion.get('anomaly_type')} | "
-                              f"Confianza: {deteccion.get('confidence_score', 0):.3f} | "
-                              f"Severity: {deteccion.get('severity')}")
-                        
-                        # Guardar en respaldo local
-                        self.guardar_respaldo_local(deteccion)
-                        
-                        # Enviar al servidor si supera umbral
-                        if deteccion.get('confidence_score', 0) >= 0.3:
-                            enviado = self.enviar_deteccion_servidor(deteccion)
-                            if enviado:
-                                print(f" [SENT] Detección enviada al servidor")
-                                self.marcar_enviado_respaldo(deteccion.get('detection_id'))
-                            else:
-                                print(f"  [WARNING] Error enviando detección")
-                    
-                    # Actualizar estadísticas
-                    self.actualizar_estadisticas(linea)
-                    
-                    # Mostrar progreso cada 500 líneas
-                    if line_count % 500 == 0:
-                        print(f"  [PROGRESS] Líneas: {line_count:,} | "
-                              f"Anomalías: {self.stats['anomalies_detected']} | "
-                              f"Enviadas: {self.stats['detections_sent']}")
-                
+                    except Exception:
+                        # Ignorar errores de procesamiento para no interrumpir la salida
+                        pass
+            
                 # Verificar si el proceso sigue corriendo
                 if self.detector_process.poll() is not None:
                     break
-            
+        
             # Proceso terminado
             return_code = self.detector_process.poll()
             print("=" * 60)
-            print(f"   Detector terminado con código: {return_code}")
-            
-            return return_code == 0
+            print(f"[END] Detector terminado con código: {return_code}")
+        
             
         except Exception as e:
             print(f"Error ejecutando detector: {e}")
@@ -378,7 +406,7 @@ class DetectorFederado:
         except Exception as e:
             print(f"  Error enviando detección: {e}")
             return False
-
+    
     def marcar_enviado_respaldo(self, detection_id):
         """Marca detección como enviada en respaldo local"""
         try:
@@ -477,7 +505,8 @@ Requisitos:
                        help='Ruta al modelo de Machine Learning')
     parser.add_argument('--flask-url', required=True,
                        help='URL del servidor Flask (ej: http://localhost:5000)')
-    
+    parser.add_argument('--servidor-federado', default='ws://192.168.18.88:8765',
+                       help='URL del servidor federado WebSocket (ej: ws://192.168.18.88:8765)')
     args = parser.parse_args()
     
     #    REEMPLAZAR EMOJIS POR TEXTO SEGURO:
@@ -495,7 +524,8 @@ Requisitos:
         user_id=args.user_id,
         interface=args.interface,
         model_path=args.model,
-        flask_url=args.flask_url
+        flask_url=args.flask_url,  # ← AGREGAR COMA
+        servidor_federado_url=args.servidor_federado
     )
     
     try:

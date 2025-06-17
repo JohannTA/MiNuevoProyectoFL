@@ -41617,3 +41617,1434 @@ INFO - 192.168.18.5 - - [16/Jun/2025 23:58:01] "GET /api/dashboard/recent-detect
 INFO - 192.168.18.5 - - [16/Jun/2025 23:58:01] "GET /api/federado/status HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [16/Jun/2025 23:58:01] "GET /api/detector/status HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [16/Jun/2025 23:58:02] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:44] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:00:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:44] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:01:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:44] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:02:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:13] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:13] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:13] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:14] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:45] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:47] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:47] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:03:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:04:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:05:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:06:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:07:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:41] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:08:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:31] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:31] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:09:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:10:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:41] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:11:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:12:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:13:51] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:31] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:31] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:14:45] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:10] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:10] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:10] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:28] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:31] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:31] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 01:15:33] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 01:15:35] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [17/Jun/2025 01:15:37] "GET /login HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:40] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:40] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:40] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:51] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:51] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:51] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:15:52] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:16:01] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 192.168.18.5 - - [17/Jun/2025 01:16:01] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:16:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [17/Jun/2025 01:16:02] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.50.76:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 10.40.50.76 - - [17/Jun/2025 07:51:48] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:51:48] "GET /login HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:51:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:00] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:09] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:09] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:10] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:10] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:12] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:12] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:22] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:22] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:23] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:23] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:32] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:32] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:33] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:33] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:45] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:52] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:52] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:53] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:52:54] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:03] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:03] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:03] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:04] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:12] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:22] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:22] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:23] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:23] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:32] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:32] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:33] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:33] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:43] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:44] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:47] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:53:47] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 07:53:48] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 07:53:50] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.50.76:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:13] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:13] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:13] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:13] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:18] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:21] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:22] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:22] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:23] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:23] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 07:56:23] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 07:56:25] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [17/Jun/2025 07:56:27] "GET /login HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:31] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:31] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:32] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:53] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:53] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:53] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:56:53] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:03] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:03] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:03] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:03] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:13] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:13] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:13] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:14] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:23] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:23] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:23] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:23] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:32] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:32] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:32] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:33] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 07:57:45] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 07:57:49] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:53] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:53] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:53] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 07:57:53] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:57:53] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.50.76:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 07:59:14] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:15] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:15] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:15] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 07:59:16] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:16] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 07:59:18] "GET /login HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:22] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:22] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:22] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:23] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:32] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:32] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:32] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:33] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:43] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:43] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:45] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:53] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:53] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:53] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 07:59:53] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:01] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:01] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:02] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:12] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:23] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:23] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:24] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:25] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 08:00:25] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 08:00:31] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:33] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:33] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:33] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.50.76 - - [17/Jun/2025 08:00:33] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.9.215:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:31] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:31] "GET /login HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:48] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:50] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:57] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:57] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:57] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 10.40.9.215 - - [17/Jun/2025 09:06:59] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:00] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:00] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:00] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:09] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:09] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:09] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:10] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:32] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:41] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:41] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:41] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:42] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:44] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:51] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:52] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:52] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:07:52] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:00] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:01] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:12] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:21] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:21] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:22] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:23] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:31] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:31] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:32] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:36] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:41] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:41] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:41] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:54] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:54] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:54] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:55] "GET /api/dashboard/counters HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:08:56] "GET /detecciones HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:18] "GET /clientes HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:41] "GET /reportes HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:41] "GET /reportes HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:41] "GET /reportes HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:47] "GET /reportes HTTP/1.1" 200 -
+INFO - Se obtuvieron 6 roles
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:50] "GET /detecciones HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:50] "GET /detecciones HTTP/1.1" 200 -
+INFO - Se obtuvieron 39 permisos
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:50] "GET /detecciones HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:50] "GET /detecciones HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:50] "GET /detecciones HTTP/1.1" 200 -
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:50] "GET /detecciones HTTP/1.1" 200 -
+INFO - Se obtuvieron 6 roles
+INFO - Se obtuvieron 6 roles
+ERROR - Error al obtener detecciones: column d.reviewed_by does not exist
+LINE 9:         LEFT JOIN users u ON d.reviewed_by = u.id
+                                     ^
+
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:57] "GET /detecciones HTTP/1.1" 200 -
+ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Exception on /admin [GET]
+Traceback (most recent call last):
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1618, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 264, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1625, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+INFO - 10.40.9.215 - - [17/Jun/2025 09:09:57] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - Se obtuvieron 39 permisos
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Se obtuvieron 39 permisos
+ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Exception on /admin [GET]
+Traceback (most recent call last):
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1618, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 264, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1625, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:01] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Exception on /admin [GET]
+Traceback (most recent call last):
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1618, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 264, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1625, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:13] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:18] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:19] "GET /dashboard HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:19] "GET /dashboard HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:20] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:20] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:20] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:20] "GET /dashboard HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:20] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:21] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:22] "GET /dashboard HTTP/1.1" 200 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:23] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:24] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:24] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:24] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:25] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:25] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:27] "GET /dashboard HTTP/1.1" 200 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Se obtuvieron 6 roles
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:27] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:29] "GET /dashboard HTTP/1.1" 200 -
+INFO - Se obtuvieron 39 permisos
+ERROR - Error en panel de administración: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Exception on /admin [GET]
+Traceback (most recent call last):
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1618, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 264, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\main.py", line 1625, in admin
+    return render_template('admin.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 1, in top-level template code
+    {% extends "maestra.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\maestra.html", line 178, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\templates\admin.html", line 262, in block 'content'
+    <form id="formConfiguracion" action="{{ url_for('actualizar_configuracion_route') }}"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'actualizar_configuracion_route'. Did you mean 'exportar_configuracion' instead?
+ERROR - Error 500: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:40] "[35m[1mGET /admin HTTP/1.1[0m" 500 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:58] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:58] "GET /dashboard HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:58] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - Detectadas 8 interfaces de red utilizables
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:59] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:10:59] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:02] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:02] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:02] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:02] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:02] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:12] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:13] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:21] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:21] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:22] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:31] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:31] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:31] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:32] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:44] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:47] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:52] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:52] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:52] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:11:53] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:01] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:01] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:02] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:12] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:14] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:18] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:34] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:37] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:37] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:37] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:38] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:39] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:41] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:42] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:42] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:43] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - ✅ Detecciones recientes obtenidas: 3
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:43] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 10.40.9.215 - - [17/Jun/2025 09:12:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.40.30.55:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 09:35:45] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 09:35:48] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [17/Jun/2025 09:35:50] "GET /login HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 09:47:36] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 09:47:38] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [17/Jun/2025 09:47:40] "GET /login HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:48:51] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:48:55] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:48:58] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:03] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:07] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:10] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:15] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750171727925"
+LINE 6:                             ) VALUES ('det_1750171727925', N...
+                                              ^
+
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:18] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:21] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/6 detecciones guardadas
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:25] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:49:30] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750171750982"
+LINE 6:                             ) VALUES ('det_1750171750982', N...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/5 detecciones guardadas
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [17/Jun/2025 09:50:06] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [17/Jun/2025 09:50:08] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [17/Jun/2025 09:50:10] "GET /login HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:51:11] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:51:15] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:51:19] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:51:23] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:51:28] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [17/Jun/2025 09:51:31] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750171866991"
+LINE 6:                             ) VALUES ('det_1750171866991', N...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/6 detecciones guardadas

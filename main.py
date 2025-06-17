@@ -796,7 +796,8 @@ def start_detector():
             '--user-id', str(user_id),
             '--interface', interface,
             '--model', model_path,
-            '--flask-url', 'http://localhost:5000'
+            '--flask-url', 'http://localhost:5000',
+            '--servidor-federado', servidor_federado
         ]
         
         # MENSAJE EN CONSOLA
@@ -822,7 +823,7 @@ def start_detector():
             stdout=subprocess.PIPE,  # Para API también
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=0,  # Sin buffer
+            bufsize=1,  # Sin buffer
             universal_newlines=True,
             cwd=os.getcwd()
         )
