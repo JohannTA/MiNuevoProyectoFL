@@ -9,7 +9,9 @@ Autor: Johann
 Fecha: 2025-06-06
 Versión: 1.0
 """
-
+import numpy as np
+import pickle
+import base64
 import asyncio
 import websockets
 import json
@@ -44,6 +46,215 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+class FederatedAggregator:
+    """Implementa algoritmo Federated Averaging optimizado para Random Forest"""
+    
+    def __init__(self):
+        self.client_models = {}
+        self.global_model = None
+        self.round_number = 0
+        self.fl_features = [
+            'flow_duration', 'total_fwd_packets', 'total_backward_packets',
+            'total_length_of_fwd_packets', 'total_length_of_bwd_packets',
+            'flow_bytes/s', 'flow_packets/s', 'packet_length_mean',
+            'packet_length_std', 'packet_length_variance', 'fin_flag_count',
+            'syn_flag_count', 'rst_flag_count', 'psh_flag_count', 'ack_flag_count',
+            'flow_iat_mean', 'flow_iat_std', 'fwd_iat_mean', 'bwd_iat_mean',
+            'avg_fwd_segment_size', 'avg_bwd_segment_size', 'subflow_fwd_packets',
+            'subflow_fwd_bytes', 'subflow_bwd_packets', 'subflow_bwd_bytes'
+        ]
+        
+    def add_client_model(self, client_id, model_data):
+        """Agrega modelo de cliente para agregación"""
+        try:
+            # Deserializar modelo
+            model_bytes = base64.b64decode(model_data['model_data'])
+            client_model_dict = pickle.loads(model_bytes)
+            
+            self.client_models[client_id] = {
+                'model': client_model_dict['model'],
+                'scaler': client_model_dict['scaler'],
+                'samples': model_data['training_samples'],
+                'accuracy': model_data['local_accuracy'],
+                'version': model_data['model_version'],
+                'timestamp': model_data['timestamp']
+            }
+            
+            logger.info(f"[FL] Modelo recibido de cliente {client_id}")
+            logger.info(f"[FL] Muestras: {model_data['training_samples']}, Accuracy: {model_data['local_accuracy']:.4f}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"[FL] Error agregando modelo de cliente {client_id}: {e}")
+            return False
+    
+    def aggregate_models_fedavg(self):
+        """Implementa FedAvg para Random Forest"""
+        if len(self.client_models) < 2:
+            logger.warning("[FL] Se necesitan al menos 2 clientes para agregación")
+            return None
+            
+        try:
+            logger.info(f"[FL] Iniciando agregación FedAvg con {len(self.client_models)} clientes")
+            
+            # Calcular pesos basados en número de muestras
+            total_samples = sum(model['samples'] for model in self.client_models.values())
+            weights = {
+                client_id: model['samples'] / total_samples 
+                for client_id, model in self.client_models.items()
+            }
+            
+            logger.info(f"[FL] Pesos por cliente: {weights}")
+            
+            # Crear modelo global con parámetros promediados
+            global_rf = RandomForestClassifier(
+                n_estimators=100,
+                max_depth=15,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                class_weight='balanced',
+                random_state=42
+            )
+            
+            # Agregar feature_importances ponderadas
+            aggregated_importances = None
+            valid_models = []
+            
+            for client_id, model_data in self.client_models.items():
+                client_model = model_data['model']
+                if hasattr(client_model, 'feature_importances_'):
+                    if aggregated_importances is None:
+                        aggregated_importances = weights[client_id] * client_model.feature_importances_
+                    else:
+                        aggregated_importances += weights[client_id] * client_model.feature_importances_
+                    valid_models.append(client_id)
+            
+            # Tomar el scaler del cliente con mejor accuracy
+            best_client = max(self.client_models.keys(), 
+                            key=lambda k: self.client_models[k]['accuracy'])
+            global_scaler = self.client_models[best_client]['scaler']
+            
+            logger.info(f"[FL] Usando scaler del cliente {best_client} (mejor accuracy)")
+            
+            # Crear conjunto de datos sintético para entrenar modelo global
+            synthetic_data = self.create_synthetic_training_data()
+            
+            if synthetic_data is not None:
+                X_synthetic, y_synthetic = synthetic_data
+                X_synthetic_scaled = global_scaler.transform(X_synthetic)
+                global_rf.fit(X_synthetic_scaled, y_synthetic)
+            
+            # Establecer feature_importances agregadas
+            if aggregated_importances is not None:
+                global_rf.feature_importances_ = aggregated_importances
+            
+            # Calcular accuracy global estimada
+            global_accuracy = np.average(
+                [model['accuracy'] for model in self.client_models.values()],
+                weights=[model['samples'] for model in self.client_models.values()]
+            )
+            
+            # Crear modelo global
+            self.global_model = {
+                'model': global_rf,
+                'scaler': global_scaler,
+                'features': self.fl_features,
+                'version': self.round_number + 1,
+                'participants': len(self.client_models),
+                'global_accuracy': global_accuracy,
+                'aggregation_method': 'fedavg_rf',
+                'created_at': time.time(),
+                'client_weights': weights
+            }
+            
+            self.round_number += 1
+            
+            logger.info(f"[FL] Agregación completada")
+            logger.info(f"[FL] Versión global: {self.global_model['version']}")
+            logger.info(f"[FL] Participantes: {self.global_model['participants']}")
+            logger.info(f"[FL] Accuracy global estimada: {global_accuracy:.4f}")
+            
+            # Limpiar modelos de clientes para siguiente ronda
+            self.client_models.clear()
+            
+            return self.global_model
+            
+        except Exception as e:
+            logger.error(f"[FL] Error en agregación FedAvg: {e}")
+            return None
+    
+    def create_synthetic_training_data(self):
+        """Crea datos sintéticos para entrenar el modelo global"""
+        try:
+            all_predictions = []
+            all_features = []
+            
+            # Recolectar predicciones de todos los modelos
+            np.random.seed(42)
+            n_synthetic = 1000
+            
+            # Generar características sintéticas realistas
+            X_synthetic = np.random.normal(0, 1, (n_synthetic, len(self.fl_features)))
+            
+            # Obtener predicciones de cada modelo cliente
+            client_predictions = []
+            for client_id, model_data in self.client_models.items():
+                client_model = model_data['model']
+                client_scaler = model_data['scaler']
+                
+                try:
+                    X_scaled = client_scaler.transform(X_synthetic)
+                    predictions = client_model.predict(X_scaled)
+                    client_predictions.append(predictions)
+                except:
+                    continue
+            
+            if not client_predictions:
+                return None
+            
+            # Usar votación mayoritaria para etiquetas sintéticas
+            client_predictions = np.array(client_predictions)
+            y_synthetic = np.round(np.mean(client_predictions, axis=0)).astype(int)
+            
+            logger.info(f"[FL] Datos sintéticos creados: {X_synthetic.shape}")
+            
+            return X_synthetic, y_synthetic
+            
+        except Exception as e:
+            logger.error(f"[FL] Error creando datos sintéticos: {e}")
+            return None
+    
+    def serialize_global_model(self):
+        """Serializa el modelo global para envío"""
+        try:
+            if not self.global_model:
+                return None
+                
+            model_bytes = pickle.dumps({
+                'model': self.global_model['model'],
+                'scaler': self.global_model['scaler'],
+                'features': self.global_model['features'],
+                'version': self.global_model['version']
+            })
+            
+            model_base64 = base64.b64encode(model_bytes).decode('utf-8')
+            
+            return {
+                'type': 'global_model',
+                'version': self.global_model['version'],
+                'model_data': model_base64,
+                'participants': self.global_model['participants'],
+                'global_accuracy': self.global_model['global_accuracy'],
+                'aggregation_method': self.global_model['aggregation_method'],
+                'created_at': self.global_model['created_at']
+            }
+            
+        except Exception as e:
+            logger.error(f"[FL] Error serializando modelo global: {e}")
+            return None
+
+# INTEGRAR FederatedAggregator en FederatedIDSServer:
 class FederatedIDSServer:
     """Servidor central para coordinar clientes IDS federados"""
     
@@ -95,6 +306,12 @@ class FederatedIDSServer:
         # Configurar manejo de señales
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
+        
+        # Inicializar FederatedAggregator
+        self.fl_aggregator = FederatedAggregator()
+        self.min_clients_for_aggregation = 2
+        self.aggregation_interval = 300  # 5 minutos
+        self.last_aggregation = time.time()
     
     def _signal_handler(self, sig, frame):
         """Maneja señales de sistema"""

@@ -13,7 +13,11 @@ import sqlite3
 import os
 from pathlib import Path
 import logging
-
+import numpy as np
+import joblib
+import pickle
+import base64
+from copy import deepcopy
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -55,7 +59,21 @@ class DetectorFederado:
             'detections_sent': 0,
             'last_detection': None
         }
-        
+        self.local_training_data = []  # Buffer para datos de entrenamiento local
+        self.model_updates_sent = 0
+        self.global_models_received = 0
+        self.local_model_version = 0
+        self.global_model_version = 0
+        self.fl_features = [
+            'flow_duration', 'total_fwd_packets', 'total_backward_packets',
+            'total_length_of_fwd_packets', 'total_length_of_bwd_packets',
+            'flow_bytes/s', 'flow_packets/s', 'packet_length_mean',
+            'packet_length_std', 'packet_length_variance', 'fin_flag_count',
+            'syn_flag_count', 'rst_flag_count', 'psh_flag_count', 'ack_flag_count',
+            'flow_iat_mean', 'flow_iat_std', 'fwd_iat_mean', 'bwd_iat_mean',
+            'avg_fwd_segment_size', 'avg_bwd_segment_size', 'subflow_fwd_packets',
+            'subflow_fwd_bytes', 'subflow_bwd_packets', 'subflow_bwd_bytes'
+        ]
         # Base de datos local para respaldo
         self.local_backup_db = f"detector_backup_user_{user_id}.db"
         self.inicializar_respaldo_local()
@@ -138,43 +156,381 @@ class DetectorFederado:
         except Exception as e:
             print(f"  Error verificando servidor federado: {e}")
             return False
+    def get_current_model_params(self):
+        """Extrae parámetros serializables del modelo actual"""
+        try:
+            model_data = joblib.load(self.model_path)
+            modelo = model_data['modelo']
+            
+            # Extraer parámetros serializables del Random Forest
+            params = {
+                'n_estimators': modelo.n_estimators,
+                'max_depth': modelo.max_depth,
+                'min_samples_split': modelo.min_samples_split,
+                'min_samples_leaf': modelo.min_samples_leaf,
+                'class_weight': modelo.class_weight,
+                'random_state': modelo.random_state,
+                'feature_importances': modelo.feature_importances_.tolist() if hasattr(modelo, 'feature_importances_') else None,
+                'n_features_in': modelo.n_features_in_ if hasattr(modelo, 'n_features_in_') else len(self.fl_features)
+            }
+            
+            return params
+            
+        except Exception as e:
+            print(f"[FL-ERROR] Error extrayendo parámetros del modelo: {e}")
+            return None
+    def serialize_model_for_fl(self):
+        """Serializa el modelo completo para aprendizaje federado"""
+        try:
+            model_data = joblib.load(self.model_path)
+            modelo = model_data['modelo']
+            scaler = model_data['scaler']
+            
+            # Serializar modelo completo en base64
+            model_bytes = pickle.dumps({
+                'model': modelo,
+                'scaler': scaler,
+                'features': self.fl_features,
+                'version': self.local_model_version,
+                'samples_trained': len(self.local_training_data),
+                'performance_metrics': self.get_local_performance_metrics()
+            })
+            
+            model_base64 = base64.b64encode(model_bytes).decode('utf-8')
+            
+            return {
+                'type': 'model_update',
+                'client_id': self.client_id,
+                'model_version': self.local_model_version,
+                'model_data': model_base64,
+                'model_params': self.get_current_model_params(),
+                'training_samples': len(self.local_training_data),
+                'local_accuracy': self.calculate_local_accuracy(),
+                'timestamp': time.time()
+            }
+            
+        except Exception as e:
+            print(f"[FL-ERROR] Error serializando modelo: {e}")
+            return None
+    async def send_model_update(self):
+        """Envía actualización del modelo al servidor federado"""
+        if not self.websocket or len(self.local_training_data) < 50:
+            return False
+            
+        try:
+            model_update = self.serialize_model_for_fl()
+            if not model_update:
+                return False
+                
+            await self.websocket.send(json.dumps(model_update))
+            
+            # Esperar confirmación
+            response = await asyncio.wait_for(self.websocket.recv(), timeout=30.0)
+            response_data = json.loads(response)
+            
+            if response_data['type'] == 'model_update_received':
+                self.model_updates_sent += 1
+                self.local_model_version += 1
+                print(f"[FL-SUCCESS] Modelo enviado al servidor federado")
+                print(f"[FL-INFO] Actualizaciones enviadas: {self.model_updates_sent}")
+                return True
+            else:
+                print(f"[FL-ERROR] Error en envío: {response_data.get('message')}")
+                return False
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error enviando modelo: {e}")
+            return False
+
+    async def request_global_model(self):
+        """Solicita el modelo global actual"""
+        try:
+            request = {
+                'type': 'get_global_model',
+                'client_id': self.client_id,
+                'current_version': self.global_model_version
+            }
+            
+            await self.websocket.send(json.dumps(request))
+            
+            response = await asyncio.wait_for(self.websocket.recv(), timeout=30.0)
+            response_data = json.loads(response)
+            
+            if response_data['type'] == 'global_model':
+                await self.apply_global_model(response_data)
+                return True
+            elif response_data['type'] == 'no_update_needed':
+                print("[FL-INFO] Modelo local está actualizado")
+                return True
+            else:
+                print(f"[FL-WARNING] No se pudo obtener modelo global: {response_data.get('message')}")
+                return False
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error solicitando modelo global: {e}")
+            return False
+
+    async def apply_global_model(self, global_model_data):
+        """Aplica el modelo global recibido"""
+        try:
+            model_base64 = global_model_data['model_data']
+            model_bytes = base64.b64decode(model_base64)
+            global_model_dict = pickle.loads(model_bytes)
+            
+            # Cargar modelo actual para backup
+            current_model_data = joblib.load(self.model_path)
+            
+            # Aplicar modelo global
+            new_model = global_model_dict['model']
+            new_scaler = global_model_dict['scaler']
+            new_version = global_model_data['version']
+            
+            # Guardar backup del modelo anterior
+            backup_path = f"{self.model_path}.backup_v{self.global_model_version}"
+            joblib.dump(current_model_data, backup_path)
+            
+            # Aplicar nuevo modelo
+            updated_model_data = {
+                'modelo': new_model,
+                'scaler': new_scaler,
+                'features': self.fl_features,
+                'version': new_version,
+                'type': 'federated_global',
+                'participants': global_model_data.get('participants', 1),
+                'global_accuracy': global_model_data.get('global_accuracy', 0.0)
+            }
+            
+            joblib.dump(updated_model_data, self.model_path)
+            
+            self.global_model_version = new_version
+            self.global_models_received += 1
+            
+            print(f"[FL-SUCCESS] Modelo global aplicado")
+            print(f"[FL-INFO] Nueva versión: {new_version}")
+            print(f"[FL-INFO] Participantes: {global_model_data.get('participants', 1)}")
+            print(f"[FL-INFO] Accuracy global: {global_model_data.get('global_accuracy', 0.0):.4f}")
+            print(f"[FL-INFO] Modelos globales recibidos: {self.global_models_received}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"[FL-ERROR] Error aplicando modelo global: {e}")
+            return False
+
+    def collect_training_sample(self, detection_data):
+        """Recolecta muestra para entrenamiento local"""
+        try:
+            # Extraer características para FL
+            features_dict = {}
+            raw_data = detection_data.get('raw_data', {})
+            
+            # Mapear características detectadas a las del modelo FL
+            for feature in self.fl_features:
+                features_dict[feature] = raw_data.get(feature, 0.0)
+            
+            # Determinar etiqueta (0=normal, 1=attack)
+            label = 1 if detection_data.get('anomaly_type') != 'normal' else 0
+            
+            training_sample = {
+                'features': features_dict,
+                'label': label,
+                'confidence': detection_data.get('confidence_score', 0.0),
+                'timestamp': time.time(),
+                'anomaly_type': detection_data.get('anomaly_type')
+            }
+            
+            self.local_training_data.append(training_sample)
+            
+            # Limitar tamaño del buffer
+            if len(self.local_training_data) > 1000:
+                self.local_training_data.pop(0)
+                
+            print(f"[FL-TRAIN] Muestra recolectada. Total: {len(self.local_training_data)}")
+            
+            # Entrenar localmente cada 100 muestras
+            if len(self.local_training_data) % 100 == 0 and len(self.local_training_data) >= 100:
+                self.retrain_local_model()
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error recolectando muestra: {e}")
+
+    def retrain_local_model(self):
+        """Reentrena el modelo localmente con nuevas muestras"""
+        try:
+            if len(self.local_training_data) < 50:
+                return False
+                
+            print(f"[FL-TRAIN] Iniciando reentrenamiento local con {len(self.local_training_data)} muestras")
+            
+            # Preparar datos de entrenamiento
+            X_new = []
+            y_new = []
+            
+            for sample in self.local_training_data[-200:]:  # Usar últimas 200 muestras
+                feature_vector = [sample['features'][feat] for feat in self.fl_features]
+                X_new.append(feature_vector)
+                y_new.append(sample['label'])
+            
+            X_new = np.array(X_new)
+            y_new = np.array(y_new)
+            
+            # Cargar modelo actual
+            model_data = joblib.load(self.model_path)
+            modelo = model_data['modelo']
+            scaler = model_data['scaler']
+            
+            # Escalar nuevos datos
+            X_new_scaled = scaler.transform(X_new)
+            
+            # Crear nuevo modelo con mismos parámetros
+            from sklearn.ensemble import RandomForestClassifier
+            new_model = RandomForestClassifier(
+                n_estimators=100,
+                max_depth=15,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                class_weight='balanced',
+                random_state=42
+            )
+            
+            # Entrenar con datos nuevos + algunos históricos
+            historical_size = min(500, len(X_new) * 3)  # 3:1 ratio histórico:nuevo
+            
+            if hasattr(modelo, 'predict'):
+                # Generar datos sintéticos históricos basados en el modelo actual
+                np.random.seed(42)
+                X_synthetic = np.random.normal(X_new_scaled.mean(axis=0), X_new_scaled.std(axis=0), 
+                                              (historical_size, len(self.fl_features)))
+                y_synthetic = modelo.predict(X_synthetic)
+                
+                # Combinar datos
+                X_combined = np.vstack([X_synthetic, X_new_scaled])
+                y_combined = np.hstack([y_synthetic, y_new])
+            else:
+                X_combined = X_new_scaled
+                y_combined = y_new
+            
+            # Entrenar nuevo modelo
+            new_model.fit(X_combined, y_combined)
+            
+            # Evaluar rendimiento
+            accuracy = new_model.score(X_new_scaled, y_new)
+            
+            # Actualizar modelo si mejora
+            if accuracy > 0.7:  # Umbral mínimo
+                model_data['modelo'] = new_model
+                model_data['local_training_samples'] = len(self.local_training_data)
+                model_data['local_accuracy'] = accuracy
+                
+                joblib.dump(model_data, self.model_path)
+                
+                self.local_model_version += 1
+                
+                print(f"[FL-SUCCESS] Modelo local reentrenado")
+                print(f"[FL-INFO] Accuracy local: {accuracy:.4f}")
+                print(f"[FL-INFO] Versión local: {self.local_model_version}")
+                
+                # Enviar actualización al servidor federado si está conectado
+                if self.websocket and self.federado_connected:
+                    asyncio.create_task(self.send_model_update())
+                
+                return True
+            else:
+                print(f"[FL-WARNING] Modelo no actualizado (accuracy {accuracy:.4f} < 0.7)")
+                return False
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error en reentrenamiento local: {e}")
+            return False
+
+    def calculate_local_accuracy(self):
+        """Calcula accuracy del modelo local"""
+        try:
+            if len(self.local_training_data) < 10:
+                return 0.0
+                
+            # Usar últimas 50 muestras para evaluación
+            test_samples = self.local_training_data[-50:] if len(self.local_training_data) >= 50 else self.local_training_data
+            
+            model_data = joblib.load(self.model_path)
+            modelo = model_data['modelo']
+            scaler = model_data['scaler']
+            
+            X_test = []
+            y_test = []
+            
+            for sample in test_samples:
+                feature_vector = [sample['features'][feat] for feat in self.fl_features]
+                X_test.append(feature_vector)
+                y_test.append(sample['label'])
+            
+            X_test = np.array(X_test)
+            y_test = np.array(y_test)
+            
+            X_test_scaled = scaler.transform(X_test)
+            accuracy = modelo.score(X_test_scaled, y_test)
+            
+            return accuracy
+            
+        except Exception as e:
+            print(f"[FL-ERROR] Error calculando accuracy local: {e}")
+            return 0.0
+
+    def get_local_performance_metrics(self):
+        """Obtiene métricas de rendimiento local"""
+        return {
+            'accuracy': self.calculate_local_accuracy(),
+            'samples_trained': len(self.local_training_data),
+            'model_updates_sent': self.model_updates_sent,
+            'global_models_received': self.global_models_received,
+            'local_version': self.local_model_version,
+            'global_version': self.global_model_version
+        }
     
     async def conectar_servidor_federado(self):
-        """Conecta al servidor federado WebSocket"""
+        """Conecta al servidor federado WebSocket con capacidades FL"""
         if not self.servidor_federado_url:
-            print("[WARNING] URL del servidor federado no configurada")
+            print("[FL-WARNING] URL del servidor federado no configurada")
             return False
         
         try:
             import websockets
             self.websocket = await websockets.connect(self.servidor_federado_url)
             
-            # Registrar cliente
+            # Registrar cliente con capacidades FL
             registration = {
                 'type': 'register',
-                'name': f'Detector-User-{self.user_id}',
+                'name': f'Detector-FL-User-{self.user_id}',
                 'location': f'Device-{self.computing_device_info.get("model", "Unknown")}',
                 'interface': self.interface,
-                'capabilities': ['intrusion_detection', 'model_training'],
-                'version': '1.0'
+                'capabilities': ['intrusion_detection', 'federated_learning', 'model_aggregation'],
+                'version': '2.0',
+                'fl_features': self.fl_features,
+                'model_type': 'RandomForestClassifier',
+                'initial_model_params': self.get_current_model_params()
             }
             
             await self.websocket.send(json.dumps(registration))
-            response = await self.websocket.recv()
+            response = await websocket.recv()
             response_data = json.loads(response)
             
             if response_data['type'] == 'registration_confirmed':
-                print(f"[OK] Conectado al servidor federado: {self.servidor_federado_url}")
                 self.client_id = response_data.get('client_id')
+                self.global_model_version = response_data.get('global_model_version', 0)
+                print(f"[FL-OK] Conectado al servidor federado: {self.servidor_federado_url}")
+                print(f"[FL-INFO] Cliente ID: {self.client_id}")
+                print(f"[FL-INFO] Versión modelo global: {self.global_model_version}")
+                
+                # Solicitar modelo global actual si hay uno más nuevo
+                await self.request_global_model()
                 return True
             else:
-                print(f"[ERROR] Error en registro federado: {response_data.get('message')}")
+                print(f"[FL-ERROR] Error en registro federado: {response_data.get('message')}")
                 return False
                 
         except Exception as e:
-            print(f"[ERROR] Error conectando servidor federado: {e}")
+            print(f"[FL-ERROR] Error conectando servidor federado: {e}")
             return False
-
     def iniciar_detector_proceso(self):
         """Proceso principal del detector federado"""
         try:
@@ -324,6 +680,7 @@ class DetectorFederado:
     def parsear_salida_detector(self, linea):
         """Parsea la salida del detector para extraer detecciones"""
         try:
+            deteccion = None
             # Buscar patrones de detección en la línea
             if any(keyword in linea.upper() for keyword in ['ATTACK', 'INTRUSION', 'ANOMALY']):
                 # Crear detección básica (en una implementación real, harías parsing más sofisticado)
@@ -345,7 +702,9 @@ class DetectorFederado:
                 }
                 
                 return deteccion
-            
+            if deteccion and deteccion.get('anomaly_type') != 'normal':
+                self.collect_training_sample(deteccion)
+              
             return None
             
         except Exception as e:
