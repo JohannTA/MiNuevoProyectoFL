@@ -3,7 +3,7 @@ from functools import wraps
 from db.db import obtener_conexion
 from psycopg2.extras import RealDictCursor
 from collections import deque
-import datetime
+from datetime import datetime
 import psutil
 import numpy as np  
 import os
@@ -19,6 +19,7 @@ import socket
 import threading
 import requests
 import sys
+import uuid
 if sys.platform == 'win32':
     # Configurar UTF-8 para Windows
     import locale
@@ -60,7 +61,7 @@ from controladores.controlador_roles import (
     verificar_permiso_usuario, inicializar_permisos_sistema
 )
 from controladores.controlador_detector import (
-    DetectionBuffer, normalizar_severity, procesar_deteccion_entrante, obtener_usuario_completo_con_dispositivo,
+     normalizar_severity, procesar_deteccion_entrante, obtener_usuario_completo_con_dispositivo,
     obtener_mapeo_usuarios_dispositivos, obtener_health_check_extendido
 )
 # Configurar logging
@@ -115,7 +116,24 @@ federado_stats = {
 # ========================================
 
 # Instancia global del buffer de detecciones
-detection_buffer = DetectionBuffer(max_size=1000, flush_interval=30)  # Flush cada 30 segundos
+def normalizar_severity(severity):
+    """Normaliza el severity a valores válidos para la BD"""
+    if not severity:
+        return 'medium'
+    
+    severity_lower = str(severity).lower()
+    
+    if severity_lower in ['low', 'bajo', 'minor']:
+        return 'low'
+    elif severity_lower in ['medium', 'medio', 'moderate']:
+        return 'medium'
+    elif severity_lower in ['high', 'alto', 'major', 'critical']:
+        return 'high'
+    elif severity_lower in ['critical', 'critico', 'severe']:
+        return 'critical'
+    else:
+        return 'medium'
+
 @app.route('/api/users/<int:user_id>/complete-info', methods=['GET'])
 def get_user_complete_info(user_id):
     """Endpoint para obtener información completa del usuario con dispositivo"""
@@ -204,7 +222,7 @@ class StatsBuffer:
             self.stats['detections_by_type'][anomaly_type] += 1
             
             # Detecciones recientes
-            detection['display_time'] = datetime.datetime.now().isoformat()
+            detection['display_time'] = datetime.datetime.datetime.now().isoformat()
             self.stats['recent_detections'].appendleft(detection)
             
             # Estadísticas por hora
@@ -619,7 +637,7 @@ def get_realtime_stats():
             stats_base['total_clientes'] = max(1, stats_base['total_clientes'])
         
         response_data = {
-            'timestamp': datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.datetime.now().isoformat(),
             'resumen': stats_base,
             'severidad_1h': severidad_1h,
             'tipos_ataque_1h': tipos_ataque_1h,
@@ -637,7 +655,7 @@ def get_realtime_stats():
         logger.error(f"Error en stats tiempo real: {e}")
         # Retornar datos básicos en caso de error
         return jsonify({
-            'timestamp': datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.datetime.now().isoformat(),
             'resumen': {
                 'total_detecciones': detector_stats.get('detections', {}).get('total', 0),
                 'detecciones_1h': 0,
@@ -739,7 +757,7 @@ def capture_detector_output(process):
                     processed_line['type'] = 'normal'
                 
                 # Agregar a cola con thread safety
-                with detector_output_lock:
+                # Lock eliminado - no necesario
                     detector_output_queue.append(processed_line)
                     # Mantener últimas 200 líneas
                     if len(detector_output_queue) > 200:
@@ -750,7 +768,7 @@ def capture_detector_output(process):
                 
     except Exception as e:
         logger.error(f"Error capturando salida del detector: {e}")
-        with detector_output_lock:
+        # Lock eliminado - no necesario
             detector_output_queue.append({
                 'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
                 'raw': f"Error capturando salida: {str(e)}",
@@ -758,7 +776,7 @@ def capture_detector_output(process):
             })
     finally:
         logger.info("Captura de salida del detector terminada")
-        with detector_output_lock:
+        # Lock eliminado - no necesario
             detector_output_queue.append({
                 'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
                 'raw': "--- Proceso detector terminado ---",
@@ -812,7 +830,7 @@ def start_detector():
         print(f"{'='*80}")
         
         # Limpiar buffer de salida
-        with detector_output_lock:
+        # Lock eliminado - no necesario
             detector_output_queue.clear()
         
         # EJECUTAR SIN CAPTURAR STDOUT (para ver toda la salida)
@@ -837,7 +855,7 @@ def start_detector():
                         print(f"[DETECTOR] {line.rstrip()}")
                         
                         # También guardar para API
-                        with detector_output_lock:
+                        # Lock eliminado - no necesario
                             detector_output_queue.append({
                                 'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
                                 'raw': line.strip(),
@@ -930,7 +948,7 @@ def get_detector_output():
         # Obtener líneas desde un índice específico
         since = request.args.get('since', 0, type=int)
         
-        with detector_output_lock:
+        # Lock eliminado - no necesario
             # Retornar líneas desde el índice solicitado
             lines = detector_output_queue[since:] if since < len(detector_output_queue) else []
             total_lines = len(detector_output_queue)
@@ -943,7 +961,7 @@ def get_detector_output():
             'total': total_lines,
             'since': since,
             'running': is_running,
-            'timestamp': datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -1128,7 +1146,7 @@ def receive_model_update():
             'client_id': client_id,
             'user_id': user_id,
             'aggregation_pending': True,
-            'timestamp': datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -1156,7 +1174,7 @@ def send_global_model():
                 'recall': 0.91,
                 'f1_score': 0.92
             },
-            'last_updated': datetime.datetime.now().isoformat(),
+            'last_updated': datetime.datetime.datetime.now().isoformat(),
             'clients_contributed': 1,  # Contar clientes reales
             'training_rounds': 1,
             'metadata': {
@@ -1173,7 +1191,7 @@ def send_global_model():
             'model_data': model_data,
             'client_id': client_id,
             'user_id': user_id,
-            'download_timestamp': datetime.datetime.now().isoformat()
+            'download_timestamp': datetime.datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -1196,7 +1214,7 @@ def get_system_log():
                 for line in lines[-50:]:
                     if line.strip():
                         log_entries.append({
-                            'timestamp': datetime.datetime.now().isoformat(),
+                            'timestamp': datetime.datetime.datetime.now().isoformat(),
                             'component': 'Sistema',
                             'level': 'INFO',
                             'message': line.strip()
@@ -1206,7 +1224,7 @@ def get_system_log():
         if not log_entries:
             log_entries = [
                 {
-                    'timestamp': datetime.datetime.now().isoformat(),
+                    'timestamp': datetime.datetime.datetime.now().isoformat(),
                     'component': 'Sistema',
                     'level': 'INFO',
                     'message': 'Sistema IDS iniciado correctamente'
@@ -1334,7 +1352,7 @@ def verificar_conexion():
             'detector': False,
             'federado': False,
             'network': False,
-            'timestamp': datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.datetime.now().isoformat()
         }
         
         # Verificar BD
@@ -1393,7 +1411,7 @@ def verificar_rendimiento():
             'memory_percent': psutil.virtual_memory().percent,
             'disk_percent': disk_percent,
             'process_count': len(psutil.pids()),
-            'timestamp': datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.datetime.now().isoformat()
         }
         
         # Evaluación de rendimiento
@@ -1440,7 +1458,7 @@ def ejecutar_diagnosticos():
                 'detector_running': detector_process is not None and detector_process.poll() is None,
                 'federado_running': federado_process is not None and federado_process.poll() is None
             },
-            'timestamp': datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.datetime.now().isoformat()
         }
         
         # Contar problemas
@@ -1485,7 +1503,7 @@ def exportar_configuracion():
                 'server': federado_stats.get('server', 'ws://localhost:8765')
             },
             'export_info': {
-                'timestamp': datetime.datetime.now().isoformat(),
+                'timestamp': datetime.datetime.datetime.now().isoformat(),
                 'exported_by': session['username'],
                 'version': '1.0'
             }
@@ -1847,8 +1865,6 @@ def time_ago(value):
         if value is None:
             return "Desconocido"
         
-        from datetime import datetime, timedelta
-        
         if isinstance(value, str):
             formats_to_try = [
                 '%Y-%m-%dT%H:%M:%S.%f%z',
@@ -2053,7 +2069,7 @@ def get_dashboard_status():
                 'stats': federado_stats.copy()
             },
             'system': {
-                'timestamp': datetime.datetime.now().isoformat(),
+                'timestamp': datetime.datetime.datetime.now().isoformat(),
                 'uptime': time.time() - app_start_time if 'app_start_time' in globals() else 0
             }
         }
@@ -2147,7 +2163,7 @@ def get_dashboard_counters():
         return jsonify({
             'success': True,
             'counters': combined_counters,
-            'timestamp': datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.datetime.now().isoformat(),
             'source': 'combined',
             'buffer_info': {
                 'detections_pending': buffer_info['buffer_size'],
@@ -2262,50 +2278,96 @@ def get_recent_detections():
 
 @app.route('/api/buffer/add-detection', methods=['POST'])
 def add_detection_to_buffer():
-    """Recibe detecciones del detector_integrado con manejo robusto"""
+    """Recibe detecciones del detector_integrado y las guarda directamente"""
     try:
-        detection_data = request.get_json()
+        data = request.get_json()
         
-        if not detection_data:
+        if not data:
             return jsonify({'success': False, 'error': 'No data provided'}), 400
         
-        # Normalizar severity antes del procesamiento
-        original_severity = detection_data.get('severity')
-        normalized_severity = normalizar_severity(original_severity)
-        detection_data['severity'] = normalized_severity
+        user_id = data.get('user_id')
+        detection = data.get('detection')
         
-        # Log de recepción mejorado
-        logger.info(f"🎯 Detección recibida: {detection_data.get('anomaly_type')} | " +
-                   f"Severity: {original_severity} -> {normalized_severity} | " +
-                   f"User: {detection_data.get('user_id')} | " +
-                   f"Confianza: {detection_data.get('confidence_score', 0):.2f}")
+        if not user_id or not detection:
+            return jsonify({'success': False, 'error': 'Datos incompletos'}), 400
         
-        # Agregar al buffer temporal (si existe)
-        if 'detection_buffer' in globals():
-            with detector_output_lock:
-                detection_data['received_at'] = datetime.datetime.now().isoformat()
-                detection_buffer.add_detection(detection_data)
+        # Preparar datos para inserción directa
+        detection_data = {
+            'user_id': user_id,
+            'detection_id': detection.get('detection_id', str(uuid.uuid4())),
+            'timestamp': detection.get('timestamp'),
+            'anomaly_type': detection.get('anomaly_type'),
+            'severity': normalizar_severity(detection.get('severity')),
+            'confidence_score': detection.get('confidence_score', 0.0),
+            'source_ip': detection.get('source_ip'),
+            'destination_ip': detection.get('destination_ip'),
+            'source_port': detection.get('source_port'),
+            'destination_port': detection.get('destination_port'),
+            'protocol': detection.get('protocol'),
+            'raw_output': detection.get('raw_output'),
+            'raw_data': detection.get('raw_data', {})
+        }
         
-        # Agregar a estadísticas en tiempo real (si existe)
+        # ✅ GUARDAR DIRECTAMENTE EN POSTGRESQL:
+        success = save_detection_to_database(detection_data)
+        
+        # ✅ ACTUALIZAR STATS PARA DASHBOARD:
         if 'stats_buffer' in globals():
             stats_buffer.add_detection(detection_data)
         
-        return jsonify({
-            'success': True,
-            'message': 'Detección procesada exitosamente',
-            'detection_id': detection_data.get('detection_id'),
-            'severity_mapping': {
-                'original': original_severity,
-                'normalized': normalized_severity
-            },
-            'buffer_size': len(detection_buffer.buffer) if 'detection_buffer' in globals() else 0,
-            'saved_to_buffer': True
-        })
+        if success:
+            logger.info(f"✅ Detección guardada | Usuario: {user_id} | Tipo: {detection_data.get('anomaly_type')}")
+            return jsonify({'success': True, 'message': 'Detección guardada exitosamente'})
+        else:
+            return jsonify({'success': False, 'error': 'Error guardando en BD'}), 500
         
     except Exception as e:
-        logger.error(f"Error procesando detección: {e}")
+        logger.error(f"❌ Error procesando detección: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+
+def save_detection_to_database(detection_data):
+    """Guarda detección directamente en PostgreSQL"""
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return False
+        
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO detections (
+                    detection_id, client_id, model_id, timestamp, source_ip, destination_ip,
+                    source_port, destination_port, protocol, anomaly_type,
+                    severity, confidence_score, raw_data, is_confirmed, false_positive
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                detection_data.get('detection_id'),
+                1,  # client_id default
+                1,  # model_id default
+                detection_data.get('timestamp', datetime.datetime.now()),
+                detection_data.get('source_ip', '0.0.0.0'),
+                detection_data.get('destination_ip', '0.0.0.0'),
+                detection_data.get('source_port', 0),
+                detection_data.get('destination_port', 0),
+                detection_data.get('protocol', 'TCP'),
+                detection_data.get('anomaly_type', 'Unknown'),
+                detection_data.get('severity', 'medium'),
+                detection_data.get('confidence_score', 0.5),
+                json.dumps(detection_data.get('raw_data', {})),
+                False,
+                False
+            ))
+        
+        conn.commit()
+        conn.close()
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error guardando detección en BD: {e}")
+        if conn:
+            conn.rollback()
+            conn.close()
+        return False
 @app.route('/api/buffer/status')
 @login_required
 def get_buffer_status():
@@ -2324,7 +2386,7 @@ def get_buffer_status():
                 'database_connected': obtener_conexion() is not None,
                 'buffer_health': 'healthy' if buffer_stats['buffer_size'] < 800 else 'warning'
             },
-            'timestamp': datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -2345,7 +2407,7 @@ def enviar_actualizacion_modelo(self, model_weights, performance_metrics):
             'model_weights': model_weights,  # Serializado
             'performance_metrics': performance_metrics,
             'training_samples': self.stats['total_packets'],
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.datetime.now().isoformat(),
             'device_info': {
                 'type': self.computing_device_info.get('type'),
                 'model': self.computing_device_info.get('model'),

@@ -43048,3 +43048,415 @@ ERROR - Error guardando detección individual: current transaction is aborted, c
 ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
 
 INFO - 💾 Buffer flush: 0/6 detecciones guardadas
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 00:32:48] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [19/Jun/2025 00:32:50] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [19/Jun/2025 00:32:52] "GET /login HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 00:33:58] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 00:34:01] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 00:34:04] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 00:34:07] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 00:34:10] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750311235069"
+LINE 6:                             ) VALUES ('det_1750311235069', N...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/5 detecciones guardadas
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 00:45:50] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [19/Jun/2025 00:45:52] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [19/Jun/2025 00:45:54] "GET /login HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 00:48:22] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [19/Jun/2025 00:48:24] "[32mGET /api/federado/status HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [19/Jun/2025 00:48:26] "GET /login HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 00:58:25] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 20:49:15] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:10] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:14] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:18] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:22] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:26] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750384266680"
+LINE 6:                             ) VALUES ('det_1750384266680', '...
+                                              ^
+
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:30] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:34] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/4 detecciones guardadas
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:38] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:42] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:46] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:50] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 20:51:54] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750384282431"
+LINE 6:                             ) VALUES ('det_1750384282431', '...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/8 detecciones guardadas
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 21:18:54] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 21:41:46] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 21:42:30] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: Network Anomaly | Severity: medium -> medium | User: 1 | Confianza: 0.75
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 21:42:34] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 21:47:48] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 22:03:21] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:01] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:03] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:05] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:07] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:10] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750388650145_0"
+LINE 6:                             ) VALUES ('det_1750388650145_0',...
+                                              ^
+
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:12] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 22:04:14] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/3 detecciones guardadas
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750388688637_0"
+LINE 6:                             ) VALUES ('det_1750388688637_0',...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/4 detecciones guardadas
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 23:19:44] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:24] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:26] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:29] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750393290738_0"
+LINE 6:                             ) VALUES ('det_1750393290738_0',...
+                                              ^
+
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:32] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/2 detecciones guardadas
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:34] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:37] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:39] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:42] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:44] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:46] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:21:48] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750393327267_0"
+LINE 6:                             ) VALUES ('det_1750393327267_0',...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/9 detecciones guardadas
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:37] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:39] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:42] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:46] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:48] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:50] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:52] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:55] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:22:57] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750393378995_0"
+LINE 6:                             ) VALUES ('det_1750393378995_0',...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/7 detecciones guardadas
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750393426362_0"
+LINE 6:                             ) VALUES ('det_1750393426362_0',...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/2 detecciones guardadas
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:23:53] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:23:56] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:23:58] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:24:00] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:24:03] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:24:05] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+ERROR - Error guardando detección individual: invalid input syntax for type uuid: "det_1750393462769_0"
+LINE 6:                             ) VALUES ('det_1750393462769_0',...
+                                              ^
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+ERROR - Error guardando detección individual: current transaction is aborted, commands ignored until end of transaction block
+
+INFO - 💾 Buffer flush: 0/6 detecciones guardadas
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:01] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:39] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:41] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:44] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:46] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:48] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 🎯 Detección recibida: None | Severity: None -> medium | User: 1 | Confianza: 0.00
+ERROR - Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [19/Jun/2025 23:37:50] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.5:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [20/Jun/2025 00:23:37] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 📨 Detección procesada | Usuario: 1 | Tipo: Network Anomaly
+ERROR - ❌ Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [20/Jun/2025 00:24:13] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -
+INFO - 📨 Detección procesada | Usuario: 1 | Tipo: Network Anomaly
+ERROR - ❌ Error procesando detección: module 'datetime' has no attribute 'now'
+INFO - 127.0.0.1 - - [20/Jun/2025 00:24:17] "[35m[1mPOST /api/buffer/add-detection HTTP/1.1[0m" 500 -

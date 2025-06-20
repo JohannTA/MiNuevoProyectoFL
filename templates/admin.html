@@ -904,7 +904,7 @@
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 25px;
-        background-color: #
+        background-color: #f8f9fa;
         transition: all 0.2s ease;
         border-width: 2px;
     }
@@ -986,6 +986,7 @@
 
 {% block extra_js %}
 <script>
+    // Función para crear el contenedor de toasts si no existe
     document.addEventListener('DOMContentLoaded', function () {
         // Inicializar tooltips para los botones de acción
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
@@ -1694,7 +1695,7 @@
                 mostrarToast('Error al actualizar usuario', 'error');
             })
             .finally(() => {
-                                              btnGuardarUsuario.innerHTML = originalText;
+                btnGuardarUsuario.innerHTML = originalText;
                 btnGuardarUsuario.disabled = false;
             });
         });
@@ -1732,7 +1733,7 @@
                 body: formData
             })
             .then(response => response.json())
-            .then data => {
+            .then (data => {
                 if (data.success) {
                     mostrarToast('Contraseña actualizada exitosamente', 'success');
                     

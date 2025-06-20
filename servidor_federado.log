@@ -85,3 +85,7 @@ task: <Task cancelling name='Task-1' coro=<FederatedIDSServer.start_server() don
 2025-06-11 18:20:15,167 - INFO - Señal 2 recibida, cerrando servidor...
 2025-06-11 18:20:15,168 - INFO - server closing
 2025-06-11 18:20:15,168 - INFO - server closed
+2025-06-19 00:16:17,519 - INFO - server listening on 0.0.0.0:8765
+2025-06-19 00:20:24,643 - INFO - Señal 2 recibida, cerrando servidor...
+2025-06-19 00:20:24,644 - INFO - server closing
+2025-06-19 00:20:24,645 - INFO - server closed

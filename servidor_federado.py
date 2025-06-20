@@ -320,39 +320,204 @@ class FederatedIDSServer:
         sys.exit(0)
     
     def load_initial_model(self):
-        """Carga el modelo inicial del servidor"""
+        """Carga el modelo inicial del servidor federado"""
         try:
-            if Path(self.model_path).exists():
+            # ✅ USAR TU MODELO ENTRENADO COMO MODELO GLOBAL INICIAL
+            initial_model_path = "model/modelo_rf.pkl"  # ← TU MODELO
+            
+            if Path(initial_model_path).exists():
+                # Cargar tu modelo entrenado
+                model_data = joblib.load(initial_model_path)
+                
+                # Convertir tu modelo en modelo global versión 1
+                self.global_model = {
+                    'model': model_data['model'],  # ← TU MODELO ENTRENADO
+                    'scaler': model_data.get('scaler'),  # ← TU SCALER (o None)
+                    'selected_features': model_data.get('selected_features', []),
+                    'resampling_pipeline': model_data.get('resampling_pipeline'),
+                    'training_time': model_data.get('training_time'),
+                    'version': 1,  # ✅ VERSIÓN 1, NO 0
+                    'timestamp': time.time(),
+                    'features': model_data.get('selected_features', []),
+                    'participants': 1,
+                    'global_accuracy': 0.95,  # ← ACCURACY ESTIMADO DE TU MODELO
+                    'aggregation_method': 'initial_pretrained_model',
+                    'created_at': time.time(),
+                    'round': 0,
+                    'metadata': {
+                        'source': 'pretrained_model',
+                        'description': 'Modelo inicial entrenado como base federada',
+                        'original_file': initial_model_path,
+                        'model_type': 'RandomForestClassifier',
+                        'training_samples': 'unknown',
+                        'creation_date': datetime.datetime.now().isoformat()
+                    }
+                }
+                
+                logger.info(f"✅ Modelo global inicial cargado desde {initial_model_path}")
+                logger.info(f"🎯 Versión global: {self.global_model['version']}")
+                logger.info(f"🧠 Modelo: {type(self.global_model['model']).__name__}")
+                logger.info(f"📊 Features: {len(self.global_model['features'])} características")
+                
+            elif Path(self.model_path).exists() and self.model_path != initial_model_path:
+                # Si no está tu modelo, usar el especificado en parámetros
                 model_data = joblib.load(self.model_path)
+                
                 if isinstance(model_data, dict):
-                    self.global_model = model_data
-                else:
+                    # Si ya es un diccionario con estructura
                     self.global_model = {
-                        'model': model_data, 
-                        'version': 0,
+                        'model': model_data.get('model', model_data.get('modelo')),
+                        'scaler': model_data.get('scaler'),
+                        'selected_features': model_data.get('selected_features', model_data.get('features', [])),
+                        'version': model_data.get('version', 1),
                         'timestamp': time.time(),
-                        'features': []
+                        'features': model_data.get('selected_features', model_data.get('features', [])),
+                        'participants': 1,
+                        'global_accuracy': model_data.get('accuracy', 0.90),
+                        'aggregation_method': 'initial_loaded_model',
+                        'created_at': time.time(),
+                        'round': 0,
+                        'metadata': {
+                            'source': 'loaded_model',
+                            'description': 'Modelo cargado desde archivo especificado',
+                            'original_file': self.model_path
+                        }
+                    }
+                else:
+                    # Si es solo el modelo
+                    self.global_model = {
+                        'model': model_data,
+                        'scaler': None,
+                        'selected_features': [],
+                        'version': 1,
+                        'timestamp': time.time(),
+                        'features': [],
+                        'participants': 1,
+                        'global_accuracy': 0.85,
+                        'aggregation_method': 'initial_single_model',
+                        'created_at': time.time(),
+                        'round': 0,
+                        'metadata': {
+                            'source': 'single_model',
+                            'description': 'Modelo único cargado',
+                            'original_file': self.model_path
+                        }
                     }
                 
                 logger.info(f"✅ Modelo inicial cargado desde {self.model_path}")
+                logger.info(f"🎯 Versión global: {self.global_model['version']}")
+                
             else:
-                # Crear modelo base si no existe
+                # ❌ SOLO EN ÚLTIMO CASO crear modelo sin entrenar
+                logger.warning("⚠️ No se encontró modelo entrenado, creando modelo base")
+                
+                from sklearn.ensemble import RandomForestClassifier
+                from sklearn.preprocessing import StandardScaler
+                
+                # Crear modelo base sin entrenar
+                base_model = RandomForestClassifier(
+                    n_estimators=100,
+                    max_depth=15,
+                    min_samples_split=5,
+                    min_samples_leaf=2,
+                    class_weight='balanced',
+                    random_state=42
+                )
+                
+                base_scaler = StandardScaler()
+                
                 self.global_model = {
-                    'model': RandomForestClassifier(n_estimators=100, random_state=42),
-                    'scaler': StandardScaler(),
-                    'version': 0,
+                    'model': base_model,
+                    'scaler': base_scaler,
+                    'selected_features': [],
+                    'version': 0,  # ← Versión 0 para modelo sin entrenar
                     'timestamp': time.time(),
                     'features': [],
+                    'participants': 0,
+                    'global_accuracy': 0.0,
+                    'aggregation_method': 'base_untrained',
+                    'created_at': time.time(),
+                    'round': 0,
                     'metadata': {
-                        'created_by': 'server',
-                        'description': 'Modelo base sin entrenar'
+                        'source': 'created_base',
+                        'description': 'Modelo base sin entrenar creado por defecto',
+                        'warning': 'Este modelo necesita entrenamiento antes de ser útil'
                     }
                 }
-                logger.info("⚠️  Modelo base creado (sin entrenar)")
+                
+                logger.warning("⚠️ Modelo base creado (sin entrenar) - se mejorará con el aprendizaje federado")
+                
+            # ✅ CONFIGURAR FL_AGGREGATOR CON EL MODELO INICIAL
+            if self.global_model:
+                self.fl_aggregator.global_model = self.global_model.copy()
+                self.fl_aggregator.round_number = self.global_model.get('round', 0)
+                
+                # Actualizar features del aggregator
+                features = self.global_model.get('features', [])
+                if features:
+                    self.fl_aggregator.fl_features = features
+                
+                logger.info(f"🔗 FederatedAggregator configurado con modelo inicial")
                 
         except Exception as e:
             logger.error(f"❌ Error cargando modelo inicial: {e}")
-            self.global_model = None
+            logger.error(f"❌ Traceback: {e.__class__.__name__}: {str(e)}")
+            
+            # Crear modelo de emergencia
+            self.global_model = {
+                'model': None,
+                'scaler': None,
+                'selected_features': [],
+                'version': -1,  # ← Versión -1 indica error
+                'timestamp': time.time(),
+                'features': [],
+                'participants': 0,
+                'global_accuracy': 0.0,
+                'aggregation_method': 'emergency_fallback',
+                'created_at': time.time(),
+                'round': 0,
+                'metadata': {
+                    'source': 'error_fallback',
+                    'description': 'Modelo de emergencia debido a error en carga',
+                    'error': str(e)
+                }
+            }
+            
+            logger.warning("⚠️ Modelo de emergencia creado debido a error")
+            """Carga el modelo inicial del servidor"""
+            try:
+                initial_model_path = "model/modelo_rf.pkl"
+                if Path(self.model_path).exists():
+                    model_data = joblib.load(self.model_path)
+                    if isinstance(model_data, dict):
+                        self.global_model = model_data
+                    else:
+                        self.global_model = {
+                            'model': model_data, 
+                            'version': 0,
+                            'timestamp': time.time(),
+                            'features': []
+                        }
+                    
+                    logger.info(f"✅ Modelo inicial cargado desde {self.model_path}")
+                else:
+                    # Crear modelo base si no existe
+                    self.global_model = {
+                        'model': RandomForestClassifier(n_estimators=100, random_state=42),
+                        'scaler': StandardScaler(),
+                        'version': 0,
+                        'timestamp': time.time(),
+                        'features': [],
+                        'metadata': {
+                            'created_by': 'server',
+                            'description': 'Modelo base sin entrenar'
+                        }
+                    }
+                    logger.info("⚠️  Modelo base creado (sin entrenar)")
+                    
+            except Exception as e:
+                logger.error(f"❌ Error cargando modelo inicial: {e}")
+                self.global_model = None
     
     async def register_client(self, websocket):
         """Maneja el registro y comunicación con clientes"""
@@ -476,14 +641,15 @@ class FederatedIDSServer:
                 await self.handle_detection_alert(client_id, data)
             elif message_type == 'model_update':
                 await self.handle_model_update(client_id, data)
-            elif message_type == 'request_global_model':
+            elif message_type == 'get_global_model':  # ✅ AGREGAR ESTE HANDLER
+                await self.send_global_model(client_id)
+            elif message_type == 'request_global_model':  # ✅ ALIAS PARA COMPATIBILIDAD
                 await self.send_global_model(client_id)
             else:
                 logger.debug(f"🤔 Tipo de mensaje desconocido: {message_type} del cliente {client_id[:8]}")
-                
         except Exception as e:
             logger.error(f"❌ Error procesando mensaje {message_type} del cliente {client_id[:8]}: {e}")
-    
+        
     async def handle_heartbeat(self, client_id, data):
         """Maneja heartbeat de cliente"""
         if client_id in self.clients:

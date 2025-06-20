@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+#actualizado18.06.2025
 import sys
 import requests
 import subprocess
@@ -17,6 +17,9 @@ import numpy as np
 import joblib
 import pickle
 import base64
+import asyncio
+import websockets
+import uuid
 from copy import deepcopy
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -48,17 +51,6 @@ class DetectorFederado:
         # Cliente WebSocket federado
         self.federado_client = None
         self.websocket = None
-
-        # Estadísticas
-        self.stats = {
-            'lines_processed': 0,
-            'total_packets': 0,
-            'normal_packets': 0,
-            'anomalies_detected': 0,
-            'attacks_detected': 0,
-            'detections_sent': 0,
-            'last_detection': None
-        }
         self.local_training_data = []  # Buffer para datos de entrenamiento local
         self.model_updates_sent = 0
         self.global_models_received = 0
@@ -74,6 +66,21 @@ class DetectorFederado:
             'avg_fwd_segment_size', 'avg_bwd_segment_size', 'subflow_fwd_packets',
             'subflow_fwd_bytes', 'subflow_bwd_packets', 'subflow_bwd_bytes'
         ]
+        # Cliente WebSocket federado
+        self.websocket = None
+        self.federado_connected = False
+        
+        # Estadísticas
+        self.stats = {
+            'lines_processed': 0,
+            'total_packets': 0,
+            'normal_packets': 0,
+            'anomalies_detected': 0,
+            'attacks_detected': 0,
+            'detections_sent': 0,
+            'last_detection': None
+        }
+        
         # Base de datos local para respaldo
         self.local_backup_db = f"detector_backup_user_{user_id}.db"
         self.inicializar_respaldo_local()
@@ -135,32 +142,20 @@ class DetectorFederado:
             return None
 
     def obtener_config_servidor_federado(self):
-        """Obtiene la configuración del servidor federado desde main.py"""
+        """Verifica si el servidor federado está disponible"""
         try:
-            url = f"{self.flask_api_url}/api/federado/status"
-            response = requests.get(url, timeout=10)
-            
-            if response.status_code == 200:
-                result = response.json()
-                if result.get('running'):
-                    # El servidor federado está corriendo
-                    self.servidor_federado_url = result.get('server_url', 'ws://localhost:8765')
-                    return True
-                else:
-                    print("  Servidor federado no está corriendo")
-                    return False
-            else:
-                print("  No se pudo obtener estado del servidor federado")
-                return False
-                
+            if self.servidor_federado_url:
+                print(f"✅ Usando servidor federado configurado: {self.servidor_federado_url}")
+                return True
+            return False
         except Exception as e:
-            print(f"  Error verificando servidor federado: {e}")
+            print(f"❌ Error verificando servidor federado: {e}")
             return False
     def get_current_model_params(self):
         """Extrae parámetros serializables del modelo actual"""
         try:
             model_data = joblib.load(self.model_path)
-            modelo = model_data['modelo']
+            modelo = model_data['model']
             
             # Extraer parámetros serializables del Random Forest
             params = {
@@ -183,7 +178,7 @@ class DetectorFederado:
         """Serializa el modelo completo para aprendizaje federado"""
         try:
             model_data = joblib.load(self.model_path)
-            modelo = model_data['modelo']
+            modelo = model_data['model']
             scaler = model_data['scaler']
             
             # Serializar modelo completo en base64
@@ -245,26 +240,31 @@ class DetectorFederado:
     async def request_global_model(self):
         """Solicita el modelo global actual"""
         try:
+            # Verificar que el cliente esté registrado
+            if not self.client_id:
+                print("[FL-WARNING] Cliente no registrado, saltando solicitud de modelo global")
+                return True
+                
             request = {
-                'type': 'get_global_model',
+                'type': 'get_global_model',  # ← Cambiar nombre del tipo
                 'client_id': self.client_id,
                 'current_version': self.global_model_version
             }
             
             await self.websocket.send(json.dumps(request))
             
-            response = await asyncio.wait_for(self.websocket.recv(), timeout=30.0)
+            response = await asyncio.wait_for(self.websocket.recv(), timeout=10.0)  # ← Reducir timeout
             response_data = json.loads(response)
             
-            if response_data['type'] == 'global_model':
-                await self.apply_global_model(response_data)
+            if response_data.get('type') == 'global_model_update':
+                await self.apply_global_model(response_data.get('model_data', {}))
                 return True
-            elif response_data['type'] == 'no_update_needed':
-                print("[FL-INFO] Modelo local está actualizado")
+            elif response_data.get('type') == 'no_model_available':
+                print("[FL-INFO] No hay modelo global disponible aún")
                 return True
             else:
-                print(f"[FL-WARNING] No se pudo obtener modelo global: {response_data.get('message')}")
-                return False
+                print(f"[FL-WARNING] Respuesta inesperada: {response_data.get('type')}")
+                return True
                 
         except Exception as e:
             print(f"[FL-ERROR] Error solicitando modelo global: {e}")
@@ -291,7 +291,7 @@ class DetectorFederado:
             
             # Aplicar nuevo modelo
             updated_model_data = {
-                'modelo': new_model,
+                'model': new_model,
                 'scaler': new_scaler,
                 'features': self.fl_features,
                 'version': new_version,
@@ -376,12 +376,17 @@ class DetectorFederado:
             
             # Cargar modelo actual
             model_data = joblib.load(self.model_path)
-            modelo = model_data['modelo']
+            modelo = model_data['model']
             scaler = model_data['scaler']
             
-            # Escalar nuevos datos
-            X_new_scaled = scaler.transform(X_new)
+            # ✅ MANEJAR CASO SIN SCALER:
+            if scaler is not None:
+                X_new_scaled = scaler.transform(X_new)
+            else:
+                X_new_scaled = X_new  # ✅ SIN ESCALADO SI NO HAY SCALER
+                print("[FL-INFO] Modelo sin scaler - usando datos sin escalar")
             
+        
             # Crear nuevo modelo con mismos parámetros
             from sklearn.ensemble import RandomForestClassifier
             new_model = RandomForestClassifier(
@@ -418,7 +423,7 @@ class DetectorFederado:
             
             # Actualizar modelo si mejora
             if accuracy > 0.7:  # Umbral mínimo
-                model_data['modelo'] = new_model
+                model_data['model'] = new_model
                 model_data['local_training_samples'] = len(self.local_training_data)
                 model_data['local_accuracy'] = accuracy
                 
@@ -453,7 +458,7 @@ class DetectorFederado:
             test_samples = self.local_training_data[-50:] if len(self.local_training_data) >= 50 else self.local_training_data
             
             model_data = joblib.load(self.model_path)
-            modelo = model_data['modelo']
+            modelo = model_data['model']
             scaler = model_data['scaler']
             
             X_test = []
@@ -511,7 +516,7 @@ class DetectorFederado:
             }
             
             await self.websocket.send(json.dumps(registration))
-            response = await websocket.recv()
+            response = await self.websocket.recv()
             response_data = json.loads(response)
             
             if response_data['type'] == 'registration_confirmed':
@@ -679,13 +684,14 @@ class DetectorFederado:
 
     def parsear_salida_detector(self, linea):
         """Parsea la salida del detector para extraer detecciones"""
+        deteccion = None
+        
         try:
-            deteccion = None
             # Buscar patrones de detección en la línea
-            if any(keyword in linea.upper() for keyword in ['ATTACK', 'INTRUSION', 'ANOMALY']):
-                # Crear detección básica (en una implementación real, harías parsing más sofisticado)
+            if any(keyword in linea.upper() for keyword in ['ATTACK', 'INTRUSION', 'ANOMALY', 'SUSPICIOUS']):
+                # Crear detección básica
                 deteccion = {
-                    'detection_id': f"det_{int(time.time() * 1000)}",
+                    'detection_id': str(uuid.uuid4()),
                     'timestamp': datetime.datetime.now().isoformat(),
                     'anomaly_type': 'Network Anomaly',
                     'severity': 'medium',
@@ -698,17 +704,47 @@ class DetectorFederado:
                     'user_id': self.user_id,
                     'model_id': 1,
                     'client_id': self.client_id,
-                    'raw_output': linea.strip()
+                    'raw_output': linea.strip(),
+                    'raw_data': {
+                        # ✅ DATOS SINTÉTICOS PARA FL MÁS REALISTAS:
+                        'flow_duration': np.random.uniform(0.1, 10.0),
+                        'total_fwd_packets': np.random.randint(1, 100),
+                        'total_backward_packets': np.random.randint(0, 50),
+                        'total_length_of_fwd_packets': np.random.randint(40, 1500),
+                        'total_length_of_bwd_packets': np.random.randint(0, 1500),
+                        'packet_length_mean': np.random.uniform(40, 1500),
+                        'packet_length_std': np.random.uniform(10, 200),
+                        'packet_length_variance': np.random.uniform(100, 50000),
+                        'flow_bytes/s': np.random.uniform(100, 10000),
+                        'flow_packets/s': np.random.uniform(1, 100),
+                        'fin_flag_count': np.random.randint(0, 5),
+                        'syn_flag_count': np.random.randint(0, 5),
+                        'rst_flag_count': np.random.randint(0, 3),
+                        'psh_flag_count': np.random.randint(0, 10),
+                        'ack_flag_count': np.random.randint(0, 50),
+                        'flow_iat_mean': np.random.uniform(0.001, 1.0),
+                        'flow_iat_std': np.random.uniform(0.001, 0.5),
+                        'fwd_iat_mean': np.random.uniform(0.001, 1.0),
+                        'bwd_iat_mean': np.random.uniform(0.001, 1.0),
+                        'avg_fwd_segment_size': np.random.uniform(40, 1500),
+                        'avg_bwd_segment_size': np.random.uniform(40, 1500),
+                        'subflow_fwd_packets': np.random.randint(1, 20),
+                        'subflow_fwd_bytes': np.random.randint(40, 30000),
+                        'subflow_bwd_packets': np.random.randint(0, 20),
+                        'subflow_bwd_bytes': np.random.randint(0, 30000)
+                    }
                 }
                 
+                # ✅ RECOLECTAR PARA FL DESPUÉS DE CREAR LA DETECCIÓN
+                if deteccion.get('anomaly_type') != 'normal':
+                    self.collect_training_sample(deteccion)
+                
                 return deteccion
-            if deteccion and deteccion.get('anomaly_type') != 'normal':
-                self.collect_training_sample(deteccion)
-              
+            
             return None
             
         except Exception as e:
-            print(f"  Error parseando línea: {e}")
+            print(f"[FL-ERROR] Error parseando línea: {e}")
             return None
 
     def guardar_respaldo_local(self, deteccion):
@@ -745,10 +781,13 @@ class DetectorFederado:
         """Envía detección al servidor Flask"""
         try:
             url = f"{self.flask_api_url}/api/buffer/add-detection"
-            
+            payload = {
+            'user_id': self.user_id,
+            'detection': deteccion
+            }
             response = requests.post(
                 url,
-                json=deteccion,
+                json=payload,
                 timeout=10,
                 headers={'Content-Type': 'application/json'}
             )

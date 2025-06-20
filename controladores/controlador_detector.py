@@ -348,6 +348,10 @@ class DetectionBuffer:
                 return
             
             saved_count = 0
+            
+            # ✅ USAR TRANSACCIÓN EXPLÍCITA:
+            conn.autocommit = False  # ← AGREGAR ESTA LÍNEA
+            
             with conn.cursor() as cursor:
                 for detection in detections_to_save:
                     try:
@@ -368,14 +372,18 @@ class DetectionBuffer:
                         model_id = 1
                         cursor.execute("SELECT EXISTS (SELECT 1 FROM ml_models WHERE id = %s)", (model_id,))
                         if not cursor.fetchone()[0]:
-                            # Crear modelo por defecto si no existe
                             cursor.execute("""
                             INSERT INTO ml_models (id, name, version, model_type, description, is_active, created_by)
                             VALUES (%s, %s, %s, %s, %s, %s, %s)
                             ON CONFLICT (id) DO NOTHING
                             """, (1, 'Default IDS Model', '1.0', 'Random Forest', 'Modelo por defecto', True, 1))
                         
-                        # Insertar detección con UPSERT
+                        # ✅ GENERAR UUID VÁLIDO:
+                        detection_id = detection.get('detection_id')
+                        if not detection_id or not detection_id.startswith(('urn:', 'uuid:')):
+                            detection_id = str(uuid.uuid4())
+                        
+                        # Insertar detección con UUID válido
                         cursor.execute("""
                             INSERT INTO detections (
                                 detection_id, client_id, model_id, timestamp, source_ip, destination_ip,
@@ -387,7 +395,7 @@ class DetectionBuffer:
                                 confidence_score = EXCLUDED.confidence_score,
                                 severity = EXCLUDED.severity
                         """, (
-                            detection.get('detection_id', f"det_{int(time.time()*1000)}_{saved_count}"),
+                            detection_id,  # ✅ UUID VÁLIDO
                             client_id,
                             model_id,
                             detection.get('timestamp', datetime.datetime.now()),
@@ -407,9 +415,15 @@ class DetectionBuffer:
                         
                     except Exception as e:
                         logger.error(f"Error guardando detección individual: {e}")
-                        continue
+                        # ✅ ROLLBACK Y CONTINÚA:
+                        conn.rollback()
+                        break  # ← SALIR DEL LOOP SI HAY ERROR
                 
-                conn.commit()
+                # ✅ COMMIT SOLO SI TODO SALIÓ BIEN:
+                if saved_count > 0:
+                    conn.commit()
+                else:
+                    conn.rollback()
             
             self.total_saved += saved_count
             self.last_flush = time.time()
@@ -418,12 +432,14 @@ class DetectionBuffer:
             
         except Exception as e:
             logger.error(f"Error en flush masivo a BD: {e}")
+            if conn:
+                conn.rollback()  # ✅ ROLLBACK EN CASO DE ERROR
             with self.buffer_lock:
                 self.buffer.extendleft(reversed(detections_to_save))
         finally:
             if conn:
                 conn.close()
-    
+
     def get_stats(self):
         """Obtiene estadísticas del buffer"""
         with self.buffer_lock:
