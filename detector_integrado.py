@@ -316,7 +316,101 @@ class DetectorFederado:
         except Exception as e:
             print(f"[FL-ERROR] Error aplicando modelo global: {e}")
             return False
-
+        # AGREGAR esta función después de apply_global_model:
+    
+    def periodic_fl_sender(self):
+        """Envía periódicamente detecciones y actualizaciones al servidor federado"""
+        print("[FL-INFO] Iniciando envío periódico al servidor federado")
+        
+        while self.running and self.federado_connected:
+            try:
+                # Esperar 30 segundos entre envíos
+                time.sleep(30)
+                
+                if not self.websocket:
+                    break
+                    
+                # ✅ ENVIAR ESTADÍSTICAS CADA 30 SEGUNDOS
+                stats_update = {
+                    'type': 'stats_update',
+                    'client_id': self.client_id,
+                    'stats': {
+                        'packets_processed': self.stats['total_packets'],
+                        'flows_analyzed': self.stats['total_packets'],  # Aproximación
+                        'total_alerts': self.stats['anomalies_detected'],
+                        'normal_traffic': self.stats['normal_packets'],
+                        'attack_types': {'suspicious': self.stats['anomalies_detected']},
+                        'alert_distribution': {
+                            'normal': self.stats['normal_packets'],
+                            'suspicious': self.stats['anomalies_detected'],
+                            'attack': self.stats['attacks_detected']
+                        },
+                        'uptime': time.time() - self.start_time.timestamp() if self.start_time else 0,
+                        'fl_training_samples': len(self.local_training_data),
+                        'model_version': self.local_model_version
+                    },
+                    'timestamp': time.time()
+                }
+                
+                # Enviar en un nuevo event loop
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                
+                try:
+                    loop.run_until_complete(self.websocket.send(json.dumps(stats_update)))
+                    print(f"[FL-SYNC] Estadísticas enviadas: {self.stats['anomalies_detected']} anomalías")
+                    
+                    # ✅ ENVIAR MODELO SI HAY SUFICIENTES MUESTRAS
+                    if len(self.local_training_data) >= 50 and len(self.local_training_data) % 50 == 0:
+                        model_update = self.serialize_model_for_fl()
+                        if model_update:
+                            loop.run_until_complete(self.websocket.send(json.dumps(model_update)))
+                            print(f"[FL-SYNC] Modelo FL enviado con {len(self.local_training_data)} muestras")
+                            
+                finally:
+                    loop.close()
+                    
+            except Exception as e:
+                print(f"[FL-ERROR] Error en envío periódico: {e}")
+                # Si hay error de conexión, intentar reconectar
+                if "connection" in str(e).lower():
+                    print("[FL-INFO] Intentando reconectar...")
+                    self.federado_connected = False
+                    break
+                    
+        print("[FL-INFO] Envío periódico finalizado")
+    
+    async def send_detection_to_federado(self, detection_data):
+        """Envía detección individual al servidor federado"""
+        if not self.websocket or not self.federado_connected:
+            return False
+            
+        try:
+            detection_alert = {
+                'type': 'detection_alert',
+                'client_id': self.client_id,
+                'alert': {
+                    'status': 'suspicious' if detection_data.get('confidence_score', 0) > 0.4 else 'normal',
+                    'src_ip': detection_data.get('source_ip', '192.168.1.100'),
+                    'dst_ip': detection_data.get('destination_ip', '192.168.1.1'),
+                    'src_port': detection_data.get('source_port', 0),
+                    'dst_port': detection_data.get('destination_port', 80),
+                    'protocol': detection_data.get('protocol', 'TCP'),
+                    'score': detection_data.get('confidence_score', 0.0),
+                    'attack_type': detection_data.get('anomaly_type', 'Unknown'),
+                    'timestamp': detection_data.get('timestamp'),
+                    'detection_id': detection_data.get('detection_id'),
+                    'fl_features': detection_data.get('raw_data', {})
+                },
+                'timestamp': time.time()
+            }
+            
+            await self.websocket.send(json.dumps(detection_alert))
+            return True
+            
+        except Exception as e:
+            print(f"[FL-ERROR] Error enviando detección al federado: {e}")
+            return False
     def collect_training_sample(self, detection_data):
         """Recolecta muestra para entrenamiento local"""
         try:
@@ -492,6 +586,8 @@ class DetectorFederado:
             'global_version': self.global_model_version
         }
     
+        # BUSCAR la función conectar_servidor_federado (línea ~200) Y REEMPLAZAR:
+    
     async def conectar_servidor_federado(self):
         """Conecta al servidor federado WebSocket con capacidades FL"""
         if not self.servidor_federado_url:
@@ -499,14 +595,20 @@ class DetectorFederado:
             return False
         
         try:
-            import websockets
-            self.websocket = await websockets.connect(self.servidor_federado_url)
+            print(f"[FL-INFO] Conectando a {self.servidor_federado_url}...")
+            
+            self.websocket = await websockets.connect(
+                self.servidor_federado_url,
+                ping_interval=20,
+                ping_timeout=10,
+                close_timeout=10
+            )
             
             # Registrar cliente con capacidades FL
             registration = {
                 'type': 'register',
                 'name': f'Detector-FL-User-{self.user_id}',
-                'location': f'Device-{self.computing_device_info.get("model", "Unknown")}',
+                'location': f'Device-{self.computing_device_info.get("model", "Unknown") if self.computing_device_info else "Unknown"}',
                 'interface': self.interface,
                 'capabilities': ['intrusion_detection', 'federated_learning', 'model_aggregation'],
                 'version': '2.0',
@@ -515,27 +617,41 @@ class DetectorFederado:
                 'initial_model_params': self.get_current_model_params()
             }
             
+            print("[FL-INFO] Enviando registro al servidor federado...")
             await self.websocket.send(json.dumps(registration))
-            response = await self.websocket.recv()
+            
+            # Esperar respuesta con timeout más largo
+            response = await asyncio.wait_for(self.websocket.recv(), timeout=30.0)
             response_data = json.loads(response)
             
             if response_data['type'] == 'registration_confirmed':
                 self.client_id = response_data.get('client_id')
                 self.global_model_version = response_data.get('global_model_version', 0)
-                print(f"[FL-OK] Conectado al servidor federado: {self.servidor_federado_url}")
+                
+                print(f"[FL-SUCCESS] ✅ Conectado al servidor federado")
                 print(f"[FL-INFO] Cliente ID: {self.client_id}")
                 print(f"[FL-INFO] Versión modelo global: {self.global_model_version}")
                 
-                # Solicitar modelo global actual si hay uno más nuevo
+                # Marcar como conectado
+                self.federado_connected = True
+                
+                # Solicitar modelo global si disponible
                 await self.request_global_model()
+                
+                # ✅ INICIAR HILO PARA ENVÍO PERIÓDICO DE DETECCIONES
+                threading.Thread(target=self.periodic_fl_sender, daemon=True).start()
+                
                 return True
             else:
-                print(f"[FL-ERROR] Error en registro federado: {response_data.get('message')}")
+                print(f"[FL-ERROR] Error en registro: {response_data.get('message', 'Desconocido')}")
                 return False
                 
+        except asyncio.TimeoutError:
+            print("[FL-ERROR] Timeout conectando al servidor federado")
+            return False
         except Exception as e:
             print(f"[FL-ERROR] Error conectando servidor federado: {e}")
-            return False
+            return False   
     def iniciar_detector_proceso(self):
         """Proceso principal del detector federado"""
         try:
@@ -573,28 +689,39 @@ class DetectorFederado:
             # Paso 4: Verificar conectividad con servidor federado
             print("   Paso 4: Verificando servidor federado...")
             federado_disponible = self.obtener_config_servidor_federado()
+            
             if federado_disponible:
                 print(f"   Servidor federado disponible: {self.servidor_federado_url}")
-                # ✅ AGREGAR CONEXIÓN WEBSOCKET:
+                
+                # ✅ CONECTAR AL SERVIDOR FEDERADO WEBSOCKET
                 try:
-                    import asyncio
+                    print("   [CONNECTING] Estableciendo conexión WebSocket...")
                     
-                    # Conectar al servidor federado WebSocket  
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
-                    federado_conectado = loop.run_until_complete(self.conectar_servidor_federado())
-                    loop.close()
                     
-                    if federado_conectado:
-                        print("   [OK] Conectado al servidor federado via WebSocket")
-                        self.federado_connected = True
-                    else:
-                        print("   [WARNING] No se pudo conectar al servidor federado")
+                    try:
+                        federado_conectado = loop.run_until_complete(self.conectar_servidor_federado())
+                        
+                        if federado_conectado:
+                            print("   [SUCCESS] ✅ Conectado al servidor federado via WebSocket")
+                            print(f"   [FL-INFO] Cliente registrado: {self.client_id}")
+                            self.federado_connected = True
+                        else:
+                            print("   [WARNING] ❌ No se pudo conectar al servidor federado")
+                            print("   [INFO] Continuando en modo local...")
+                            self.federado_connected = False
+                            
+                    finally:
+                        # NO cerrar el loop aquí porque WebSocket lo sigue usando
+                        pass
                         
                 except Exception as e:
-                    print(f"   [WARNING] Error conectando WebSocket federado: {e}")
+                    print(f"   [ERROR] Error conectando WebSocket federado: {e}")
+                    self.federado_connected = False
             else:
-                print("  Servidor federado no disponible - funcionando en modo local")
+                print("   [INFO] Servidor federado no disponible - funcionando en modo local")
+                self.federado_connected = False
             
             print("=" * 60)
             print(" INICIANDO DETECTOR DE TRÁFICO DE RED")
@@ -735,9 +862,24 @@ class DetectorFederado:
                     }
                 }
                 
-                # ✅ RECOLECTAR PARA FL DESPUÉS DE CREAR LA DETECCIÓN
+                # ✅ RECOLECTAR PARA FL
                 if deteccion.get('anomaly_type') != 'normal':
                     self.collect_training_sample(deteccion)
+                
+                # ✅ ENVIAR AL SERVIDOR FEDERADO SI ESTÁ CONECTADO
+                if self.federado_connected and self.websocket:
+                    try:
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        
+                        try:
+                            loop.run_until_complete(self.send_detection_to_federado(deteccion))
+                            print(f"[FL-SENT] Detección enviada al servidor federado")
+                        finally:
+                            loop.close()
+                            
+                    except Exception as e:
+                        print(f"[FL-ERROR] Error enviando detección: {e}")
                 
                 return deteccion
             

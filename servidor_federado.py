@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
+CODIGO HECHO 22.06.2025 v 2
 Servidor Federado para Sistema de Detección de Intrusiones
 ----------------------------------------------------------
 Coordina múltiples clientes IDS y agrega sus modelos
@@ -601,7 +602,7 @@ class FederatedIDSServer:
         except asyncio.TimeoutError:
             logger.warning("⏰ Timeout esperando registro de cliente")
         except websockets.exceptions.ConnectionClosed:
-            logger.info(f"🔌 Cliente {client_name} ({client_id[:8] if client_id else 'desconocido'}) desconectado")
+            logger.info(f"🔌 Cliente {client_name} ({client_id[:8]}) desconectado")
         except json.JSONDecodeError:
             logger.error("❌ Mensaje de registro JSON inválido")
         except Exception as e:
@@ -721,14 +722,13 @@ class FederatedIDSServer:
             # Agregar a cola de eventos
             self.event_queue.append(enriched_alert)
             
-            # Log de la alerta
+            # ✅ LOG MEJORADO PARA VER LAS DETECCIONES
             severity = alert.get('status', 'unknown')
             src_ip = alert.get('src_ip', 'unknown')
             dst_ip = alert.get('dst_ip', 'unknown')
             score = alert.get('score', 0)
             attack_type = alert.get('attack_type', '')
             
-            # Usar emojis y colores para mejor visualización
             emoji_map = {
                 'normal': '✅',
                 'suspicious': '⚠️',
@@ -738,18 +738,20 @@ class FederatedIDSServer:
             
             client_name = client_info.get('name', 'Unknown')
             
+            # ✅ MOSTRAR DETECCIÓN EN SERVIDOR FEDERADO
+            print(f"\n📥 [DETECTION] {emoji} {client_name}: {src_ip} -> {dst_ip}")
+            print(f"    Tipo: {attack_type} | Score: {score:.4f} | Status: {severity.upper()}")
+            print(f"    FL Features: {len(alert.get('fl_features', {})) if alert.get('fl_features') else 0}")
+            
+            # Actualizar estadísticas globales
+            self.global_stats['total_detections'] += 1
+            self.global_stats['alert_distribution'][severity] += 1
+            if attack_type:
+                self.global_stats['attack_types'][attack_type] += 1
+                
             logger.info(f"{emoji} [{severity.upper()}] {client_name}: {src_ip} -> {dst_ip} "
                        f"({attack_type}) Score: {score:.4f}")
-            
-            # Reenviar alerta crítica a otros clientes
-            if severity == 'attack' and score > 0.8:
-                await self.broadcast_message({
-                    'type': 'critical_alert',
-                    'alert': enriched_alert
-                }, exclude_client=client_id)
-                
-                logger.warning(f"🚨 Alerta crítica distribuida a {len(self.clients)-1} clientes")
-                
+        
         except Exception as e:
             logger.error(f"❌ Error manejando alerta del cliente {client_id[:8]}: {e}")
     

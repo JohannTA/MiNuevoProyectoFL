@@ -3,7 +3,7 @@ from functools import wraps
 from db.db import obtener_conexion
 from psycopg2.extras import RealDictCursor
 from collections import deque
-from datetime import datetime
+import datetime
 import psutil
 import numpy as np  
 import os
@@ -27,12 +27,6 @@ if sys.platform == 'win32':
         sys.stdout.reconfigure(encoding='utf-8')
     if sys.stderr.encoding != 'utf-8':
         sys.stderr.reconfigure(encoding='utf-8')
-detector_output_queue = []
-federado_output_queue = []
-detector_output_lock = threading.Lock()
-federado_process = None 
-detection_buffer_lock = threading.Lock()  
-start_time = time.time() 
 # Importaciones de controladores
 from controladores.controlador_usuario import (
     obtener_usuario_por_id, autenticar_usuario, registrar_actividad_usuario, 
@@ -100,17 +94,18 @@ detector_stats = {
     'uptime': 0,
     'detections': {'normal': 0, 'suspicious': 0, 'attack': 0}
 }
+# AGREGAR estas definiciones globales después de línea 105:
 federado_stats = {
     'status': 'stopped',
+    'host': '0.0.0.0',
+    'port': 8765,
     'server': 'ws://localhost:8765',
     'clients': 0,
-    'models': 0,
-    'last_sync': None,
-    'shared': 0,
-    'received': 0,
-    'accuracy': 0
+    'uptime': 0
 }
 
+# Variables globales para salida del detector
+detector_output_queue = []
 # ========================================
 # SISTEMA DE BUFFER TEMPORAL
 # ========================================
@@ -178,8 +173,7 @@ def health_check_extended():
         "processes": {
             "detector_running": detector_running,
             "federado_running": federado_running
-        },
-        "buffer": detection_buffer.get_stats()
+        }
     })
     
     if "error" in result:
@@ -222,14 +216,14 @@ class StatsBuffer:
             self.stats['detections_by_type'][anomaly_type] += 1
             
             # Detecciones recientes
-            detection['display_time'] = datetime.datetime.datetime.now().isoformat()
+            detection['display_time'] = datetime.datetime.now().isoformat()
             self.stats['recent_detections'].appendleft(detection)
             
             # Estadísticas por hora
-            current_hour = datetime.now().hour
+            current_hour = datetime.datetime.now().hour
             if current_hour not in self.stats['hourly_stats']:
                 self.stats['hourly_stats'][current_hour] = 0
-            self.stats['hourly_stats'][current_hour] += 1
+            current_hour = datetime.datetime.now().hour
     
     def get_stats(self):
         """Obtiene estadísticas actuales"""
@@ -637,7 +631,7 @@ def get_realtime_stats():
             stats_base['total_clientes'] = max(1, stats_base['total_clientes'])
         
         response_data = {
-            'timestamp': datetime.datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.now().isoformat(),
             'resumen': stats_base,
             'severidad_1h': severidad_1h,
             'tipos_ataque_1h': tipos_ataque_1h,
@@ -655,7 +649,7 @@ def get_realtime_stats():
         logger.error(f"Error en stats tiempo real: {e}")
         # Retornar datos básicos en caso de error
         return jsonify({
-            'timestamp': datetime.datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.now().isoformat(),
             'resumen': {
                 'total_detecciones': detector_stats.get('detections', {}).get('total', 0),
                 'detecciones_1h': 0,
@@ -755,34 +749,15 @@ def capture_detector_output(process):
                     processed_line['type'] = 'success'
                 elif any(keyword in line_upper for keyword in ['NORMAL', 'TRÁFICO']):
                     processed_line['type'] = 'normal'
-                
-                # Agregar a cola con thread safety
-                # Lock eliminado - no necesario
-                    detector_output_queue.append(processed_line)
-                    # Mantener últimas 200 líneas
                     if len(detector_output_queue) > 200:
                         detector_output_queue.pop(0)
-                
-                # También imprimir en el log del servidor para debugging
                 logger.info(f"[DETECTOR] {line}")
                 
     except Exception as e:
         logger.error(f"Error capturando salida del detector: {e}")
-        # Lock eliminado - no necesario
-            detector_output_queue.append({
-                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-                'raw': f"Error capturando salida: {str(e)}",
-                'type': 'error'
-            })
     finally:
         logger.info("Captura de salida del detector terminada")
-        # Lock eliminado - no necesario
-            detector_output_queue.append({
-                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-                'raw': "--- Proceso detector terminado ---",
-                'type': 'warning'
-            })
- 
+
 @app.route('/api/detector/start', methods=['POST'])
 @login_required
 def start_detector():
@@ -828,12 +803,8 @@ def start_detector():
         print(f"🔗 Flask URL: http://localhost:5000")
         print(f"🔧 Comando: {' '.join(cmd)}")
         print(f"{'='*80}")
-        
-        # Limpiar buffer de salida
-        # Lock eliminado - no necesario
-            detector_output_queue.clear()
-        
-        # EJECUTAR SIN CAPTURAR STDOUT (para ver toda la salida)
+
+        # EJCUTAR SIN CAPTURAR STDOUT (para ver toda la salida)
         detector_process = subprocess.Popen(
             cmd,
             # stdout=None,      # Salida directa a consola
@@ -846,24 +817,13 @@ def start_detector():
             cwd=os.getcwd()
         )
         
-        # Captura EN TIEMPO REAL para API (sin interferir con consola)
+        # Captura EN TIEMPO REALa para API (sin interferir con consola)
         def capture_for_api():
             try:
                 for line in iter(detector_process.stdout.readline, ''):
                     if line.strip():
                         # Mostrar en consola principal
                         print(f"[DETECTOR] {line.rstrip()}")
-                        
-                        # También guardar para API
-                        # Lock eliminado - no necesario
-                            detector_output_queue.append({
-                                'timestamp': datetime.datetime.now().strftime('%H:%M:%S'),
-                                'raw': line.strip(),
-                                'type': 'output'
-                            })
-                            # Limitar tamaño
-                            if len(detector_output_queue) > 500:
-                                detector_output_queue.pop(0)
             except Exception as e:
                 print(f"❌ Error en captura: {e}")
         
@@ -949,9 +909,8 @@ def get_detector_output():
         since = request.args.get('since', 0, type=int)
         
         # Lock eliminado - no necesario
-            # Retornar líneas desde el índice solicitado
-            lines = detector_output_queue[since:] if since < len(detector_output_queue) else []
-            total_lines = len(detector_output_queue)
+        lines = detector_output_queue[since:] if since < len(detector_output_queue) else []
+        total_lines = len(detector_output_queue)  # ← CORREGIR INDENTACIÓN AQUÍ
         
         # Verificar si el proceso sigue corriendo
         is_running = detector_process is not None and detector_process.poll() is None
@@ -961,7 +920,7 @@ def get_detector_output():
             'total': total_lines,
             'since': since,
             'running': is_running,
-            'timestamp': datetime.datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -1146,7 +1105,7 @@ def receive_model_update():
             'client_id': client_id,
             'user_id': user_id,
             'aggregation_pending': True,
-            'timestamp': datetime.datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -1174,7 +1133,7 @@ def send_global_model():
                 'recall': 0.91,
                 'f1_score': 0.92
             },
-            'last_updated': datetime.datetime.datetime.now().isoformat(),
+            'last_updated': datetime.datetime.now().isoformat(),
             'clients_contributed': 1,  # Contar clientes reales
             'training_rounds': 1,
             'metadata': {
@@ -1191,7 +1150,7 @@ def send_global_model():
             'model_data': model_data,
             'client_id': client_id,
             'user_id': user_id,
-            'download_timestamp': datetime.datetime.datetime.now().isoformat()
+            'download_timestamp': datetime.datetime.now().isoformat()
         })
         
     except Exception as e:
@@ -1214,7 +1173,7 @@ def get_system_log():
                 for line in lines[-50:]:
                     if line.strip():
                         log_entries.append({
-                            'timestamp': datetime.datetime.datetime.now().isoformat(),
+                            'timestamp': datetime.datetime.now().isoformat(),
                             'component': 'Sistema',
                             'level': 'INFO',
                             'message': line.strip()
@@ -1224,7 +1183,7 @@ def get_system_log():
         if not log_entries:
             log_entries = [
                 {
-                    'timestamp': datetime.datetime.datetime.now().isoformat(),
+                    'timestamp': datetime.datetime.now().isoformat(),
                     'component': 'Sistema',
                     'level': 'INFO',
                     'message': 'Sistema IDS iniciado correctamente'
@@ -1352,7 +1311,7 @@ def verificar_conexion():
             'detector': False,
             'federado': False,
             'network': False,
-            'timestamp': datetime.datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.now().isoformat()
         }
         
         # Verificar BD
@@ -1411,7 +1370,7 @@ def verificar_rendimiento():
             'memory_percent': psutil.virtual_memory().percent,
             'disk_percent': disk_percent,
             'process_count': len(psutil.pids()),
-            'timestamp': datetime.datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.now().isoformat()
         }
         
         # Evaluación de rendimiento
@@ -1458,7 +1417,7 @@ def ejecutar_diagnosticos():
                 'detector_running': detector_process is not None and detector_process.poll() is None,
                 'federado_running': federado_process is not None and federado_process.poll() is None
             },
-            'timestamp': datetime.datetime.datetime.now().isoformat()
+            'timestamp': datetime.datetime.now().isoformat()
         }
         
         # Contar problemas
@@ -1503,7 +1462,7 @@ def exportar_configuracion():
                 'server': federado_stats.get('server', 'ws://localhost:8765')
             },
             'export_info': {
-                'timestamp': datetime.datetime.datetime.now().isoformat(),
+                'timestamp': datetime.datetime.now().isoformat(),
                 'exported_by': session['username'],
                 'version': '1.0'
             }
@@ -1858,75 +1817,7 @@ def time_format(value):
         logger.error(f"Error formateando hora {value}: {e}")
         return str(value) if value is not None else "N/A"
 
-@app.template_filter('time_ago')
-def time_ago(value):
-    """Tiempo transcurrido - VERSIÓN ROBUSTA"""
-    try:
-        if value is None:
-            return "Desconocido"
-        
-        if isinstance(value, str):
-            formats_to_try = [
-                '%Y-%m-%dT%H:%M:%S.%f%z',
-                '%Y-%m-%dT%H:%M:%S%z',
-                '%Y-%m-%dT%H:%M:%S.%f',
-                '%Y-%m-%dT%H:%M:%S',
-                '%Y-%m-%d %H:%M:%S.%f',
-                '%Y-%m-%d %H:%M:%S'
-            ]
-            
-            dt = None
-            for fmt in formats_to_try:
-                try:
-                    if 'Z' in value:
-                        value = value.replace('Z', '+00:00')
-                    dt = datetime.strptime(value, fmt)
-                    break
-                except ValueError:
-                    continue
-            
-            if dt is None:
-                return "Desconocido"
-                
-        elif hasattr(value, 'replace'):
-            dt = value
-        else:
-            return "Desconocido"
-        
-        now = datetime.now()
-        
-        # Manejar timezone si existe
-        if hasattr(dt, 'tzinfo') and dt.tzinfo is not None:
-            if now.tzinfo is None:
-                from datetime import timezone
-                now = now.replace(tzinfo=timezone.utc)
-        elif now.tzinfo is not None and (not hasattr(dt, 'tzinfo') or dt.tzinfo is None):
-            dt = dt.replace(tzinfo=now.tzinfo)
-        
-        try:
-            diff = now - dt
-        except TypeError:
-            # Si hay problemas con timezone, usar versiones naive
-            if hasattr(dt, 'replace') and hasattr(dt, 'tzinfo'):
-                dt = dt.replace(tzinfo=None)
-            now = datetime.now()
-            diff = now - dt
-        
-        if diff.days > 0:
-            return f"hace {diff.days} día{'s' if diff.days > 1 else ''}"
-        elif diff.seconds > 3600:
-            hours = diff.seconds // 3600
-            return f"hace {hours} hora{'s' if hours > 1 else ''}"
-        elif diff.seconds > 60:
-            minutes = diff.seconds // 60
-            return f"hace {minutes} minuto{'s' if minutes > 1 else ''}"
-        else:
-            return "hace unos segundos"
-            
-    except Exception as e:
-        logger.error(f"Error calculando tiempo transcurrido para {value}: {e}")
-        return "Desconocido"
-
+# time_ago duplicado eliminado
 @app.template_filter('percentage')
 def percentage_format(value):
     """Formatea porcentajes - VERSIÓN ROBUSTA"""
@@ -1948,30 +1839,6 @@ def percentage_format(value):
     except Exception as e:
         logger.error(f"Error formateando porcentaje {value}: {e}")
         return "0%"
-    """Formatea números con separadores de miles"""
-    try:
-        if value is None:
-            return "0"
-        return "{:,}".format(int(value))
-    except (ValueError, TypeError):
-        return str(value) if value is not None else "0"
-
-
-@app.template_filter('date_format')
-def date_format(value, format='%Y-%m-%d %H:%M'):
-    """Formatea fechas"""
-    try:
-        if isinstance(value, str):
-            # Intentar parsear fecha ISO
-            from datetime import datetime
-            dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
-            return dt.strftime(format)
-        elif hasattr(value, 'strftime'):
-            return value.strftime(format)
-        else:
-            return str(value)
-    except:
-        return str(value) if value else ""
 
 @app.template_filter('time_ago')
 def time_ago(value):
@@ -2064,13 +1931,9 @@ def get_dashboard_status():
                 'running': detector_running,
                 'stats': detector_stats.copy()
             },
-            'federado': {
-                'running': federado_running,
-                'stats': federado_stats.copy()
-            },
             'system': {
-                'timestamp': datetime.datetime.datetime.now().isoformat(),
-                'uptime': time.time() - app_start_time if 'app_start_time' in globals() else 0
+                'timestamp': datetime.datetime.now().isoformat(),
+                'uptime': time.time() - start_time if 'start_time' in globals() else 0
             }
         }
         
@@ -2158,12 +2021,11 @@ def get_dashboard_counters():
         }
         
         # Información adicional del sistema
-        buffer_info = detection_buffer.get_stats()
-        
+        buffer_info = {"buffer_size": 0, "save_rate": 100.0, "total_buffered": 0}
         return jsonify({
             'success': True,
             'counters': combined_counters,
-            'timestamp': datetime.datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.now().isoformat(),
             'source': 'combined',
             'buffer_info': {
                 'detections_pending': buffer_info['buffer_size'],
@@ -2312,8 +2174,8 @@ def add_detection_to_buffer():
         success = save_detection_to_database(detection_data)
         
         # ✅ ACTUALIZAR STATS PARA DASHBOARD:
-        if 'stats_buffer' in globals():
-            stats_buffer.add_detection(detection_data)
+        
+        stats_buffer.add_detection(detection_data)
         
         if success:
             logger.info(f"✅ Detección guardada | Usuario: {user_id} | Tipo: {detection_data.get('anomaly_type')}")
@@ -2368,126 +2230,7 @@ def save_detection_to_database(detection_data):
             conn.rollback()
             conn.close()
         return False
-@app.route('/api/buffer/status')
-@login_required
-def get_buffer_status():
-    """Obtiene estado detallado del sistema de buffer"""
-    try:
-        buffer_stats = detection_buffer.get_stats()
-        realtime_stats = stats_buffer.get_stats()
-        
-        return jsonify({
-            'success': True,
-            'buffer_stats': buffer_stats,
-            'realtime_stats': realtime_stats,
-            'system_status': {
-                'detector_running': detector_process is not None and detector_process.poll() is None,
-                'federado_running': federado_process is not None and federado_process.poll() is None,
-                'database_connected': obtener_conexion() is not None,
-                'buffer_health': 'healthy' if buffer_stats['buffer_size'] < 800 else 'warning'
-            },
-            'timestamp': datetime.datetime.datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        logger.error(f"Error obteniendo estado del buffer: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
-# AGREGAR ESTAS FUNCIONES después de marcar_enviado_respaldo:
-
-def enviar_actualizacion_modelo(self, model_weights, performance_metrics):
-    """Envía actualización del modelo para aprendizaje federado"""
-    try:
-        url = f"{self.flask_api_url}/api/federated/model-update"
-        
-        payload = {
-            'client_id': int(self.client_id),
-            'user_id': self.user_id,
-            'model_weights': model_weights,  # Serializado
-            'performance_metrics': performance_metrics,
-            'training_samples': self.stats['total_packets'],
-            'timestamp': datetime.datetime.now().isoformat(),
-            'device_info': {
-                'type': self.computing_device_info.get('type'),
-                'model': self.computing_device_info.get('model'),
-                'serial': self.computing_device_info.get('serial_number')
-            }
-        }
-        
-        response = requests.post(
-            url,
-            json=payload,
-            timeout=30,
-            headers={'Content-Type': 'application/json'}
-        )
-        
-        if response.status_code == 200:
-            result = response.json()
-            if result.get('success'):
-                self.model_updates_sent += 1
-                print(f"📤 [FEDERADO] Actualización de modelo enviada #{self.model_updates_sent}")
-                return True
-        
-        print(f"⚠️ [FEDERADO] Error enviando actualización: HTTP {response.status_code}")
-        return False
-        
-    except Exception as e:
-        print(f"⚠️ [FEDERADO] Error: {e}")
-        return False
-
-def recibir_modelo_global(self):
-    """Recibe el modelo global actualizado del servidor federado"""
-    try:
-        url = f"{self.flask_api_url}/api/federado/global-model"
-        
-        params = {
-            'client_id': self.client_id,
-            'user_id': self.user_id
-        }
-        
-        response = requests.get(url, params=params, timeout=15)
-        
-        if response.status_code == 200:
-            result = response.json()
-            if result.get('success'):
-                model_data = result.get('model_data')
-                self.model_updates_received += 1
-                print(f"📥 [FEDERADO] Modelo global recibido #{self.model_updates_received}")
-                return model_data
-        
-        return None
-        
-    except Exception as e:
-        print(f"⚠️ [FEDERADO] Error recibiendo modelo: {e}")
-        return None
-
-def verificar_conectividad_federado(self):
-    """Verifica conectividad con el servidor federado"""
-    try:
-        url = f"{self.flask_api_url}/health-extended"
-        
-        response = requests.get(url, timeout=10)
-        
-        if response.status_code == 200:
-            result = response.json()
-            federated_available = result.get('federated_learning', {}).get('enabled', False)
-            
-            if federated_available:
-                print("✅ [FEDERADO] Servidor federado disponible")
-                return True
-            else:
-                print("⚠️ [FEDERADO] Servidor disponible pero aprendizaje federado desactivado")
-                return False
-        else:
-            print(f"⚠️ [FEDERADO] Servidor no disponible: HTTP {response.status_code}")
-            return False
-            
-    except Exception as e:
-        print(f"❌ [FEDERADO] Error verificando conectividad: {e}")
-        return False
-
-
+    
 if __name__ == "__main__":
     inicializar_sistema()
     

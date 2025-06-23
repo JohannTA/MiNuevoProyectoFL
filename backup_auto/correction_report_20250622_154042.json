@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-06-22T15:40:42.322138",
+  "errors_found": [
+    {
+      "type": "indentation_error",
+      "line": 919,
+      "description": "Indentación incorrecta en get_detector_output",
+      "severity": "critical"
+    },
+    {
+      "type": "duplicate_filter",
+      "description": "Filtro time_ago duplicado 2 veces",
+      "severity": "medium"
+    }
+  ],
+  "fixes_applied": [
+    "✅ Indentación corregida en get_detector_output",
+    "✅ Variable detector_output_queue agregada",
+    "✅ 1 filtros time_ago duplicados eliminados"
+  ],
+  "total_errors": 2,
+  "total_fixes": 3
+}
