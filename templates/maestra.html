@@ -126,12 +126,6 @@
                 <a href="{{ url_for('detecciones') }}" class="sidebar-link {% if request.path == '/detecciones' %}active{% endif %}">
                     <i class="fas fa-shield-alt"></i> Detecciones
                 </a>
-                <a href="{{ url_for('clientes') }}" class="sidebar-link {% if request.path == '/clientes' %}active{% endif %}">
-                    <i class="fas fa-laptop"></i> Clientes
-                </a>
-                <a href="{{ url_for('reportes') }}" class="sidebar-link {% if request.path == '/reportes' %}active{% endif %}">
-                    <i class="fas fa-chart-bar"></i> Reportes
-                </a>
                 
                 {% if session.role == 'admin' %}
                 <a href="{{ url_for('admin') }}" class="sidebar-link {% if request.path == '/admin' %}active{% endif %}">

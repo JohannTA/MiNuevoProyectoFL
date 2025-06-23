@@ -169,10 +169,6 @@
             <!-- Datos de Prueba -->
             <div class="control-group">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-outline-info dropdown-toggle" 
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-database me-1"></i>Datos
-                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><h6 class="dropdown-header">
                             <i class="fas fa-database me-1"></i>Gestión de Datos
@@ -1129,11 +1125,16 @@
         try {
             updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} detector...`, 'info');
             
+            // ✅ OBTENER CONFIGURACIÓN DINÁMICA DESDE LOS INPUTS HTML
             const config = {
                 interface: document.getElementById('interface-select')?.value || 'Wi-Fi',
-                client_id: parseInt(document.getElementById('client-id')?.value) || 1,
                 servidor_federado: document.getElementById('servidor-federado')?.value || 'ws://192.168.18.88:8765'
+                // user_id se obtiene automáticamente de la sesión en el backend
+                // model_path es dinámico en el backend
+                // flask_url es fijo: http://localhost:5000
             };
+            
+            console.log('🚀 Enviando configuración al detector:', config);
             
             const response = await fetch(`/api/detector/${action}`, {
                 method: 'POST',
@@ -1147,6 +1148,15 @@
                 updateSystemLog(data.message, 'success');
                 showNotification('success', data.message, 3000);
                 
+                // ✅ MOSTRAR CONFIGURACIÓN APLICADA
+                if (data.config && !isRunning) {
+                    updateSystemLog(`Configuración aplicada:`, 'info');
+                    updateSystemLog(`  • Usuario ID: ${data.config.user_id}`, 'info');
+                    updateSystemLog(`  • Interfaz: ${data.config.interface}`, 'info');
+                    updateSystemLog(`  • Modelo: ${data.config.model_path}`, 'info');
+                    updateSystemLog(`  • Servidor Federado: ${data.config.servidor_federado}`, 'info');
+                }
+                
                 // Actualizar estado inmediatamente
                 setTimeout(updateServiceStatus, 1000);
             } else {
@@ -1158,8 +1168,6 @@
             showNotification('error', `Error: ${error.message}`, 5000);
         }
     }
-    
-    // Toggle federado
     async function toggleFederado() {
         const isRunning = federadoState.status === 'running';
         const action = isRunning ? 'stop' : 'start';

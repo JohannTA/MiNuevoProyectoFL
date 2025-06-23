@@ -766,9 +766,12 @@ def start_detector():
     
     try:
         data = request.get_json() or {}
-        user_id = session.get('client_id', 1)
-        interface = data.get('interface', 'Wi-Fi')
-        servidor_federado = data.get('servidor_federado', 'ws://192.168.18.88:8765')
+        
+        #   OBTENER PARÁMETROS DINÁMICOS DEL FRONTEND
+        user_id = session.get('user_id', 1)  # ← DESDE SESIÓN
+        interface = data.get('interface', 'Wi-Fi')  # ← DESDE SELECTOR
+        servidor_federado = data.get('servidor_federado', 'ws://192.168.18.88:8765')  # ← DESDE INPUT
+        
         if detector_process and detector_process.poll() is None:
             return jsonify({'error': 'El detector ya está ejecutándose'}), 400
         
@@ -776,86 +779,87 @@ def start_detector():
         if not os.path.exists('detector_integrado.py'):
             return jsonify({'error': 'detector_integrado.py no encontrado'}), 500
         
-        # Buscar modelo disponible
+        #   BUSCAR MODELO DINÁMICAMENTE (COMO YA LO TIENES)
         model_path = 'model/modelo_rf.pkl'
         if not os.path.exists(model_path):
             model_path = 'model/modelo_rf_optimizado.pkl'
         if not os.path.exists(model_path):
             return jsonify({'error': 'Modelo no encontrado'}), 500
         
-        # Comando SIMPLIFICADO para detector integrado
+        #   COMANDO CON PARÁMETROS DINÁMICOS
         cmd = [
             sys.executable, 'detector_integrado.py',
-            '--user-id', str(user_id),
-            '--interface', interface,
-            '--model', model_path,
-            '--flask-url', 'http://localhost:5000',
-            '--servidor-federado', servidor_federado
+            '--user-id', str(user_id),                    # ← DESDE SESIÓN
+            '--interface', interface,                      # ← DESDE SELECTOR HTML
+            '--model', model_path,                        # ← DINÁMICO
+            '--flask-url', 'http://localhost:5000',       # ← FIJO
+            '--servidor-federado', servidor_federado      # ← DESDE INPUT HTML
         ]
         
-        # MENSAJE EN CONSOLA
+        # MENSAJE EN CONSOLA CON PARÁMETROS REALES
         print(f"\n{'='*80}")
-        print(f"🚀 INICIANDO DETECTOR INTEGRADO FEDERADO")
+        print("INICIANDO DETECTOR INTEGRADO FEDERADO")
         print(f"{'='*80}")
-        print(f"👤 Usuario ID: {user_id}")
-        print(f"🌐 Interfaz: {interface}")
-        print(f"🤖 Modelo: {model_path}")
-        print(f"🔗 Flask URL: http://localhost:5000")
-        print(f"🔧 Comando: {' '.join(cmd)}")
+        print(f"Usuario ID (sesión): {user_id}")
+        print(f"Interfaz (selector): {interface}")
+        print(f"Modelo (dinámico): {model_path}")
+        print(f"Flask URL (fijo): http://localhost:5000")
+        print(f"Servidor Federado (input): {servidor_federado}")
+        print(f"Comando: {' '.join(cmd)}")
         print(f"{'='*80}")
 
-        # EJCUTAR SIN CAPTURAR STDOUT (para ver toda la salida)
+        # EJECUTAR CON PARÁMETROS DINÁMICOS
         detector_process = subprocess.Popen(
             cmd,
-            # stdout=None,      # Salida directa a consola
-            # stderr=None,      # Errores directos a consola
-            stdout=subprocess.PIPE,  # Para API también
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1,  # Sin buffer
+            bufsize=1,
             universal_newlines=True,
             cwd=os.getcwd()
         )
         
-        # Captura EN TIEMPO REALa para API (sin interferir con consola)
+        # Captura de salida
         def capture_for_api():
             try:
                 for line in iter(detector_process.stdout.readline, ''):
                     if line.strip():
-                        # Mostrar en consola principal
                         print(f"[DETECTOR] {line.rstrip()}")
             except Exception as e:
-                print(f"❌ Error en captura: {e}")
+                print(f"  Error en captura: {e}")
         
-        # Iniciar captura en hilo separado
         threading.Thread(target=capture_for_api, daemon=True).start()
         
-        print(f"✅ Detector iniciado con PID: {detector_process.pid}")
-        print(f"📡 Salida visible en tiempo real en esta consola")
+        print(f"Detector iniciado con PID: {detector_process.pid}")
+        print(f"Parámetros aplicados correctamente")
         print(f"{'='*80}\n")
         
-        # Actualizar estadísticas
+        #   ACTUALIZAR ESTADÍSTICAS CON PARÁMETROS REALES
         detector_stats['status'] = 'running'
         detector_stats['interface'] = interface
         detector_stats['user_id'] = user_id
+        detector_stats['servidor_federado'] = servidor_federado
+        detector_stats['model_path'] = model_path
         detector_stats['start_time'] = time.time()
         detector_stats['pid'] = detector_process.pid
         
         return jsonify({
             'success': True,
-            'message': f'Detector federado iniciado - salida en consola',
+            'message': f'Detector iniciado con parámetros dinámicos',
             'pid': detector_process.pid,
-            'interface': interface,
-            'user_id': user_id,
-            'model_path': model_path,
-            'flask_url': 'http://localhost:5000'
+            'config': {
+                'user_id': user_id,
+                'interface': interface,
+                'model_path': model_path,
+                'flask_url': 'http://localhost:5000',
+                'servidor_federado': servidor_federado
+            }
         })
         
     except Exception as e:
-        print(f"❌ Error iniciando detector: {e}")
+        print(f"  Error iniciando detector: {e}")
         logger.error(f"Error iniciando detector: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
 
 @app.route('/api/detector/stop', methods=['POST'])
 @login_required
@@ -2115,7 +2119,7 @@ def get_recent_detections():
                     }
                     detections.append(detection)
                 
-                logger.info(f"✅ Detecciones recientes obtenidas: {len(detections)}")
+                logger.info(f"  Detecciones recientes obtenidas: {len(detections)}")
                 
                 return jsonify({
                     'success': True,
@@ -2170,21 +2174,21 @@ def add_detection_to_buffer():
             'raw_data': detection.get('raw_data', {})
         }
         
-        # ✅ GUARDAR DIRECTAMENTE EN POSTGRESQL:
+        #   GUARDAR DIRECTAMENTE EN POSTGRESQL:
         success = save_detection_to_database(detection_data)
         
-        # ✅ ACTUALIZAR STATS PARA DASHBOARD:
+        #   ACTUALIZAR STATS PARA DASHBOARD:
         
         stats_buffer.add_detection(detection_data)
         
         if success:
-            logger.info(f"✅ Detección guardada | Usuario: {user_id} | Tipo: {detection_data.get('anomaly_type')}")
+            logger.info(f"  Detección guardada | Usuario: {user_id} | Tipo: {detection_data.get('anomaly_type')}")
             return jsonify({'success': True, 'message': 'Detección guardada exitosamente'})
         else:
             return jsonify({'success': False, 'error': 'Error guardando en BD'}), 500
         
     except Exception as e:
-        logger.error(f"❌ Error procesando detección: {e}")
+        logger.error(f"  Error procesando detección: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

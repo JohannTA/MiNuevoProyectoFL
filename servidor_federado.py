@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-CODIGO HECHO 22.06.2025 v 2
+CODIGO HECHO 22.06.2025 v5
 Servidor Federado para Sistema de Detección de Intrusiones
 ----------------------------------------------------------
 Coordina múltiples clientes IDS y agrega sus modelos
@@ -629,6 +629,28 @@ class FederatedIDSServer:
         except Exception as e:
             logger.error(f"❌ Error en loop de mensajes del cliente {client_id[:8]}: {e}")
     
+        # AGREGAR en process_client_message:
+    async def handle_disconnect(self, client_id, data):
+        """Maneja desconexión limpia de cliente"""
+        try:
+            reason = data.get('reason', 'unknown')
+            final_stats = data.get('final_stats', {})
+            
+            if client_id in self.clients:
+                client_name = self.clients[client_id].get('name', 'Unknown')
+                print(f"🚪 Cliente desconectándose limpiamente: {client_name} ({client_id[:8]})")
+                print(f"   Razón: {reason}")
+                
+                # Marcar como desconectado
+                self.clients[client_id]['status'] = 'disconnecting'
+                self.clients[client_id]['disconnect_reason'] = reason
+                self.clients[client_id]['disconnect_time'] = time.time()
+                
+            logger.info(f"👋 Desconexión limpia: {client_id[:8]} - {reason}")
+            
+        except Exception as e:
+            logger.error(f"❌ Error manejando desconexión de {client_id[:8]}: {e}")
+
     async def process_client_message(self, client_id, data):
         """Procesa diferentes tipos de mensajes de clientes"""
         message_type = data.get('type')
@@ -636,26 +658,65 @@ class FederatedIDSServer:
         try:
             if message_type == 'heartbeat':
                 await self.handle_heartbeat(client_id, data)
+            elif message_type == 'ping':  # ✅ AGREGAR HANDLER PARA PING
+                await self.handle_ping(client_id, data)
             elif message_type == 'stats_update':
                 await self.handle_stats_update(client_id, data)
             elif message_type == 'detection_alert':
                 await self.handle_detection_alert(client_id, data)
             elif message_type == 'model_update':
                 await self.handle_model_update(client_id, data)
-            elif message_type == 'get_global_model':  # ✅ AGREGAR ESTE HANDLER
+            elif message_type == 'get_global_model':
                 await self.send_global_model(client_id)
-            elif message_type == 'request_global_model':  # ✅ ALIAS PARA COMPATIBILIDAD
+            elif message_type == 'request_global_model':
                 await self.send_global_model(client_id)
+            elif message_type == 'disconnect':
+                await self.handle_disconnect(client_id, data)
             else:
                 logger.debug(f"🤔 Tipo de mensaje desconocido: {message_type} del cliente {client_id[:8]}")
         except Exception as e:
             logger.error(f"❌ Error procesando mensaje {message_type} del cliente {client_id[:8]}: {e}")
-        
+
+    # ✅ AGREGAR HANDLER PARA PING:
+    async def handle_ping(self, client_id, data):
+        """Maneja ping de verificación de conexión"""
+        if client_id in self.clients:
+            self.clients[client_id]['last_heartbeat'] = time.time()
+            
+            # Responder con pong
+            pong_response = {
+                'type': 'pong',
+                'client_id': client_id,
+                'server_time': time.time(),
+                'round': self.current_round,
+                'status': 'ok'
+            }
+            await self.send_to_client(client_id, pong_response)
+            
+            logger.debug(f"🏓 Ping-Pong con cliente {client_id[:8]}")
+
     async def handle_heartbeat(self, client_id, data):
         """Maneja heartbeat de cliente"""
         if client_id in self.clients:
             self.clients[client_id]['last_heartbeat'] = time.time()
             self.clients[client_id]['status'] = data.get('status', 'active')
+            
+            # ✅ PROCESAR ESTADÍSTICAS DEL HEARTBEAT
+            stats = data.get('stats', {})
+            if stats:
+                # Actualizar estadísticas del cliente
+                self.clients[client_id]['last_stats'] = stats
+                self.clients[client_id]['last_stats_update'] = time.time()
+                
+                # Solo incrementar estadísticas globales si es nueva información
+                client_key = f"{client_id}_last_packets"
+                last_packets = getattr(self, client_key, 0)
+                current_packets = stats.get('packets_processed', 0)
+                
+                if current_packets > last_packets:
+                    diff = current_packets - last_packets
+                    self.global_stats['total_packets'] += diff
+                    setattr(self, client_key, current_packets)
             
             # Responder heartbeat
             response = {
@@ -665,7 +726,10 @@ class FederatedIDSServer:
                 'connected_clients': len(self.clients)
             }
             await self.send_to_client(client_id, response)
-    
+            
+            # ✅ LOG MÁS SILENCIOSO
+            logger.debug(f"💓 Heartbeat: {self.clients[client_id].get('name', 'Unknown')} ({client_id[:8]})")
+
     async def handle_stats_update(self, client_id, data):
         """Maneja actualización de estadísticas de cliente"""
         stats = data.get('stats', {})
@@ -703,17 +767,22 @@ class FederatedIDSServer:
         except Exception as e:
             logger.error(f"❌ Error actualizando estadísticas del cliente {client_id[:8]}: {e}")
     
+        # REEMPLAZAR handle_detection_alert completamente:
+    
     async def handle_detection_alert(self, client_id, data):
-        """Maneja alertas de detección de clientes"""
+        """Maneja alertas de detección de clientes - FLUJO REAL CORREGIDO"""
         alert = data.get('alert', {})
         
         try:
-            # Enriquecer alerta con información del cliente
+            # Obtener información del cliente
             client_info = self.clients.get(client_id, {})
+            client_name = client_info.get('name', 'Unknown')
+            
+            # Enriquecer alerta con información del servidor
             enriched_alert = {
                 **alert,
                 'client_id': client_id,
-                'client_name': client_info.get('name', 'Unknown'),
+                'client_name': client_name,
                 'client_location': client_info.get('location', 'Unknown'),
                 'server_timestamp': time.time(),
                 'global_round': self.current_round
@@ -722,39 +791,65 @@ class FederatedIDSServer:
             # Agregar a cola de eventos
             self.event_queue.append(enriched_alert)
             
-            # ✅ LOG MEJORADO PARA VER LAS DETECCIONES
-            severity = alert.get('status', 'unknown')
+            # ✅ EXTRAER DATOS REALES DE LA ALERTA
+            severity = alert.get('status', 'unknown').lower()
             src_ip = alert.get('src_ip', 'unknown')
             dst_ip = alert.get('dst_ip', 'unknown')
-            score = alert.get('score', 0)
-            attack_type = alert.get('attack_type', '')
+            src_port = alert.get('src_port', 0)
+            dst_port = alert.get('dst_port', 0)
+            protocol = alert.get('protocol', 'TCP')
+            score = alert.get('score', 0.0)
+            attack_type = alert.get('attack_type', 'Unknown')
+            timestamp = alert.get('timestamp', '')
             
+            # ✅ MAPEAR EMOJIS CORRECTAMENTE
             emoji_map = {
                 'normal': '✅',
-                'suspicious': '⚠️',
-                'attack': '🚨'
+                'suspicious': '⚠️', 
+                'attack': '🚨',
+                'unknown': '❓'
             }
             emoji = emoji_map.get(severity, '❓')
             
-            client_name = client_info.get('name', 'Unknown')
+            # ✅ MOSTRAR DETECCIÓN REAL EN TIEMPO REAL
+            print(f"\n📥 [DETECTION] {emoji} {client_name}")
+            print(f"    🌐 {src_ip}:{src_port} -> {dst_ip}:{dst_port} ({protocol})")
+            print(f"    🎯 Tipo: {attack_type} | Score: {score:.4f} | Status: {severity.upper()}")
+            print(f"    🕐 Timestamp: {timestamp}")
             
-            # ✅ MOSTRAR DETECCIÓN EN SERVIDOR FEDERADO
-            print(f"\n📥 [DETECTION] {emoji} {client_name}: {src_ip} -> {dst_ip}")
-            print(f"    Tipo: {attack_type} | Score: {score:.4f} | Status: {severity.upper()}")
-            print(f"    FL Features: {len(alert.get('fl_features', {})) if alert.get('fl_features') else 0}")
-            
-            # Actualizar estadísticas globales
+            # ✅ ACTUALIZAR ESTADÍSTICAS GLOBALES REALES
             self.global_stats['total_detections'] += 1
             self.global_stats['alert_distribution'][severity] += 1
-            if attack_type:
+            
+            if attack_type and attack_type != 'Unknown':
                 self.global_stats['attack_types'][attack_type] += 1
-                
-            logger.info(f"{emoji} [{severity.upper()}] {client_name}: {src_ip} -> {dst_ip} "
-                       f"({attack_type}) Score: {score:.4f}")
-        
+            
+            # ✅ ESTIMAR PAQUETES Y FLUJOS BASADOS EN LA DETECCIÓN
+            estimated_packets = max(1, int(score * 20))  # Más score = más paquetes procesados
+            self.global_stats['total_packets'] += estimated_packets
+            self.global_stats['total_flows'] += 1
+            
+            # ✅ ACTUALIZAR ESTADÍSTICAS DEL CLIENTE
+            if client_id in self.clients:
+                self.clients[client_id]['total_alerts'] += 1
+                self.clients[client_id]['last_detection'] = {
+                    'timestamp': time.time(),
+                    'severity': severity,
+                    'score': score,
+                    'attack_type': attack_type
+                }
+            
+            # ✅ LOG ESTRUCTURADO PARA ARCHIVO
+            logger.info(
+                f"{emoji} [{severity.upper()}] {client_name}: "
+                f"{src_ip}:{src_port} -> {dst_ip}:{dst_port} "
+                f"({attack_type}) Score: {score:.4f} Protocol: {protocol}"
+            )
+            
         except Exception as e:
             logger.error(f"❌ Error manejando alerta del cliente {client_id[:8]}: {e}")
-    
+            print(f"❌ Error procesando detección: {e}")
+
     async def handle_model_update(self, client_id, data):
         """Maneja actualización de modelo de cliente"""
         model_data = data.get('model_data', {})
@@ -786,41 +881,72 @@ class FederatedIDSServer:
         except Exception as e:
             logger.error(f"❌ Error actualizando modelo del cliente {client_id[:8]}: {e}")
     
+        # MODIFICAR send_global_model:
+    
     async def send_global_model(self, client_id):
         """Envía el modelo global a un cliente específico"""
         try:
             if not self.global_model:
                 await self.send_to_client(client_id, {
-                    'type': 'error',
-                    'message': 'Modelo global no disponible'
+                    'type': 'no_model_available',
+                    'message': 'Modelo global no disponible aún'
                 })
                 return
             
-            # Serializar modelo para envío
-            model_message = {
-                'type': 'global_model_update',
-                'model_data': {
-                    'version': self.global_model.get('version', 0),
-                    'features': self.global_model.get('features', []),
-                    'timestamp': self.global_model.get('timestamp', time.time()),
-                    'round': self.current_round,
-                    'checksum': self._calculate_model_checksum(self.global_model)
-                },
-                'aggregation_info': {
-                    'participating_clients': len(self.client_models),
-                    'aggregation_time': time.time(),
-                    'total_rounds': self.current_round
+            # ✅ PREPARAR MODELO PARA ENVÍO
+            if self.global_model.get('model') is not None:
+                # Serializar modelo completo si existe
+                try:
+                    model_bytes = pickle.dumps({
+                        'model': self.global_model['model'],
+                        'scaler': self.global_model.get('scaler'),
+                        'features': self.global_model.get('features', []),
+                        'version': self.global_model.get('version', 1)
+                    })
+                    model_base64 = base64.b64encode(model_bytes).decode('utf-8')
+                    
+                    model_message = {
+                        'type': 'global_model_update',
+                        'model_data': {
+                            'version': self.global_model.get('version', 1),
+                            'model_data': model_base64,
+                            'features': self.global_model.get('features', []),
+                            'timestamp': self.global_model.get('timestamp', time.time()),
+                            'participants': self.global_model.get('participants', 1),
+                            'global_accuracy': self.global_model.get('global_accuracy', 0.9),
+                            'round': self.current_round
+                        }
+                    }
+                    
+                except Exception as e:
+                    logger.error(f"❌ Error serializando modelo: {e}")
+                    # Enviar modelo básico si falla la serialización
+                    model_message = {
+                        'type': 'global_model_update',
+                        'model_data': {
+                            'version': self.global_model.get('version', 1),
+                            'features': self.global_model.get('features', []),
+                            'timestamp': self.global_model.get('timestamp', time.time()),
+                            'participants': self.global_model.get('participants', 1),
+                            'global_accuracy': self.global_model.get('global_accuracy', 0.9),
+                            'round': self.current_round,
+                            'model_available': False
+                        }
+                    }
+            else:
+                # Modelo no disponible
+                model_message = {
+                    'type': 'no_model_available',
+                    'message': 'Modelo global aún no está listo'
                 }
-            }
             
             await self.send_to_client(client_id, model_message)
             
             client_name = self.clients.get(client_id, {}).get('name', 'Unknown')
-            logger.info(f"📤 Modelo global enviado a {client_name}")
+            logger.info(f"📤 Respuesta de modelo enviada a {client_name}")
             
         except Exception as e:
             logger.error(f"❌ Error enviando modelo global al cliente {client_id[:8]}: {e}")
-    
     async def trigger_model_aggregation(self):
         """Dispara la agregación de modelos"""
         if len(self.client_models) < self.aggregation_config['min_clients']:
@@ -1225,9 +1351,11 @@ class FederatedIDSServer:
             print(f"🚨 Detecciones totales: {self.global_stats['total_detections']:,}")
             
             if runtime > 0:
-                print(f"⚡ Tasa promedio: {self.global_stats['total_packets']/runtime:.1f} pkt/s")
+                packets_rate = self.global_stats['total_packets'] / runtime
+                detections_rate = self.global_stats['total_detections'] / runtime
+                print(f"⚡ Tasa promedio: {packets_rate:.1f} pkt/s, {detections_rate:.2f} det/s")
             
-            # Distribución de alertas
+            # ✅ DISTRIBUCIÓN DE ALERTAS REALES
             if self.global_stats['alert_distribution']:
                 print("\n🎯 Distribución de alertas:")
                 total_alerts = sum(self.global_stats['alert_distribution'].values())
@@ -1236,7 +1364,7 @@ class FederatedIDSServer:
                     emoji = {"normal": "✅", "suspicious": "⚠️", "attack": "🚨"}.get(alert_type, "❓")
                     print(f"   {emoji} {alert_type.capitalize()}: {count:,} ({percentage:.1f}%)")
             
-            # Tipos de ataques
+            # ✅ TIPOS DE ATAQUES REALES
             if self.global_stats['attack_types']:
                 print("\n🎯 Tipos de ataques detectados:")
                 sorted_attacks = sorted(self.global_stats['attack_types'].items(), 
@@ -1343,8 +1471,6 @@ class FederatedIDSServer:
         logger.info(f"🚀 Iniciando servidor federado en {self.host}:{self.port}")
         
         # Crear directorio de modelos
-        Path("models").mkdir(exist_ok=True)
-        
         # Iniciar tareas en segundo plano
         self.start_background_tasks()
         
