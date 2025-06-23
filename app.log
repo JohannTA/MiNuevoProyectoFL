@@ -50533,3 +50533,13 @@ INFO -   Detecciones recientes obtenidas: 5
 INFO - 192.168.18.5 - - [23/Jun/2025 03:03:52] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [23/Jun/2025 03:03:52] "GET /api/detector/status HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [23/Jun/2025 03:03:52] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:02] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:02] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:02] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:03] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:12] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:12] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:12] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:04:13] "GET /api/dashboard/counters HTTP/1.1" 200 -
