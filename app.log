@@ -50624,3 +50624,32 @@ INFO -   Detecciones recientes obtenidas: 5
 INFO - 192.168.18.5 - - [23/Jun/2025 03:12:14] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [23/Jun/2025 03:12:14] "GET /api/detector/status HTTP/1.1" 200 -
 INFO - 192.168.18.5 - - [23/Jun/2025 03:12:15] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:24] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:24] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:24] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:25] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:34] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:34] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:34] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:36] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:44] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:44] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:44] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:45] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:54] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:54] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:54] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:12:55] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:04] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:04] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:04] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:05] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:14] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:14] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.5 - - [23/Jun/2025 03:13:14] "GET /api/detector/status HTTP/1.1" 200 -
