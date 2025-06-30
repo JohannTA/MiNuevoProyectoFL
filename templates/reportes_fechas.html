@@ -1,0 +1,571 @@
+{% extends "maestra.html" %}
+
+{% block title %}Reportes por Fechas - IDS Federado{% endblock %}
+
+{% block page_title %}📅 Reportes por Fechas{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <button type="button" class="btn btn-primary" onclick="generarReporte()">
+        <i class="fas fa-play me-1"></i>Generar Reporte
+    </button>
+    <button type="button" class="btn btn-outline-secondary" onclick="limpiarFiltros()">
+        <i class="fas fa-eraser me-1"></i>Limpiar
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Filtros por Fechas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h6 class="m-0">
+                    <i class="fas fa-calendar-alt me-2"></i>Filtrar Detecciones por Fechas
+                </h6>
+            </div>
+            <div class="card-body">
+                <form id="formReporteFechas">
+                    <div class="row g-4">
+                        <!-- Selección de Período -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Rango de Fechas y Horas</label>
+                                <input type="text" class="form-control" id="rango-fechas"
+                                    placeholder="DD/MM/YYYY HH:MM - DD/MM/YYYY HH:MM">
+                                <div class="form-text">
+                                    <strong>Formatos soportados:</strong><br>
+                                    • <code>29/06/2025 14:30 - 29/06/2025 16:30</code> (con horas específicas)<br>
+                                    • <code>29/06/2025 - 30/06/2025</code> (días completos)<br>
+                                    • <code>29/06/2025 14:30</code> (hora específica ±30min)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opciones de Descarga -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Formato de Descarga</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="formato" id="formato-excel"
+                                        value="excel" checked>
+                                    <label class="btn btn-outline-success" for="formato-excel">
+                                        <i class="fas fa-file-excel me-1"></i>Excel
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="formato" id="formato-csv" value="csv">
+                                    <label class="btn btn-outline-info" for="formato-csv">
+                                        <i class="fas fa-file-csv me-1"></i>CSV
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked id="incluir-estadisticas">
+                                    <label class="form-check-label" for="incluir-estadisticas">
+                                        Incluir hoja de estadísticas (solo Excel)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista Previa de Datos -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="m-0">
+                    <i class="fas fa-eye me-2"></i>Vista Previa de Detecciones
+                </h6>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-3" id="total-registros">0 registros</span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="actualizarVistaPrevia()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm" id="tabla-vista-previa">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 12%">Fecha/Hora</th>
+                                <th style="width: 10%">Cliente</th>
+                                <th style="width: 10%">Severidad</th>
+                                <th style="width: 18%">Tipo de Anomalía</th>
+                                <th style="width: 15%">IP Origen</th>
+                                <th style="width: 15%">IP Destino</th>
+                                <th style="width: 10%">Puerto</th>
+                                <th style="width: 10%">Confianza</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-vista-previa">
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando datos...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Cargando vista previa...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación simple -->
+                <nav class="mt-3">
+                    <ul class="pagination pagination-sm justify-content-center" id="paginacion-vista-previa">
+                        <!-- Generado dinámicamente -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ========================================
+    // REPORTES POR FECHAS - SIMPLIFICADO
+    // ========================================
+
+    // Variables globales
+    let datosReporte = [];
+    let paginaActual = 1;
+    const registrosPorPagina = 15;
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('📅 Inicializando reporte por fechas...');
+        inicializarReporteFechas();
+    });
+
+    // Función principal de inicialización
+    function inicializarReporteFechas() {
+        try {
+            // Configurar date picker con soporte para horas
+            if (typeof flatpickr !== 'undefined') {
+                flatpickr("#rango-fechas", {
+                    mode: "range",
+                    dateFormat: "d/m/Y H:i", // ✅ INCLUIR HORAS
+                    enableTime: true, // ✅ HABILITAR SELECTOR DE TIEMPO
+                    time_24hr: true, // ✅ FORMATO 24 HORAS
+                    locale: "es",
+                    defaultDate: [
+                        new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 horas atrás
+                        new Date() // ahora
+                    ],
+                    onChange: function (selectedDates, dateStr, instance) {
+                        console.log('🕒 Fechas y horas seleccionadas:', dateStr);
+                        actualizarVistaPrevia();
+                    }
+                });
+            } else {
+                // Fallback: establecer rango por defecto con horas
+                const rangoFechas = document.getElementById('rango-fechas');
+                if (rangoFechas && !rangoFechas.value) {
+                    establecerRangoRapido('ultimas-6-horas');
+                }
+            }
+
+            setTimeout(() => {
+                actualizarVistaPrevia();
+            }, 500);
+
+            console.log('✅ Reporte por fechas con horas inicializado');
+
+        } catch (error) {
+            console.error('❌ Error inicializando reporte:', error);
+        }
+    }
+
+    // Función para seleccionar período predefinido
+    // Función simplificada para períodos
+
+    // Actualizar vista previa de datos
+    // Actualizar vista previa de datos
+    async function actualizarVistaPrevia() {
+        try {
+            console.log('🔄 Actualizando vista previa...');
+            mostrarCargando();
+
+            const filtros = obtenerFiltrosFechas();
+            console.log('🔍 Filtros enviados:', filtros);
+
+            // Llamar a la API para obtener datos reales
+            const response = await fetch('/api/reportes/datos-fechas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(filtros)
+            });
+
+            console.log('📡 Response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('📊 Datos recibidos:', data);
+
+            if (data.success) {
+                datosReporte = data.datos || [];
+                actualizarTablaVistaPrevia();
+
+                // Solo actualizar estadísticas si están disponibles
+                if (data.estadisticas) {
+                    actualizarEstadisticas(data.estadisticas);
+                }
+
+                actualizarRangoFechas(filtros);
+                console.log('✅ Vista previa actualizada correctamente');
+            } else {
+                throw new Error(data.error || 'Error desconocido del servidor');
+            }
+
+        } catch (error) {
+            console.error('❌ Error actualizando vista previa:', error);
+            mostrarError(`Error al cargar datos: ${error.message}`);
+
+            // Mostrar datos simulados como fallback
+            console.log('🔄 Cargando datos simulados como fallback...');
+            const datosSimulados = generarDatosSimulados();
+            datosReporte = datosSimulados.datos;
+            actualizarTablaVistaPrevia();
+            actualizarEstadisticas(datosSimulados.estadisticas);
+            actualizarRangoFechas(filtros);
+        }
+    }
+    // Obtener filtros de fechas del formulario
+    // Obtener filtros de fechas del formulario - CORREGIDO
+    function obtenerFiltrosFechas() {
+        // ✅ ELIMINAR REFERENCIA A ELEMENTO QUE NO EXISTE
+        // const periodo = document.getElementById('periodo-predefinido').value;
+        let rango_fechas = document.getElementById('rango-fechas').value;
+
+        // ✅ LIMPIAR RANGO DE FECHAS ANTES DE ENVIAR
+        if (rango_fechas) {
+            rango_fechas = rango_fechas.trim();
+            console.log(`🔍 Rango enviado: "${rango_fechas}"`);
+        }
+
+        return {
+            // periodo: periodo,  // ✅ QUITAR ESTA LÍNEA
+            rango_fechas: rango_fechas,
+            pagina: paginaActual,
+            limite: registrosPorPagina
+        };
+    }
+
+
+    // ✅ FUNCIÓN AUXILIAR PARA FORMATEAR FECHAS
+    function formatearFecha(fecha) {
+        const dia = fecha.getDate().toString().padStart(2, '0');
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+        const año = fecha.getFullYear();
+        return `${dia}/${mes}/${año}`;
+    }
+
+    // Generar datos simulados (fallback)
+    function generarDatosSimulados() {
+        const tipos = ['Suspicious Activity', 'Port Scanning', 'DDoS Attack', 'Brute Force', 'Malware'];
+        const severidades = ['critical', 'high', 'medium', 'low'];
+        const ips = ['192.168.1.100', '10.0.0.50', '172.16.0.25', '203.0.113.10'];
+
+        const datos = [];
+        const total = Math.floor(Math.random() * 100) + 20;
+
+        for (let i = 0; i < total; i++) {
+            datos.push({
+                timestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+                client_id: Math.floor(Math.random() * 3) + 1,
+                severity: severidades[Math.floor(Math.random() * severidades.length)],
+                anomaly_type: tipos[Math.floor(Math.random() * tipos.length)],
+                source_ip: ips[Math.floor(Math.random() * ips.length)],
+                source_port: Math.floor(Math.random() * 65535) + 1,
+                destination_ip: ips[Math.floor(Math.random() * ips.length)],
+                destination_port: [80, 443, 22, 21, 25][Math.floor(Math.random() * 5)],
+                confidence_score: Math.random()
+            });
+        }
+
+        // Calcular estadísticas
+        const estadisticas = {
+            criticas: datos.filter(d => d.severity === 'critical').length,
+            altas: datos.filter(d => d.severity === 'high').length,
+            medias: datos.filter(d => d.severity === 'medium').length,
+            total: datos.length
+        };
+
+        return { datos, estadisticas };
+    }
+
+    // Actualizar tabla de vista previa
+    function actualizarTablaVistaPrevia() {
+        const tbody = document.getElementById('tbody-vista-previa');
+        const totalRegistros = document.getElementById('total-registros');
+
+        totalRegistros.textContent = `${datosReporte.length} registros`;
+
+        if (datosReporte.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-0">No se encontraron detecciones para el rango de fechas seleccionado</p>
+                </td>
+            </tr>
+        `;
+            return;
+        }
+
+        // Paginar datos
+        const inicio = (paginaActual - 1) * registrosPorPagina;
+        const fin = inicio + registrosPorPagina;
+        const datosPaginados = datosReporte.slice(inicio, fin);
+
+        tbody.innerHTML = datosPaginados.map(registro => `
+        <tr>
+            <td><small>${formatearFecha(registro.timestamp)}</small></td>
+            <td><span class="badge bg-light text-dark">Cliente ${registro.client_id}</span></td>
+            <td>${obtenerBadgeSeveridad(registro.severity)}</td>
+            <td><small>${registro.anomaly_type}</small></td>
+            <td><code class="small">${registro.source_ip}</code></td>
+            <td><code class="small">${registro.destination_ip}</code></td>
+            <td><small>${registro.destination_port}</small></td>
+            <td><small>${Math.round(registro.confidence_score * 100)}%</small></td>
+        </tr>
+    `).join('');
+
+        actualizarPaginacion();
+    }
+
+    // Actualizar estadísticas (agregar al final del JavaScript)
+    function actualizarEstadisticas(stats) {
+        // Verificar si los elementos existen antes de actualizarlos
+        const statTotal = document.getElementById('stat-total');
+        const statCriticas = document.getElementById('stat-criticas');
+        const statAltas = document.getElementById('stat-altas');
+
+        if (statTotal) statTotal.textContent = stats.total || 0;
+        if (statCriticas) statCriticas.textContent = stats.criticas || 0;
+        if (statAltas) statAltas.textContent = stats.altas || 0;
+
+        console.log('📊 Estadísticas actualizadas:', stats);
+    }
+
+    // Actualizar rango de fechas mostrado
+    function actualizarRangoFechas(filtros) {
+        const rangoElement = document.getElementById('stat-rango');
+        if (!rangoElement) return; // El elemento no existe en esta versión
+
+        if (filtros.periodo && filtros.periodo !== 'personalizado') {
+            const nombres = {
+                'hoy': 'Hoy',
+                'ayer': 'Ayer',
+                'ultima-semana': 'Última semana',
+                'ultimo-mes': 'Último mes',
+                'ultimo-trimestre': 'Último trimestre'
+            };
+            rangoElement.textContent = nombres[filtros.periodo] || '-';
+        } else if (filtros.rango_fechas) {
+            rangoElement.textContent = filtros.rango_fechas;
+        } else {
+            rangoElement.textContent = '-';
+        }
+    }
+    // Actualizar paginación
+    function actualizarPaginacion() {
+        const totalPaginas = Math.ceil(datosReporte.length / registrosPorPagina);
+        const paginacion = document.getElementById('paginacion-vista-previa');
+
+        if (totalPaginas <= 1) {
+            paginacion.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+
+        // Botón anterior
+        html += `<li class="page-item ${paginaActual === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual - 1})">Anterior</a>
+    </li>`;
+
+        // Páginas
+        for (let i = 1; i <= totalPaginas; i++) {
+            if (i === paginaActual) {
+                html += `<li class="page-item active">
+                <a class="page-link" href="#">${i}</a>
+            </li>`;
+            } else if (i === 1 || i === totalPaginas || Math.abs(i - paginaActual) <= 1) {
+                html += `<li class="page-item">
+                <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
+            </li>`;
+            } else if (Math.abs(i - paginaActual) === 2) {
+                html += `<li class="page-item disabled">
+                <a class="page-link" href="#">...</a>
+            </li>`;
+            }
+        }
+
+        // Botón siguiente
+        html += `<li class="page-item ${paginaActual === totalPaginas ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual + 1})">Siguiente</a>
+    </li>`;
+
+        paginacion.innerHTML = html;
+    }
+
+    // Cambiar página
+    function cambiarPagina(nuevaPagina) {
+        const totalPaginas = Math.ceil(datosReporte.length / registrosPorPagina);
+
+        if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+            paginaActual = nuevaPagina;
+            actualizarTablaVistaPrevia();
+        }
+    }
+
+    // Generar reporte para descarga
+    async function generarReporte() {
+        try {
+            const filtros = obtenerFiltrosFechas();
+            const formato = document.querySelector('input[name="formato"]:checked').value;
+            const incluirEstadisticas = document.getElementById('incluir-estadisticas').checked;
+
+            if (!filtros.rango_fechas && !filtros.periodo) {
+                mostrarError('Por favor selecciona un rango de fechas');
+                return;
+            }
+
+            console.log('📊 Generando reporte:', { filtros, formato, incluirEstadisticas });
+            mostrarNotificacion('info', `Generando reporte en formato ${formato.toUpperCase()}...`, 3000);
+
+            const response = await fetch('/api/reportes/generar-fechas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    filtros: filtros,
+                    formato: formato,
+                    incluir_estadisticas: incluirEstadisticas
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                mostrarNotificacion('success', 'Reporte generado exitosamente', 3000);
+
+                // Iniciar descarga
+                if (data.download_url) {
+                    const link = document.createElement('a');
+                    link.href = data.download_url;
+                    link.download = data.filename || `reporte_fechas.${formato}`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } else {
+                throw new Error(data.error);
+            }
+
+        } catch (error) {
+            console.error('❌ Error generando reporte:', error);
+            mostrarError('Error al generar reporte: ' + error.message);
+        }
+    }
+
+    // Funciones auxiliares
+    function obtenerBadgeSeveridad(severity) {
+        const badges = {
+            'critical': '<span class="badge bg-danger">Crítica</span>',
+            'high': '<span class="badge bg-warning">Alta</span>',
+            'medium': '<span class="badge bg-info">Media</span>',
+            'low': '<span class="badge bg-secondary">Baja</span>'
+        };
+        return badges[severity] || `<span class="badge bg-light text-dark">${severity}</span>`;
+    }
+
+    function formatearFecha(timestamp) {
+        return new Date(timestamp).toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function mostrarCargando() {
+        const tbody = document.getElementById('tbody-vista-previa');
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="8" class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 text-muted mb-0">Actualizando datos...</p>
+            </td>
+        </tr>
+    `;
+    }
+
+    function mostrarNotificacion(tipo, mensaje, duracion = 5000) {
+        console.log(`${tipo.toUpperCase()}: ${mensaje}`);
+
+        // Crear notificación visual
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${tipo === 'error' ? 'danger' : tipo} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+        document.body.appendChild(alertDiv);
+
+        // Auto-remover después de la duración especificada
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, duracion);
+    }
+
+    function mostrarError(mensaje) {
+        mostrarNotificacion('error', mensaje, 5000);
+    }
+
+    function limpiarFiltros() {
+        console.log('🧹 Limpiando filtros...');
+
+        // Establecer rango por defecto con horas (últimas 6 horas)
+        establecerRangoRapido('ultimas-6-horas');
+
+        document.querySelector('input[name="formato"][value="excel"]').checked = true;
+        document.getElementById('incluir-estadisticas').checked = true;
+
+        mostrarNotificacion('info', 'Filtros reiniciados con rango de últimas 6 horas', 2000);
+    }
+    // Hacer funciones globales
+    window.generarReporte = generarReporte;
+    window.actualizarVistaPrevia = actualizarVistaPrevia;
+    window.limpiarFiltros = limpiarFiltros;
+    window.cambiarPagina = cambiarPagina;
+
+    console.log('🚀 JavaScript de reportes por fechas cargado');
+</script>
+{% endblock %}

@@ -34,7 +34,7 @@ from collections import defaultdict, deque, Counter
 from sklearn.preprocessing import StandardScaler
 from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List, Set, Tuple, Any, Optional, Union
-
+total_packets_processed = 0    
 # Configuración de logging
 logging.basicConfig(
     level=logging.INFO,
@@ -52,6 +52,8 @@ CONFIG = {
     # Umbrales de detección ajustados para reducir falsos positivos
     'NORMAL_THRESHOLD': 0.4,      # Más alto que versiones anteriores
     'SUSPICIOUS_THRESHOLD': 0.7,  # Más alto que versiones anteriores
+    
+    'WEB_PORTS': {80, 443, 8080, 8443, 8000, 8888, 3000, 5000, 9000},
     
     # Parámetros de detección especializados por tipo de ataque
     'PORT_SCAN': {
@@ -1234,7 +1236,9 @@ class FlowRecord:
             return 0
     
     def get_features(self):
-        """Extrae características del flujo para el modelo de ML"""
+        """Extrae características del flujo - ALINEADO CON MODELO"""
+        
+        selected_features = get_selected_features_25()
         
         # Evitar divisiones por cero
         n_packets = max(1, len(self.packets))
@@ -1242,21 +1246,17 @@ class FlowRecord:
         bwd_packets = max(1, len(self.bwd_packets))
         flow_duration = max(0.001, self.flow_duration)
         
-        # Características básicas de flujo
+        # Características básicas
         total_fwd_packets = len(self.fwd_packets)
         total_bwd_packets = len(self.bwd_packets)
-        
-        # Longitudes de paquetes
         total_fwd_length = sum(self.fwd_packets) if self.fwd_packets else 0
         total_bwd_length = sum(self.bwd_packets) if self.bwd_packets else 0
         
-        # Estadísticas de tamaño de paquetes
+        # Estadísticas de paquetes
         has_packets = len(self.packet_lengths) > 0
         packet_length_mean = np.mean(self.packet_lengths) if has_packets else 0
         packet_length_std = np.std(self.packet_lengths) if has_packets and len(self.packet_lengths) > 1 else 0
         packet_length_variance = np.var(self.packet_lengths) if has_packets and len(self.packet_lengths) > 1 else 0
-        min_packet_length = min(self.packet_lengths) if has_packets else 0
-        max_packet_length = max(self.packet_lengths) if has_packets else 0
         
         # Promedios de segmentos
         avg_fwd_segment_size = np.mean(self.fwd_packets) if self.fwd_packets else 0
@@ -1270,23 +1270,15 @@ class FlowRecord:
         has_iats = len(self.inter_arrival_times) > 0
         flow_iat_mean = np.mean(self.inter_arrival_times) if has_iats else 0
         flow_iat_std = np.std(self.inter_arrival_times) if has_iats and len(self.inter_arrival_times) > 1 else 0
-        flow_iat_max = max(self.inter_arrival_times) if has_iats else 0
-        flow_iat_min = min(self.inter_arrival_times) if has_iats else 0
         
         has_fwd_iats = len(self.fwd_inter_arrival_times) > 0
         fwd_iat_mean = np.mean(self.fwd_inter_arrival_times) if has_fwd_iats else 0
-        fwd_iat_std = np.std(self.fwd_inter_arrival_times) if has_fwd_iats and len(self.fwd_inter_arrival_times) > 1 else 0
-        fwd_iat_max = max(self.fwd_inter_arrival_times) if has_fwd_iats else 0
-        fwd_iat_min = min(self.fwd_inter_arrival_times) if has_fwd_iats else 0
         
         has_bwd_iats = len(self.bwd_inter_arrival_times) > 0
         bwd_iat_mean = np.mean(self.bwd_inter_arrival_times) if has_bwd_iats else 0
-        bwd_iat_std = np.std(self.bwd_inter_arrival_times) if has_bwd_iats and len(self.bwd_inter_arrival_times) > 1 else 0
-        bwd_iat_max = max(self.bwd_inter_arrival_times) if has_bwd_iats else 0
-        bwd_iat_min = min(self.bwd_inter_arrival_times) if has_bwd_iats else 0
         
-        # Crear diccionario de características
-        features = {
+        # ✅ DICCIONARIO CON EXACTAMENTE LAS 25 CARACTERÍSTICAS
+        all_features = {
             'flow_duration': flow_duration,
             'total_fwd_packets': total_fwd_packets,
             'total_backward_packets': total_bwd_packets,
@@ -1294,65 +1286,32 @@ class FlowRecord:
             'total_length_of_bwd_packets': total_bwd_length,
             'flow_bytes/s': flow_bytes_per_sec,
             'flow_packets/s': flow_packets_per_sec,
-            
-            # IAT (Inter Arrival Time) - tiempos entre paquetes
-            'flow_iat_mean': flow_iat_mean,
-            'flow_iat_std': flow_iat_std,
-            'flow_iat_max': flow_iat_max,
-            'flow_iat_min': flow_iat_min,
-            'fwd_iat_mean': fwd_iat_mean,
-            'fwd_iat_std': fwd_iat_std,
-            'fwd_iat_max': fwd_iat_max,
-            'fwd_iat_min': fwd_iat_min,
-            'bwd_iat_mean': bwd_iat_mean,
-            'bwd_iat_std': bwd_iat_std,
-            'bwd_iat_max': bwd_iat_max,
-            'bwd_iat_min': bwd_iat_min,
-            
-            # Flags TCP
+            'packet_length_mean': packet_length_mean,
+            'packet_length_std': packet_length_std,
+            'packet_length_variance': packet_length_variance,
             'fin_flag_count': self.flags['FIN'],
             'syn_flag_count': self.flags['SYN'],
             'rst_flag_count': self.flags['RST'],
             'psh_flag_count': self.flags['PSH'],
             'ack_flag_count': self.flags['ACK'],
-            'urg_flag_count': self.flags['URG'],
-            
-            # Estadísticas de tamaño de paquetes
-            'packet_length_mean': packet_length_mean,
-            'packet_length_std': packet_length_std,
-            'packet_length_variance': packet_length_variance,
-            'min_packet_length': min_packet_length,
-            'max_packet_length': max_packet_length,
+            'flow_iat_mean': flow_iat_mean,
+            'flow_iat_std': flow_iat_std,
+            'fwd_iat_mean': fwd_iat_mean,
+            'bwd_iat_mean': bwd_iat_mean,
             'avg_fwd_segment_size': avg_fwd_segment_size,
             'avg_bwd_segment_size': avg_bwd_segment_size,
-            
-            # Subflujos (para compatibilidad con CICIDS2017)
             'subflow_fwd_packets': total_fwd_packets,
             'subflow_fwd_bytes': total_fwd_length,
             'subflow_bwd_packets': total_bwd_packets,
-            'subflow_bwd_bytes': total_bwd_length,
-            
-            # Características adicionales
-            'fwd_header_length': total_fwd_packets * 20,  # Aproximación de encabezado TCP/IP
-            'bwd_header_length': total_bwd_packets * 20,  # Aproximación de encabezado TCP/IP
-            'fwd_packets/s': total_fwd_packets / flow_duration,
-            'bwd_packets/s': total_bwd_packets / flow_duration,
-            
-            # Características de estado TCP
-            'connection_state': 1 if self.connection_state == "ESTABLISHED" else 0,
-            'retransmissions': self.retransmissions,
-            'out_of_order': self.out_of_order,
-            
-            # Características especiales para detección específica
-            'port_scan_suspect': 1 if len(self.ports_seen) >= CONFIG['PORT_SCAN']['MIN_PORTS'] else 0,
-            'periodic_behavior': self.periodic_behavior,
-            'is_encrypted': 1 if self.is_encrypted else 0,
-            'payload_entropy': self.payload_entropy
+            'subflow_bwd_bytes': total_bwd_length
         }
         
+        # ✅ RETORNAR SOLO LAS 25 CARACTERÍSTICAS EN ORDEN CORRECTO
+        features = {}
+        for feature_name in selected_features:
+            features[feature_name] = all_features.get(feature_name, 0.0)
+        
         return features
-
-
 class NetworkMonitor:
     """Monitor de red para detección de intrusiones en tiempo real"""
     
@@ -1371,7 +1330,7 @@ class NetworkMonitor:
         self.flows = {}  # Diccionario para almacenar flujos activos
         self.flow_lock = threading.Lock()
         self.stop_capture = threading.Event()
-        
+
         # Hilos de trabajo
         self.capture_thread = None
         self.cleanup_thread = None
@@ -1606,7 +1565,9 @@ class NetworkMonitor:
     
     def _process_packet(self, packet):
         """Procesa un paquete y lo añade al flujo correspondiente"""
+        global total_packets_processed
         try:
+            total_packets_processed += 1
             start_time = time.time()
             
             # Verificar si es un paquete IP
@@ -1688,7 +1649,163 @@ class NetworkMonitor:
             
         except Exception as e:
             logger.error(f"Error procesando paquete: {str(e)}")
-    
+
+    def _evaluate_flow(self, flow_id):
+        """Evalúa un flujo para detectar posibles intrusiones - SOLO DETECCIÓN"""
+        try:
+            flow = self.flows[flow_id]
+            
+            # ✅ OBTENER CARACTERÍSTICAS (YA FILTRADAS A 25)
+            features = flow.get_features()
+            selected_features = get_selected_features_25()
+            
+            # ✅ VERIFICAR DIMENSIONES
+            if len(features) != 25:
+                logger.warning(f"Número incorrecto de características: {len(features)}, esperado: 25")
+                return
+            
+            # Contador de rendimiento
+            self.performance_metrics['flows_analyzed'] += 1
+            
+            # ✅ PREPARAR DATOS EN ORDEN CORRECTO
+            X = [features[f] for f in selected_features]
+            X = np.array([X])
+            
+            # ✅ VERIFICAR ANTES DE ESCALAR
+            if X.shape[1] != 25:
+                logger.error(f"Error dimensional: X tiene {X.shape[1]} características, esperado 25")
+                return
+            
+            # ✅ APLICAR ESCALADO
+            try:
+                X_scaled = self.scaler.transform(X)
+            except ValueError as e:
+                logger.error(f"Error en escalado: {e}")
+                return
+            
+            # ✅ REALIZAR PREDICCIÓN DEL MODELO
+            prediction = self.model.predict(X_scaled)[0]
+            probabilities = self.model.predict_proba(X_scaled)[0]
+            confidence = np.max(probabilities)
+            
+            # ✅ EVALUACIÓN HÍBRIDA CON PATRONES DE EXPERTOS
+            threat_result = self.threat_evaluator.evaluate_threat(flow, features, X_scaled)
+            
+            # Extraer resultados
+            final_score = threat_result['score']
+            ml_score = threat_result['ml_score']
+            pattern_scores = threat_result['pattern_scores']
+            primary_attack_type = threat_result['primary_attack_type']
+            primary_attack_score = threat_result['primary_attack_score']
+            classification = threat_result['classification']
+            
+            # ✅ DETERMINAR TIPO DE ANOMALÍA Y SEVERIDAD
+            if classification == 'normal':
+                anomaly_type = "Normal Traffic"
+                severity = "low"
+                status = "NORMAL"
+            elif classification == 'suspicious':
+                anomaly_type = "Suspicious Activity"
+                severity = "medium"
+                status = "SUSPICIOUS"
+            else:  # attack
+                if primary_attack_type == 'scan':
+                    anomaly_type = "Port Scan"
+                elif primary_attack_type == 'dos':
+                    anomaly_type = "DoS Attack"
+                elif primary_attack_type == 'web':
+                    anomaly_type = "Web Attack"
+                elif primary_attack_type == 'bruteforce':
+                    anomaly_type = "Brute Force"
+                elif primary_attack_type == 'exfiltration':
+                    anomaly_type = "Data Exfiltration"
+                elif primary_attack_type == 'malware':
+                    anomaly_type = "Malware Traffic"
+                else:
+                    anomaly_type = "Network Attack"
+                
+                severity = "high" if final_score > 0.8 else "medium"
+                status = "ATTACK"
+            
+            # ✅ LOGGING CON FORMATO CONSISTENTE PARA detector_integrado.py
+            logger.info(f"[{status}] {flow.src_ip}:{flow.src_port} <-> {flow.dst_ip}:{flow.dst_port} ({flow.protocol}) - Prob: {final_score:.4f} - Total : {self.performance_metrics['flows_analyzed']}")
+            
+            # ✅ ACTUALIZAR CONTADORES
+            self.alert_counts[classification] += 1
+            
+            # Si es un ataque, actualizar contador por tipo
+            if classification == 'attack':
+                attack_type = primary_attack_type
+                if attack_type not in self.attack_types:
+                    attack_type = 'other'
+                self.attack_types[attack_type] += 1
+            
+            # ✅ IMPRIMIR EN CONSOLA SI CORRESPONDE
+            if classification != 'normal' or CONFIG['SHOW_NORMAL_TRAFFIC']:
+                self._print_detection(classification, flow, final_score, primary_attack_type, pattern_scores)
+            
+            # ✅ CREAR REGISTRO DE DETECCIÓN SOLO PARA ESTADÍSTICAS LOCALES
+            detection_record = {
+                'timestamp': datetime.datetime.now(),
+                'flow_id': flow_id,
+                'src_ip': flow.src_ip,
+                'dst_ip': flow.dst_ip,
+                'src_port': flow.src_port,
+                'dst_port': flow.dst_port,
+                'protocol': flow.protocol,
+                'status': classification,
+                'score': final_score,
+                'ml_score': ml_score,
+                'attack_type': anomaly_type,
+                'primary_attack_type': primary_attack_type,
+                'primary_attack_score': primary_attack_score,
+                'pattern_scores': pattern_scores,
+                'packet_count': len(flow.packets),
+                'duration': flow.flow_duration,
+                'flags': flow.flags.copy() if hasattr(flow, 'flags') else {},
+                'ports_accessed': list(flow.ports_seen) if hasattr(flow, 'ports_seen') else []
+            }
+            
+            self.recent_detections.append(detection_record)
+            
+            # ✅ ELIMINAR FLUJOS DE ALTA CONFIANZA DE ATAQUE
+            if classification == 'attack' and final_score > 0.8:
+                try:
+                    del self.flows[flow_id]
+                    logger.debug(f"Flujo {flow_id} eliminado (ataque de alta confianza)")
+                except KeyError:
+                    pass  # Ya fue eliminado
+            
+        except Exception as e:
+            logger.error(f"Error evaluando flujo {flow_id}: {e}")
+            traceback.print_exc()
+
+    def _send_to_flask(self, detection_data):
+        """Envía detección al servidor Flask para integración federada"""
+        try:
+            if not hasattr(self, 'flask_url') or not self.flask_url:
+                return
+            
+            url = f"{self.flask_url}/api/buffer/add-detection"
+            payload = {
+                'user_id': getattr(self, 'user_id', 1),
+                'detection': detection_data
+            }
+            
+            response = requests.post(
+                url,
+                json=payload,
+                timeout=5,
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            if response.status_code == 200:
+                logger.debug("Detección enviada al sistema federado exitosamente")
+            else:
+                logger.warning(f"Error enviando detección al sistema federado: HTTP {response.status_code}")
+                
+        except Exception as e:
+            logger.error(f"Error enviando detección al Flask: {e}")
     def _evaluate_flow_baseline(self, flow_id):
         """Evalúa un flujo en modo aprendizaje para crear línea base"""
         try:
@@ -1739,7 +1856,7 @@ class NetworkMonitor:
         except Exception as e:
             logger.error(f"Error evaluando flujo en modo aprendizaje: {str(e)}")
     
-    def _evaluate_flow(self, flow_id):
+    
         """Evalúa un flujo para detectar posibles intrusiones"""
         try:
             start_time = time.time()
@@ -1809,7 +1926,7 @@ class NetworkMonitor:
                 level = 'error'
             
             # Crear mensaje detallado
-            msg = f"[{status.upper()}] {flow.src_ip}:{flow.src_port} <-> {flow.dst_ip}:{flow.dst_port} ({flow.protocol}) - Prob: {final_score:.4f}"
+            msg = f"[{status.upper()}] {flow.src_ip}:{flow.src_port} <-> {flow.dst_ip}:{flow.dst_port} ({flow.protocol}) - Prob: {final_score:.4f} - Total : {total_packets_processed}"
             
             if status == 'attack':
                 msg += f" - Tipo: {attack_type.upper()}"
@@ -1858,7 +1975,7 @@ class NetworkMonitor:
         except Exception as e:
             logger.error(f"Error evaluando flujo {flow_id}: {str(e)}")
             traceback.print_exc()
-    
+
     def _cleanup_flows(self):
         """Limpia flujos inactivos periódicamente"""
         while not self.stop_capture.is_set():
@@ -2154,6 +2271,33 @@ class NetworkMonitor:
             logger.error(f"Error exportando estadísticas: {e}")
             return False
 
+def get_detector_stats():
+    """Obtiene estadísticas del detector"""
+    global total_packets_processed
+    return {
+        'total_packets': total_packets_processed,
+        'start_time': time.time(),  # Puedes modificar esto si guardas el tiempo de inicio
+        'status': 'running'
+    }
+
+def reset_packet_counter():
+    """Reinicia el contador de paquetes"""
+    global total_packets_processed
+    total_packets_processed = 0
+    print(f"[DEBUG] Contador de paquetes reiniciado")
+    
+def get_selected_features_25():
+    """Retorna las 25 características seleccionadas para el modelo CICIDS2017"""
+    return [
+        'flow_duration', 'total_fwd_packets', 'total_backward_packets',
+        'total_length_of_fwd_packets', 'total_length_of_bwd_packets',
+        'flow_bytes/s', 'flow_packets/s', 'packet_length_mean',
+        'packet_length_std', 'packet_length_variance', 'fin_flag_count',
+        'syn_flag_count', 'rst_flag_count', 'psh_flag_count', 'ack_flag_count',
+        'flow_iat_mean', 'flow_iat_std', 'fwd_iat_mean', 'bwd_iat_mean',
+        'avg_fwd_segment_size', 'avg_bwd_segment_size', 'subflow_fwd_packets',
+        'subflow_fwd_bytes', 'subflow_bwd_packets', 'subflow_bwd_bytes'
+    ]
 
 def run_system(model_path, interface, duration=0, options=None):
     """

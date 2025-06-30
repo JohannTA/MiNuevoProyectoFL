@@ -1,65 +1,128 @@
-<!-- filepath: c:\Users\johan\OneDrive\Documentos\NUEVOFL\MiNuevoProyectoFL\templates\reportes.html -->
 {% extends "maestra.html" %}
 
 {% block title %}Reportes - IDS Federado{% endblock %}
 
-{% block page_title %}Reportes{% endblock %}
+{% block page_title %}Centro de Reportes{% endblock %}
 
 {% block page_actions %}
 <div class="btn-group">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateReportModal">
-        <i class="fas fa-file-alt"></i> Nuevo Reporte
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalGenerarReporte">
+        <i class="fas fa-file-alt me-1"></i>Nuevo Reporte
     </button>
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
+            data-bs-toggle="dropdown">
+        <span class="visually-hidden">Más opciones</span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" onclick="exportarTodosReportes()">
+            <i class="fas fa-download me-2"></i>Exportar Todos</a></li>
+        <li><a class="dropdown-item" href="#" onclick="programarReporte()">
+            <i class="fas fa-clock me-2"></i>Programar Reporte</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" onclick="limpiarReportes()">
+            <i class="fas fa-trash me-2 text-danger"></i>Limpiar Antiguos</a></li>
+    </ul>
 </div>
 {% endblock %}
 
 {% block content %}
+<!-- Resumen de Reportes -->
 <div class="row mb-4">
-    <!-- Filtros de reportes -->
-    <div class="col-12 mb-4">
-        <div class="dashboard-card card">
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-2x text-primary mb-2"></i>
+                <h4 id="total-reportes">0</h4>
+                <p class="text-muted mb-0">Total Reportes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                <h4 id="reportes-pendientes">0</h4>
+                <p class="text-muted mb-0">Pendientes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                <h4 id="reportes-completados">0</h4>
+                <p class="text-muted mb-0">Completados</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar fa-2x text-info mb-2"></i>
+                <h4 id="reportes-programados">0</h4>
+                <p class="text-muted mb-0">Programados</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros Avanzados -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
             <div class="card-header">
-                <h5 class="mb-0">Filtros de reportes</h5>
+                <h6 class="m-0">
+                    <i class="fas fa-filter me-2"></i>Filtros de Búsqueda
+                </h6>
             </div>
             <div class="card-body">
-                <form>
+                <form id="formFiltrosReportes">
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label for="reportType" class="form-label">Tipo de reporte</label>
-                            <select class="form-select" id="reportType">
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo de Reporte</label>
+                            <select class="form-select" id="filtro-tipo">
                                 <option value="">Todos los tipos</option>
-                                <option value="summary">Resumen general</option>
-                                <option value="detailed">Detallado de detecciones</option>
-                                <option value="client">Por cliente</option>
-                                <option value="attack">Por tipo de ataque</option>
+                                <option value="detecciones">📋 Detecciones</option>
+                                <option value="actividad">📈 Actividad por Cliente</option>
+                                <option value="amenazas">⚠️ Amenazas Críticas</option>
+                                <option value="trafico">🌐 Tráfico de Red</option>
+                                <option value="ejecutivo">📊 Ejecutivo</option>
+                                <option value="rendimiento">🔄 Rendimiento</option>
+                                <option value="ataques">🎯 Por Tipo de Ataque</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label for="reportPeriod" class="form-label">Periodo</label>
-                            <select class="form-select" id="reportPeriod">
-                                <option value="">Todos los periodos</option>
-                                <option value="daily">Diario</option>
-                                <option value="weekly">Semanal</option>
-                                <option value="monthly">Mensual</option>
-                                <option value="quarterly">Trimestral</option>
+                        <div class="col-md-3">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" id="filtro-estado">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">⏳ Pendiente</option>
+                                <option value="procesando">🔄 Procesando</option>
+                                <option value="completado">✅ Completado</option>
+                                <option value="error">❌ Error</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label for="reportDateRange" class="form-label">Rango de fechas</label>
-                            <input type="text" class="form-control" id="reportDateRange" placeholder="DD/MM/YYYY - DD/MM/YYYY">
+                        <div class="col-md-3">
+                            <label class="form-label">Rango de Fechas</label>
+                            <input type="text" class="form-control" id="filtro-fechas" 
+                                   placeholder="DD/MM/YYYY - DD/MM/YYYY">
                         </div>
-                        <div class="col-md-8">
-                            <label for="reportCreator" class="form-label">Creado por</label>
-                            <select class="form-select" id="reportCreator">
+                        <div class="col-md-3">
+                            <label class="form-label">Creado por</label>
+                            <select class="form-select" id="filtro-usuario">
                                 <option value="">Todos los usuarios</option>
-                                <option value="1">admin</option>
-                                <option value="2">analista1</option>
-                                <option value="3">supervisor</option>
+                                <option value="admin">👤 admin</option>
+                                <option value="analista1">👤 analista1</option>
+                                <option value="supervisor">👤 supervisor</option>
                             </select>
                         </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-search"></i> Filtrar
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary" onclick="aplicarFiltros()">
+                                <i class="fas fa-search me-1"></i>Buscar
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary ms-2" onclick="limpiarFiltros()">
+                                <i class="fas fa-eraser me-1"></i>Limpiar
                             </button>
                         </div>
                     </div>
@@ -67,155 +130,83 @@
             </div>
         </div>
     </div>
-    
-    <!-- Tabla de reportes -->
+</div>
+
+<!-- Tabla de Reportes -->
+<div class="row">
     <div class="col-12">
-        <div class="dashboard-card card">
+        <div class="dashboard-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Reportes generados</h5>
-                <span class="badge bg-primary">15 reportes</span>
+                <h6 class="m-0">
+                    <i class="fas fa-list me-2"></i>Reportes Generados
+                </h6>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-3" id="badge-total-reportes">0 reportes</span>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" onclick="actualizarTabla()" 
+                                title="Actualizar">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="toggleVista()" 
+                                title="Cambiar vista">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="tabla-reportes">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Título</th>
-                                <th>Tipo</th>
-                                <th>Periodo</th>
-                                <th>Rango de fechas</th>
-                                <th>Creado por</th>
-                                <th>Fecha de creación</th>
-                                <th>Acciones</th>
+                                <th style="width: 100px;">
+                                    <button class="btn btn-link p-0 text-decoration-none" 
+                                            onclick="ordenarPor('id')">
+                                        ID <i class="fas fa-sort"></i>
+                                    </button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link p-0 text-decoration-none" 
+                                            onclick="ordenarPor('titulo')">
+                                        Título <i class="fas fa-sort"></i>
+                                    </button>
+                                </th>
+                                <th style="width: 120px;">Tipo</th>
+                                <th style="width: 100px;">
+                                    <button class="btn btn-link p-0 text-decoration-none" 
+                                            onclick="ordenarPor('estado')">
+                                        Estado <i class="fas fa-sort"></i>
+                                    </button>
+                                </th>
+                                <th style="width: 150px;">Período</th>
+                                <th style="width: 120px;">Creado por</th>
+                                <th style="width: 130px;">
+                                    <button class="btn btn-link p-0 text-decoration-none" 
+                                            onclick="ordenarPor('fecha')">
+                                        Fecha <i class="fas fa-sort"></i>
+                                    </button>
+                                </th>
+                                <th style="width: 120px;" class="text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody-reportes">
+                            <!-- Datos cargados dinámicamente -->
                             <tr>
-                                <td>REP-2025-0015</td>
-                                <td>Resumen mensual de detecciones - Mayo 2025</td>
-                                <td>Resumen general</td>
-                                <td>Mensual</td>
-                                <td>01/05/2025 - 31/05/2025</td>
-                                <td>admin</td>
-                                <td>01/06/2025</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver reporte">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Descargar PDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Descargar Excel">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>REP-2025-0014</td>
-                                <td>Detecciones por cliente - Centro de Datos</td>
-                                <td>Por cliente</td>
-                                <td>Semanal</td>
-                                <td>25/05/2025 - 31/05/2025</td>
-                                <td>analista1</td>
-                                <td>01/06/2025</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver reporte">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Descargar PDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Descargar Excel">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>REP-2025-0013</td>
-                                <td>Análisis de ataques de inyección SQL</td>
-                                <td>Por tipo de ataque</td>
-                                <td>Trimestral</td>
-                                <td>01/03/2025 - 31/05/2025</td>
-                                <td>supervisor</td>
-                                <td>03/06/2025</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver reporte">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Descargar PDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Descargar Excel">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>REP-2025-0012</td>
-                                <td>Detecciones de alta severidad - Mayo 2025</td>
-                                <td>Detallado de detecciones</td>
-                                <td>Mensual</td>
-                                <td>01/05/2025 - 31/05/2025</td>
-                                <td>admin</td>
-                                <td>01/06/2025</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver reporte">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Descargar PDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Descargar Excel">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>REP-2025-0011</td>
-                                <td>Resumen semanal de detecciones</td>
-                                <td>Resumen general</td>
-                                <td>Semanal</td>
-                                <td>25/05/2025 - 31/05/2025</td>
-                                <td>analista1</td>
-                                <td>01/06/2025</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver reporte">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Descargar PDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Descargar Excel">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </div>
+                                    <p class="mt-2 text-muted">Cargando reportes...</p>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                
                 <!-- Paginación -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Siguiente</a>
-                        </li>
+                <nav aria-label="Paginación de reportes">
+                    <ul class="pagination justify-content-center" id="paginacion-reportes">
+                        <!-- Generado dinámicamente -->
                     </ul>
                 </nav>
             </div>
@@ -223,104 +214,1009 @@
     </div>
 </div>
 
-<!-- Modal para generar reporte -->
-<div class="modal fade" id="generateReportModal" tabindex="-1" aria-labelledby="generateReportModalLabel" aria-hidden="true">
+<!-- Modal para Generar Nuevo Reporte -->
+<div class="modal fade" id="modalGenerarReporte" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="generateReportModalLabel">Generar Nuevo Reporte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">
+                    <i class="fas fa-file-alt me-2"></i>Generar Nuevo Reporte
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="newReportTitle" class="form-label">Título del reporte</label>
-                        <input type="text" class="form-control" id="newReportTitle" required>
-                    </div>
-                    <div class="row mb-3">
+                <form id="formGenerarReporte">
+                    <!-- Información Básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-info-circle me-1"></i>Información Básica
+                            </h6>
+                        </div>
                         <div class="col-md-6">
-                            <label for="newReportType" class="form-label">Tipo de reporte</label>
-                            <select class="form-select" id="newReportType" required>
+                            <label class="form-label">Título del Reporte <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="titulo-reporte" required
+                                   placeholder="Ej: Reporte de Detecciones - Junio 2025">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Reporte <span class="text-danger">*</span></label>
+                            <select class="form-select" id="tipo-reporte" required onchange="cambiarTipoReporte()">
                                 <option value="">Seleccionar tipo...</option>
-                                <option value="summary">Resumen general</option>
-                                <option value="detailed">Detallado de detecciones</option>
-                                <option value="client">Por cliente</option>
-                                <option value="attack">Por tipo de ataque</option>
+                                <option value="detecciones">📋 Reporte de Detecciones</option>
+                                <option value="actividad">📈 Actividad por Cliente</option>
+                                <option value="amenazas">⚠️ Amenazas Críticas</option>
+                                <option value="trafico">🌐 Tráfico de Red</option>
+                                <option value="ejecutivo">📊 Reporte Ejecutivo</option>
+                                <option value="rendimiento">🔄 Rendimiento del Sistema</option>
+                                <option value="ataques">🎯 Por Tipo de Ataque</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Período y Fechas -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-calendar-alt me-1"></i>Período de Análisis
+                            </h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Período Predefinido</label>
+                            <select class="form-select" id="periodo-predefinido" onchange="seleccionarPeriodo()">
+                                <option value="">Seleccionar período...</option>
+                                <option value="hoy">📅 Hoy</option>
+                                <option value="ayer">📅 Ayer</option>
+                                <option value="semana">📅 Última semana</option>
+                                <option value="mes">📅 Último mes</option>
+                                <option value="trimestre">📅 Último trimestre</option>
+                                <option value="personalizado">📅 Personalizado</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="newReportPeriod" class="form-label">Periodo</label>
-                            <select class="form-select" id="newReportPeriod" required>
-                                <option value="">Seleccionar periodo...</option>
-                                <option value="daily">Diario</option>
-                                <option value="weekly">Semanal</option>
-                                <option value="monthly">Mensual</option>
-                                <option value="quarterly">Trimestral</option>
-                                <option value="custom">Personalizado</option>
-                            </select>
+                            <label class="form-label">Rango Personalizado <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="rango-fechas" required
+                                   placeholder="DD/MM/YYYY - DD/MM/YYYY">
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="newReportDateRange" class="form-label">Rango de fechas</label>
-                        <input type="text" class="form-control" id="newReportDateRange" placeholder="DD/MM/YYYY - DD/MM/YYYY" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="newReportClient" class="form-label">Cliente (opcional)</label>
-                        <select class="form-select" id="newReportClient">
-                            <option value="">Todos los clientes</option>
-                            <option value="1">Oficina Principal</option>
-                            <option value="2">Sucursal Norte</option>
-                            <option value="3">Sucursal Sur</option>
-                            <option value="4">Centro de Datos</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="newReportAttackType" class="form-label">Tipo de ataque (opcional)</label>
-                        <select class="form-select" id="newReportAttackType">
-                            <option value="">Todos los tipos</option>
-                            <option value="dos">DoS / DDoS</option>
-                            <option value="sql">Inyección SQL</option>
-                            <option value="xss">Cross-site Scripting (XSS)</option>
-                            <option value="bruteforce">Fuerza Bruta</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="newReportSeverity" class="form-label">Severidad (opcional)</label>
-                        <select class="form-select" id="newReportSeverity">
-                            <option value="">Todas</option>
-                            <option value="high">Alta</option>
-                            <option value="medium">Media</option>
-                            <option value="low">Baja</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="newReportFormat" class="form-label">Formato de salida</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="pdf" id="formatPDF" checked>
-                            <label class="form-check-label" for="formatPDF">
-                                PDF
-                            </label>
+
+                    <!-- Filtros Específicos -->
+                    <div class="row mb-4" id="seccion-filtros">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-filter me-1"></i>Filtros Específicos
+                            </h6>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="excel" id="formatExcel" checked>
-                            <label class="form-check-label" for="formatExcel">
-                                Excel
-                            </label>
+                        
+                        <!-- Filtros que aparecen según el tipo -->
+                        <div id="filtros-dinamicos">
+                            <!-- Se llenan dinámicamente según el tipo de reporte -->
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="csv" id="formatCSV">
-                            <label class="form-check-label" for="formatCSV">
-                                CSV
-                            </label>
+                    </div>
+
+                    <!-- Formato de Salida -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-file-export me-1"></i>Formato de Salida
+                            </h6>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="formato-pdf" checked>
+                                <label class="form-check-label" for="formato-pdf">
+                                    <i class="fas fa-file-pdf text-danger me-1"></i>PDF
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="formato-excel" checked>
+                                <label class="form-check-label" for="formato-excel">
+                                    <i class="fas fa-file-excel text-success me-1"></i>Excel
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="formato-csv">
+                                <label class="form-check-label" for="formato-csv">
+                                    <i class="fas fa-file-csv text-info me-1"></i>CSV
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opciones Adicionales -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-cog me-1"></i>Opciones Adicionales
+                            </h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="incluir-graficos" checked>
+                                <label class="form-check-label" for="incluir-graficos">
+                                    Incluir gráficos
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="incluir-resumen">
+                                <label class="form-check-label" for="incluir-resumen">
+                                    Incluir resumen ejecutivo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enviar-email">
+                                <label class="form-check-label" for="enviar-email">
+                                    Enviar por email al completar
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="programar-automatico">
+                                <label class="form-check-label" for="programar-automatico">
+                                    Programar automáticamente
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Generar Reporte</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="generarReporte()">
+                    <i class="fas fa-play me-1"></i>Generar Reporte
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal para Ver Reporte -->
+<div class="modal fade" id="modalVerReporte" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titulo-ver-reporte">
+                    <i class="fas fa-eye me-2"></i>Visualizar Reporte
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="contenido-reporte">
+                <!-- Contenido del reporte -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="descargarReporte()">
+                    <i class="fas fa-download me-1"></i>Descargar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pestañas de Tipos de Reportes -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="reportesTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="detecciones-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-detecciones" type="button" role="tab">
+                            <i class="fas fa-list me-2 text-primary"></i>Detecciones
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="actividad-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-actividad" type="button" role="tab">
+                            <i class="fas fa-chart-line me-2 text-success"></i>Actividad
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="amenazas-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-amenazas" type="button" role="tab">
+                            <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Amenazas
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="trafico-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-trafico" type="button" role="tab">
+                            <i class="fas fa-network-wired me-2 text-info"></i>Tráfico
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ejecutivo-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-ejecutivo" type="button" role="tab">
+                            <i class="fas fa-chart-pie me-2 text-secondary"></i>Ejecutivo
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="rendimiento-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-rendimiento" type="button" role="tab">
+                            <i class="fas fa-tachometer-alt me-2 text-dark"></i>Rendimiento
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ataques-tab" data-bs-toggle="tab" 
+                                data-bs-target="#tab-ataques" type="button" role="tab">
+                            <i class="fas fa-shield-alt me-2 text-danger"></i>Ataques
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card-body">
+                <div class="tab-content" id="reportesTabContent">
+                    
+                    <!-- TAB: Reporte de Detecciones -->
+                    <div class="tab-pane fade show active" id="tab-detecciones" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">📋 Reporte de Detecciones</h5>
+                                <p class="text-muted mb-0">Análisis detallado de todas las detecciones del sistema</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="generarReporteDetecciones()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período</label>
+                                        <select class="form-select" id="detecciones-periodo">
+                                            <option value="hoy">Hoy</option>
+                                            <option value="semana" selected>Última semana</option>
+                                            <option value="mes">Último mes</option>
+                                            <option value="personalizado">Personalizado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Severidad mínima</label>
+                                        <select class="form-select" id="detecciones-severidad">
+                                            <option value="">Todas</option>
+                                            <option value="low">Baja</option>
+                                            <option value="medium">Media</option>
+                                            <option value="high">Alta</option>
+                                            <option value="critical">Crítica</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Cliente específico</label>
+                                        <select class="form-select" id="detecciones-cliente">
+                                            <option value="">Todos los clientes</option>
+                                            <option value="1">Cliente 1</option>
+                                            <option value="2">Cliente 2</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Formato</label>
+                                        <select class="form-select" id="detecciones-formato">
+                                            <option value="pdf">📄 PDF</option>
+                                            <option value="excel">📊 Excel</option>
+                                            <option value="csv">📋 CSV</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-light p-3 rounded">
+                                    <h6 class="text-success">✅ Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• Lista detallada de detecciones</li>
+                                        <li>• Estadísticas por severidad</li>
+                                        <li>• Gráficos de tendencias</li>
+                                        <li>• Top IPs y puertos</li>
+                                        <li>• Análisis temporal</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Reporte de Actividad -->
+                    <div class="tab-pane fade" id="tab-actividad" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">📈 Reporte de Actividad por Cliente</h5>
+                                <p class="text-muted mb-0">Análisis comparativo de la actividad entre clientes</p>
+                            </div>
+                            <button class="btn btn-success" onclick="generarReporteActividad()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período de análisis</label>
+                                        <select class="form-select" id="actividad-periodo">
+                                            <option value="semana">Última semana</option>
+                                            <option value="mes" selected>Último mes</option>
+                                            <option value="trimestre">Último trimestre</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Métrica principal</label>
+                                        <select class="form-select" id="actividad-metrica">
+                                            <option value="detecciones">Detecciones</option>
+                                            <option value="paquetes">Paquetes analizados</option>
+                                            <option value="tiempo">Tiempo activo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Clientes a incluir</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="actividad-todos">
+                                            <label class="form-check-label" for="actividad-todos">
+                                                Incluir todos los clientes activos
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-light p-3 rounded">
+                                    <h6 class="text-success">✅ Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• Comparativo entre clientes</li>
+                                        <li>• Ranking de actividad</li>
+                                        <li>• Tendencias temporales</li>
+                                        <li>• Métricas de rendimiento</li>
+                                        <li>• Gráficos comparativos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Reporte de Amenazas -->
+                    <div class="tab-pane fade" id="tab-amenazas" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">⚠️ Reporte de Amenazas Críticas</h5>
+                                <p class="text-muted mb-0">Análisis enfocado en amenazas de alta severidad</p>
+                            </div>
+                            <button class="btn btn-warning" onclick="generarReporteAmenazas()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nivel mínimo</label>
+                                        <select class="form-select" id="amenazas-nivel">
+                                            <option value="medium">Media y superior</option>
+                                            <option value="high" selected>Alta y crítica</option>
+                                            <option value="critical">Solo críticas</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período</label>
+                                        <select class="form-select" id="amenazas-periodo">
+                                            <option value="24h">Últimas 24 horas</option>
+                                            <option value="7d" selected>Últimos 7 días</option>
+                                            <option value="30d">Últimos 30 días</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="amenazas-resueltas">
+                                            <label class="form-check-label" for="amenazas-resueltas">
+                                                Incluir amenazas ya resueltas
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-warning bg-opacity-10 p-3 rounded border border-warning">
+                                    <h6 class="text-warning">⚠️ Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• Amenazas de alta prioridad</li>
+                                        <li>• Análisis de impacto</li>
+                                        <li>• Recomendaciones</li>
+                                        <li>• Timeline de incidentes</li>
+                                        <li>• Métricas de respuesta</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Reporte de Tráfico -->
+                    <div class="tab-pane fade" id="tab-trafico" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">🌐 Reporte de Tráfico de Red</h5>
+                                <p class="text-muted mb-0">Análisis del tráfico de red monitoreado</p>
+                            </div>
+                            <button class="btn btn-info" onclick="generarReporteTrafico()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Protocolo</label>
+                                        <select class="form-select" id="trafico-protocolo">
+                                            <option value="">Todos</option>
+                                            <option value="tcp">TCP</option>
+                                            <option value="udp">UDP</option>
+                                            <option value="icmp">ICMP</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Rango de puertos</label>
+                                        <input type="text" class="form-control" id="trafico-puertos" 
+                                               placeholder="Ej: 80,443,8080-8090">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Subred a analizar</label>
+                                        <input type="text" class="form-control" id="trafico-subred" 
+                                               placeholder="Ej: 192.168.1.0/24 (vacío = todas)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-info bg-opacity-10 p-3 rounded border border-info">
+                                    <h6 class="text-info">🌐 Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• Top IPs origen/destino</li>
+                                        <li>• Protocolos más usados</li>
+                                        <li>• Análisis de puertos</li>
+                                        <li>• Patrones de tráfico</li>
+                                        <li>• Bandwith utilizado</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Reporte Ejecutivo -->
+                    <div class="tab-pane fade" id="tab-ejecutivo" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">📊 Reporte Ejecutivo</h5>
+                                <p class="text-muted mb-0">Resumen consolidado para nivel directivo</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="generarReporteEjecutivo()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período del informe</label>
+                                        <select class="form-select" id="ejecutivo-periodo">
+                                            <option value="semanal">Semanal</option>
+                                            <option value="mensual" selected>Mensual</option>
+                                            <option value="trimestral">Trimestral</option>
+                                            <option value="anual">Anual</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nivel de detalle</label>
+                                        <select class="form-select" id="ejecutivo-detalle">
+                                            <option value="alto">Alto nivel</option>
+                                            <option value="medio" selected>Medio</option>
+                                            <option value="detallado">Detallado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="ejecutivo-graficos">
+                                            <label class="form-check-label" for="ejecutivo-graficos">
+                                                Incluir gráficos ejecutivos
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="ejecutivo-recomendaciones">
+                                            <label class="form-check-label" for="ejecutivo-recomendaciones">
+                                                Incluir recomendaciones estratégicas
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-secondary bg-opacity-10 p-3 rounded border border-secondary">
+                                    <h6 class="text-secondary">📊 Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• KPIs principales</li>
+                                        <li>• Tendencias de seguridad</li>
+                                        <li>• ROI del sistema</li>
+                                        <li>• Resumen ejecutivo</li>
+                                        <li>• Métricas de mejora</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Reporte de Rendimiento -->
+                    <div class="tab-pane fade" id="tab-rendimiento" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">🔄 Reporte de Rendimiento</h5>
+                                <p class="text-muted mb-0">Análisis del rendimiento del sistema IDS</p>
+                            </div>
+                            <button class="btn btn-dark" onclick="generarReporteRendimiento()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Métricas a incluir</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="rend-cpu">
+                                            <label class="form-check-label" for="rend-cpu">Uso de CPU</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="rend-memoria">
+                                            <label class="form-check-label" for="rend-memoria">Uso de memoria</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="rend-red">
+                                            <label class="form-check-label" for="rend-red">Tráfico de red</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período de análisis</label>
+                                        <select class="form-select" id="rendimiento-periodo">
+                                            <option value="hora">Última hora</option>
+                                            <option value="dia" selected>Último día</option>
+                                            <option value="semana">Última semana</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-dark bg-opacity-10 p-3 rounded border border-dark">
+                                    <h6 class="text-dark">🔄 Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• Métricas de sistema</li>
+                                        <li>• Uptime y disponibilidad</li>
+                                        <li>• Throughput de detección</li>
+                                        <li>• Latencia de respuesta</li>
+                                        <li>• Recomendaciones de optimización</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Reporte por Tipo de Ataque -->
+                    <div class="tab-pane fade" id="tab-ataques" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-1">🎯 Reporte por Tipo de Ataque</h5>
+                                <p class="text-muted mb-0">Análisis detallado por categorías de ataques</p>
+                            </div>
+                            <button class="btn btn-danger" onclick="generarReporteAtaques()">
+                                <i class="fas fa-play me-1"></i>Generar Reporte
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de ataque</label>
+                                        <select class="form-select" id="ataques-tipo">
+                                            <option value="">Todos los tipos</option>
+                                            <option value="ddos">DDoS</option>
+                                            <option value="bruteforce">Fuerza bruta</option>
+                                            <option value="scanning">Port scanning</option>
+                                            <option value="malware">Malware</option>
+                                            <option value="phishing">Phishing</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Origen geográfico</label>
+                                        <select class="form-select" id="ataques-origen">
+                                            <option value="">Todos los orígenes</option>
+                                            <option value="interno">Interno</option>
+                                            <option value="externo">Externo</option>
+                                            <option value="mixto">Mixto</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked id="ataques-patrones">
+                                            <label class="form-check-label" for="ataques-patrones">
+                                                Incluir análisis de patrones
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-danger bg-opacity-10 p-3 rounded border border-danger">
+                                    <h6 class="text-danger">🎯 Incluye:</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li>• Clasificación por tipo</li>
+                                        <li>• Evolución temporal</li>
+                                        <li>• Vectores de ataque</li>
+                                        <li>• Contramedidas sugeridas</li>
+                                        <li>• Indicadores de compromiso</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos CSS -->
+<style>
+.dashboard-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.table th button {
+    color: inherit;
+    text-decoration: none !important;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.modal-lg {
+    max-width: 900px;
+}
+
+.border-bottom {
+    border-bottom: 2px solid #e9ecef !important;
+}
+
+.text-primary {
+    color: #0d6efd !important;
+}
+
+.spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+</style>
+
+<!-- JavaScript -->
+<script>
+// Variables globales
+let reportesData = [];
+let filtrosActivos = {};
+let paginaActual = 1;
+const reportesPorPagina = 10;
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarReportes();
+    cargarReportes();
+    configurarEventos();
+});
+
+// Función principal de inicialización
+function inicializarReportes() {
+    console.log('Inicializando módulo de reportes...');
+    
+    // Configurar date picker para rangos de fechas
+    if (typeof flatpickr !== 'undefined') {
+        flatpickr("#filtro-fechas", {
+            mode: "range",
+            dateFormat: "d/m/Y",
+            locale: "es"
+        });
+        
+        flatpickr("#rango-fechas", {
+            mode: "range",
+            dateFormat: "d/m/Y",
+            locale: "es"
+        });
+    }
+    
+    actualizarResumen();
+}
+
+// Cargar reportes desde el servidor
+async function cargarReportes() {
+    try {
+        showLoading();
+        
+        const response = await fetch('/api/reportes/listar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(filtrosActivos)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            reportesData = data.reportes;
+            actualizarTablaReportes();
+            actualizarResumen();
+        } else {
+            showError('Error al cargar reportes: ' + data.error);
+        }
+        
+    } catch (error) {
+        console.error('Error cargando reportes:', error);
+        showError('Error de conexión al cargar reportes');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Actualizar tabla de reportes
+function actualizarTablaReportes() {
+    const tbody = document.getElementById('tbody-reportes');
+    const badgeTotal = document.getElementById('badge-total-reportes');
+    
+    // Actualizar badge
+    badgeTotal.textContent = `${reportesData.length} reportes`;
+    
+    // Si no hay datos
+    if (reportesData.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No se encontraron reportes</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalGenerarReporte">
+                        <i class="fas fa-plus me-1"></i>Crear Primer Reporte
+                    </button>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Paginar datos
+    const inicio = (paginaActual - 1) * reportesPorPagina;
+    const fin = inicio + reportesPorPagina;
+    const reportesPaginados = reportesData.slice(inicio, fin);
+    
+    // Generar filas
+    tbody.innerHTML = reportesPaginados.map(reporte => `
+        <tr>
+            <td>
+                <span class="badge bg-light text-dark">${reporte.id}</span>
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    ${getIconoTipo(reporte.tipo)}
+                    <div class="ms-2">
+                        <div class="fw-bold">${reporte.titulo}</div>
+                        <small class="text-muted">${reporte.descripcion || ''}</small>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <span class="badge ${getBadgeClaseTipo(reporte.tipo)}">
+                    ${getNombreTipo(reporte.tipo)}
+                </span>
+            </td>
+            <td>
+                <span class="badge ${getBadgeClaseEstado(reporte.estado)}">
+                    ${getIconoEstado(reporte.estado)} ${reporte.estado}
+                </span>
+            </td>
+            <td>
+                <small class="text-muted">
+                    ${formatearPeriodo(reporte.fecha_inicio, reporte.fecha_fin)}
+                </small>
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-user-circle me-1"></i>
+                    <small>${reporte.creado_por}</small>
+                </div>
+            </td>
+            <td>
+                <small>${formatearFecha(reporte.fecha_creacion)}</small>
+            </td>
+            <td class="text-center">
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="verReporte(${reporte.id})" 
+                            title="Ver reporte">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-success" onclick="descargarReporte(${reporte.id})" 
+                            title="Descargar">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="eliminarReporte(${reporte.id})" 
+                            title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    // Actualizar paginación
+    actualizarPaginacion();
+}
+
+// Funciones auxiliares para el formateo
+function getIconoTipo(tipo) {
+    const iconos = {
+        'detecciones': '<i class="fas fa-list text-primary"></i>',
+        'actividad': '<i class="fas fa-chart-line text-success"></i>',
+        'amenazas': '<i class="fas fa-exclamation-triangle text-warning"></i>',
+        'trafico': '<i class="fas fa-network-wired text-info"></i>',
+        'ejecutivo': '<i class="fas fa-chart-pie text-purple"></i>',
+        'rendimiento': '<i class="fas fa-tachometer-alt text-secondary"></i>',
+        'ataques': '<i class="fas fa-shield-alt text-danger"></i>'
+    };
+    return iconos[tipo] || '<i class="fas fa-file-alt"></i>';
+}
+
+function getBadgeClaseTipo(tipo) {
+    const clases = {
+        'detecciones': 'bg-primary',
+        'actividad': 'bg-success',
+        'amenazas': 'bg-warning',
+        'trafico': 'bg-info',
+        'ejecutivo': 'bg-secondary',
+        'rendimiento': 'bg-dark',
+        'ataques': 'bg-danger'
+    };
+    return clases[tipo] || 'bg-light text-dark';
+}
+
+function getNombreTipo(tipo) {
+    const nombres = {
+        'detecciones': 'Detecciones',
+        'actividad': 'Actividad',
+        'amenazas': 'Amenazas',
+        'trafico': 'Tráfico',
+        'ejecutivo': 'Ejecutivo',
+        'rendimiento': 'Rendimiento',
+        'ataques': 'Ataques'
+    };
+    return nombres[tipo] || tipo;
+}
+
+function getBadgeClaseEstado(estado) {
+    const clases = {
+        'pendiente': 'bg-warning',
+        'procesando': 'bg-info',
+        'completado': 'bg-success',
+        'error': 'bg-danger'
+    };
+    return clases[estado] || 'bg-secondary';
+}
+
+function getIconoEstado(estado) {
+    const iconos = {
+        'pendiente': '⏳',
+        'procesando': '🔄',
+        'completado': '✅',
+        'error': '❌'
+    };
+    return iconos[estado] || '📄';
+}
+
+// Aplicar filtros
+function aplicarFiltros() {
+    filtrosActivos = {
+        tipo: document.getElementById('filtro-tipo').value,
+        estado: document.getElementById('filtro-estado').value,
+        fechas: document.getElementById('filtro-fechas').value,
+        usuario: document.getElementById('filtro-usuario').value
+    };
+    
+    paginaActual = 1;
+    cargarReportes();
+}
+
+// Limpiar filtros
+function limpiarFiltros() {
+    document.getElementById('formFiltrosReportes').reset();
+    filtrosActivos = {};
+    paginaActual = 1;
+    cargarReportes();
+}
+
+// Generar reporte
+async function generarReporte() {
+    try {
+        const formData = obtenerDatosFormulario();
+        
+        if (!validarFormulario(formData)) {
+            return;
+        }
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalGenerarReporte'));
+        modal.hide();
+        
+        showSuccess('Reporte agregado a la cola de procesamiento');
+        
+        const response = await fetch('/api/reportes/generar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showSuccess('Reporte generado exitosamente');
+            cargarReportes();
+        } else {
+            showError('Error al generar reporte: ' + data.error);
+        }
+        
+    } catch (error) {
+        console.error('Error generando reporte:', error);
+        showError('Error de conexión al generar reporte');
+    }
+}
+
+// Funciones auxiliares de UI
+function showLoading() {
+    // Implementar indicador de carga
+}
+
+function hideLoading() {
+    // Ocultar indicador de carga
+}
+
+function showSuccess(message) {
+    // Mostrar notificación de éxito
+    console.log('SUCCESS:', message);
+}
+
+function showError(message) {
+    // Mostrar notificación de error
+    console.log('ERROR:', message);
+}
+
+function formatearFecha(fecha) {
+    return new Date(fecha).toLocaleDateString('es-ES');
+}
+
+function formatearPeriodo(inicio, fin) {
+    return `${formatearFecha(inicio)} - ${formatearFecha(fin)}`;
+}
+
+// Hacer funciones globales
+window.aplicarFiltros = aplicarFiltros;
+window.limpiarFiltros = limpiarFiltros;
+window.generarReporte = generarReporte;
+window.verReporte = verReporte;
+window.descargarReporte = descargarReporte;
+window.eliminarReporte = eliminarReporte;
+</script>
 {% endblock %}

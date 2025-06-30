@@ -17,7 +17,7 @@
                     <i class="fas fa-clock me-1"></i>Actualizando...
                 </span>
             </div>
-            
+
             <!-- Botón de actualización manual -->
             <button class="btn btn-outline-secondary btn-sm" onclick="actualizarDashboard()">
                 <i class="fas fa-sync-alt me-1"></i>Actualizar
@@ -30,7 +30,7 @@
 <div class="row">
     <div class="col-12">
         <div class="d-flex flex-wrap gap-2 justify-content-center">
-            
+
             <!-- Control Detector -->
             <div class="control-group">
                 <div class="btn-group">
@@ -38,15 +38,19 @@
                         <i class="fas fa-play" id="icon-detector"></i>
                         <span id="text-detector">Iniciar Detector</span>
                     </button>
-                    <button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split" 
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="visually-hidden">Configuración</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end p-3" style="min-width: 320px;">
-                        <li><h6 class="dropdown-header text-success">
-                            <i class="fas fa-search me-1"></i>Configuración del Detector
-                        </h6></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <h6 class="dropdown-header text-success">
+                                <i class="fas fa-search me-1"></i>Configuración del Detector
+                            </h6>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Interfaz de Red</label>
@@ -58,20 +62,23 @@
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Cliente ID</label>
-                                <input type="number" id="client-id" class="form-control form-control-sm" 
-                                       value="1" min="1" max="999">
+                                <input type="number" id="client-id" class="form-control form-control-sm" value="1"
+                                    min="1" max="999">
                             </div>
                         </li>
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Servidor Federado</label>
-                                <input type="text" id="servidor-federado" class="form-control form-control-sm" 
-                                       value="ws://192.168.18.88:8765" placeholder="ws://ip:puerto">
+                                <input type="text" id="servidor-federado" class="form-control form-control-sm"
+                                    value="ws://192.168.18.88:8765" placeholder="ws://ip:puerto">
                             </div>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="cargarInterfaces()">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100"
+                                onclick="cargarInterfaces()">
                                 <i class="fas fa-search me-1"></i>Detectar Interfaces
                             </button>
                         </li>
@@ -86,39 +93,46 @@
                         <i class="fas fa-network-wired" id="icon-federado"></i>
                         <span id="text-federado">Iniciar Federado</span>
                     </button>
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" 
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="visually-hidden">Configuración</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end p-3" style="min-width: 320px;">
-                        <li><h6 class="dropdown-header text-primary">
-                            <i class="fas fa-network-wired me-1"></i>Configuración del Servidor Federado
-                        </h6></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <h6 class="dropdown-header text-primary">
+                                <i class="fas fa-network-wired me-1"></i>Configuración del Servidor Federado
+                            </h6>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Host</label>
-                                <input type="text" id="federado-host" class="form-control form-control-sm" 
-                                       value="0.0.0.0" placeholder="0.0.0.0">
+                                <input type="text" id="federado-host" class="form-control form-control-sm"
+                                    value="0.0.0.0" placeholder="0.0.0.0">
                             </div>
                         </li>
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Puerto</label>
-                                <input type="number" id="federado-puerto" class="form-control form-control-sm" 
-                                       value="8765" min="1024" max="65535">
+                                <input type="number" id="federado-puerto" class="form-control form-control-sm"
+                                    value="8765" min="1024" max="65535">
                             </div>
                         </li>
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Mínimo Clientes</label>
-                                <input type="number" id="min-clientes" class="form-control form-control-sm" 
-                                       value="1" min="1" max="10">
+                                <input type="number" id="min-clientes" class="form-control form-control-sm" value="1"
+                                    min="1" max="10">
                             </div>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <button type="button" class="btn btn-outline-warning btn-sm w-100 mb-2" onclick="verificarConexion()">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button type="button" class="btn btn-outline-warning btn-sm w-100 mb-2"
+                                onclick="verificarConexion()">
                                 <i class="fas fa-network-wired me-1"></i>Verificar Conexión
                             </button>
                         </li>
@@ -129,14 +143,16 @@
             <!-- Herramientas del Sistema -->
             <div class="control-group">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" 
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         <i class="fas fa-tools me-1"></i>Herramientas
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><h6 class="dropdown-header">
-                            <i class="fas fa-cogs me-1"></i>Diagnósticos
-                        </h6></li>
+                        <li>
+                            <h6 class="dropdown-header">
+                                <i class="fas fa-cogs me-1"></i>Diagnósticos
+                            </h6>
+                        </li>
                         <li>
                             <button class="dropdown-item" onclick="verificarRendimiento()">
                                 <i class="fas fa-tachometer-alt me-2 text-info"></i>Verificar Rendimiento
@@ -147,17 +163,22 @@
                                 <i class="fas fa-stethoscope me-2 text-secondary"></i>Ejecutar Diagnósticos
                             </button>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><h6 class="dropdown-header">
-                            <i class="fas fa-file-export me-1"></i>Configuración
-                        </h6></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <h6 class="dropdown-header">
+                                <i class="fas fa-file-export me-1"></i>Configuración
+                            </h6>
+                        </li>
                         <li>
                             <button class="dropdown-item" onclick="exportarConfiguracion()">
                                 <i class="fas fa-download me-2 text-success"></i>Exportar Configuración
                             </button>
                         </li>
                         <li>
-                            <input type="file" id="import-config" accept=".json" onchange="importarConfiguracion(event)" style="display: none;">
+                            <input type="file" id="import-config" accept=".json" onchange="importarConfiguracion(event)"
+                                style="display: none;">
                             <button class="dropdown-item" onclick="document.getElementById('import-config').click()">
                                 <i class="fas fa-upload me-2 text-primary"></i>Importar Configuración
                             </button>
@@ -170,9 +191,11 @@
             <div class="control-group">
                 <div class="btn-group">
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><h6 class="dropdown-header">
-                            <i class="fas fa-database me-1"></i>Gestión de Datos
-                        </h6></li>
+                        <li>
+                            <h6 class="dropdown-header">
+                                <i class="fas fa-database me-1"></i>Gestión de Datos
+                            </h6>
+                        </li>
                         <li>
                             <button class="dropdown-item" onclick="insertTestData()">
                                 <i class="fas fa-plus me-2 text-success"></i>Insertar Datos de Prueba
@@ -199,36 +222,38 @@
 
 <!-- Overview Cards -->
 <div class="row">
+
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <i class="fas fa-shield-alt text-primary fa-2x"></i>
+                        <i class="fas fa-eye text-primary fa-2x"></i>
                     </div>
                     <div>
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Detecciones
+                            Total Analizados
                         </div>
-                        <div class="h3 font-weight-bold" id="total-detecciones">0</div>
+                        <div class="h3 font-weight-bold" id="total-analizados">0</div>
+                        <small class="text-muted">Paquetes procesados</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="dashboard-card h-100">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <i class="fas fa-clock text-warning fa-2x"></i>
+                        <i class="fas fa-shield-alt text-warning fa-2x"></i>
                     </div>
                     <div>
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Últimas 24h
+                            Total Detecciones
                         </div>
-                        <div class="h3 font-weight-bold" id="detecciones-24h">0</div>
+                        <div class="h3 font-weight-bold" id="total-detecciones">0</div>
+                        <small class="text-muted">Anomalías detectadas</small>
                     </div>
                 </div>
             </div>
@@ -240,13 +265,34 @@
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
+                        <i class="fas fa-exclamation-triangle text-warning fa-2x"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Sospechosas
+                        </div>
+                        <div class="h3 font-weight-bold" id="sospechosas">0</div>
+                        <small class="text-muted">Actividad sospechosa</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROJO: Alertas Críticas -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-fire text-danger fa-2x"></i>
                     </div>
                     <div>
                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
                             Alertas Críticas
                         </div>
                         <div class="h3 font-weight-bold" id="alertas-criticas">0</div>
+                        <small class="text-muted">Requieren atención</small>
                     </div>
                 </div>
             </div>
@@ -376,49 +422,10 @@
 </div>
 
 <!-- Gráfico de Actividad -->
-<div class="row">
-    <div class="col-12 mb-4">
-        <div class="dashboard-card">
-            <div class="card-header">
-                <h6 class="m-0 font-weight-bold"><i class="fas fa-chart-line me-2"></i>Actividad en Tiempo Real</h6>
-            </div>
-            <div class="card-body">
-                <div class="chart-container">
-                    <canvas id="activity-chart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Reportes de Distribución -->
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="dashboard-card">
-            <div class="card-header">
-                <h6 class="m-0 font-weight-bold"><i class="fas fa-chart-pie me-2"></i>Distribución por Severidad</h6>
-            </div>
-            <div class="card-body">
-                <div id="severity-distribution">
-                    <p class="text-muted text-center">Cargando datos...</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-md-6 mb-4">
-        <div class="dashboard-card">
-            <div class="card-header">
-                <h6 class="m-0 font-weight-bold"><i class="fas fa-bug me-2"></i>Tipos de Ataque</h6>
-            </div>
-            <div class="card-body">
-                <div id="attack-types">
-                    <p class="text-muted text-center">Cargando datos...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_css %}
@@ -429,100 +436,100 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 <style>
-        /* ========================================
+    /* ========================================
        DASHBOARD STYLES - SISTEMA IDS FEDERADO
        ======================================== */
-    
+
     /* Control groups spacing */
     .control-group {
         margin-bottom: 0.5rem;
     }
-    
+
     .control-group .btn-group {
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         border-radius: 6px;
     }
-    
+
     .control-group .btn {
         border-radius: 6px !important;
         font-weight: 500;
         padding: 0.5rem 1rem;
         transition: all 0.2s ease;
     }
-    
+
     .control-group .btn:hover {
         transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
-    
+
     /* Dropdown improvements */
     .dropdown-menu {
         border: none;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         border-radius: 8px;
         padding: 0.5rem 0;
     }
-    
+
     .dropdown-header {
         font-weight: 600;
         font-size: 0.85rem;
         color: inherit !important;
         padding: 0.5rem 1rem;
     }
-    
+
     .dropdown-item {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
         transition: all 0.2s ease;
     }
-    
+
     .dropdown-item:hover {
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
         transform: translateX(3px);
     }
-    
+
     .dropdown-item i {
         width: 18px;
         text-align: center;
     }
-    
+
     /* Dashboard cards */
     .dashboard-card {
         border: none;
         box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
         transition: all 0.3s ease;
-        background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%);
         backdrop-filter: blur(10px);
         border-radius: 15px;
         overflow: hidden;
     }
-    
+
     .dashboard-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
     }
-    
+
     .dashboard-card .card-header {
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
         border: none;
         border-radius: 15px 15px 0 0;
         backdrop-filter: blur(10px);
     }
-    
+
     .dashboard-card .card-body {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 0 0 15px 15px;
         backdrop-filter: blur(5px);
     }
-    
+
     /* System status panel */
     .system-status-panel {
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
         border-radius: 10px;
         padding: 15px;
         margin-bottom: 15px;
     }
-    
+
     /* System log */
     .system-log {
         background: #1e1e1e;
@@ -534,101 +541,128 @@
         overflow-y: auto;
         font-size: 0.85rem;
     }
-    
+
     .log-entry {
         margin-bottom: 3px;
         animation: logFadeIn 0.5s ease-in;
     }
-    
+
     @keyframes logFadeIn {
-        from { opacity: 0; transform: translateX(-10px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
-    
+
     /* Counter animations */
     .counter-updating {
         animation: counterPulse 0.6s ease-in-out;
     }
-    
+
     @keyframes counterPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); color: #ffc107; }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+            color: #ffc107;
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
-    
+
     /* Chart container */
     .chart-container {
         position: relative;
         height: 300px;
     }
-    
+
     /* Detection row animation */
     .detection-row-new {
         animation: slideInRight 0.5s ease-out;
     }
-    
+
     @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(30px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
-    
+
     /* Fixed status indicators */
-    #connection-status, #last-update {
+    #connection-status,
+    #last-update {
         position: fixed;
         right: 20px;
         z-index: 1050;
     }
-    
-    #connection-status { top: 20px; }
-    #last-update { 
-        bottom: 20px; 
-        background: rgba(0,0,0,0.7);
+
+    #connection-status {
+        top: 20px;
+    }
+
+    #last-update {
+        bottom: 20px;
+        background: rgba(0, 0, 0, 0.7);
         color: white;
         padding: 5px 10px;
         border-radius: 15px;
         font-size: 0.8rem;
     }
-    
+
     /* Status info styling */
     .status-info {
         font-size: 0.9rem;
     }
-    
+
     .status-info .d-flex {
         margin-bottom: 0.25rem;
     }
-    
+
     /* Badge improvements */
     .badge {
         font-size: 0.75rem;
         padding: 0.35em 0.65em;
         border-radius: 0.375rem;
     }
-    
+
     /* Table improvements */
     .table-responsive {
         border-radius: 8px;
         overflow: hidden;
     }
-    
+
     .table th {
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
         border-top: none;
         font-weight: 600;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    
+
     .table td {
         font-size: 0.9rem;
         vertical-align: middle;
     }
-    
+
     .table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,0.025);
+        background-color: rgba(0, 0, 0, 0.025);
     }
-    
+
     /* Form controls in dropdowns */
     .dropdown-menu .form-control,
     .dropdown-menu .form-select {
@@ -636,75 +670,94 @@
         padding: 0.375rem 0.75rem;
         border-radius: 0.375rem;
     }
-    
+
     /* Text size utilities */
     .text-xs {
         font-size: 0.75rem;
     }
-    
+
     .font-weight-bold {
         font-weight: 700;
     }
-    
+
     /* H3 styling for counters */
     .h3 {
         font-size: 1.75rem;
         font-weight: 700;
         margin-bottom: 0;
     }
-    
+
     /* Responsive design */
     @media (max-width: 768px) {
         .control-group {
             width: 100%;
             margin-bottom: 0.75rem;
         }
-        
+
         .control-group .btn-group {
             width: 100%;
         }
-        
+
         .control-group .btn {
             flex: 1;
         }
-        
+
         .dashboard-card {
             margin-bottom: 1rem;
         }
-        
+
         .chart-container {
             height: 250px;
         }
-        
+
         .system-log {
             max-height: 200px;
             font-size: 0.8rem;
         }
     }
-    
+
     /* Button state changes animation */
     .btn-state-change {
         animation: buttonPulse 0.3s ease;
     }
-    
+
     @keyframes buttonPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
-    
+
     /* Success/Error/Warning colors for logs */
-    .text-success { color: #28a745 !important; }
-    .text-danger { color: #dc3545 !important; }
-    .text-warning { color: #ffc107 !important; }
-    .text-info { color: #17a2b8 !important; }
-    
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+
+    .text-info {
+        color: #17a2b8 !important;
+    }
+
     /* Loading states */
     .loading {
         opacity: 0.6;
         pointer-events: none;
     }
-    
+
     .loading::after {
         content: "";
         position: absolute;
@@ -719,93 +772,114 @@
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
-    
+
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
-    
+
     /* Notification positioning */
     .alert.position-fixed {
         z-index: 9999;
         max-width: 400px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         border: none;
         border-radius: 8px;
     }
-    
+
     /* Custom scrollbar for system log */
     .system-log::-webkit-scrollbar {
         width: 8px;
     }
-    
+
     .system-log::-webkit-scrollbar-track {
         background: #2a2a2a;
         border-radius: 4px;
     }
-    
+
     .system-log::-webkit-scrollbar-thumb {
         background: #00ff00;
         border-radius: 4px;
     }
-    
+
     .system-log::-webkit-scrollbar-thumb:hover {
         background: #00cc00;
     }
-    
+
     /* Icon improvements */
     .fa-2x {
         font-size: 1.5em;
     }
-    
+
     /* Card body padding */
     .card-body {
         padding: 1.25rem;
     }
-    
+
     /* Form improvements in dropdowns */
     .dropdown-menu .mb-3:last-child {
         margin-bottom: 0 !important;
     }
-    
+
     /* Connection indicator pulse */
     #connection-indicator.bg-success {
         animation: pulse-success 2s infinite;
     }
-    
+
     @keyframes pulse-success {
-        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        0% {
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+        }
     }
-    
+
     #connection-indicator.bg-danger {
         animation: pulse-danger 1s infinite;
     }
-    
+
     @keyframes pulse-danger {
-        0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
     }
 </style>
 <script>
-        // filepath: c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\static\js\dashboard.js
-    
+    // filepath: c:\Users\JOHANN\OneDrive\Documentos\PRYFL\MiNuevoProyectoFL\static\js\dashboard.js
+
     // ========================================
     // DASHBOARD JAVASCRIPT - SISTEMA IDS FEDERADO
     // ========================================
-    
+
     // Variables globales
     let detectorState = { running: false, interface: 'Wi-Fi', stats: {}, status: 'stopped' };
     let federadoState = { running: false, server: 'ws://localhost:8765', stats: {}, status: 'stopped' };
     let updateInterval = null;
     let lastUpdate = new Date();
-    
+
     // ========================================
     // INICIALIZACIÓN
     // ========================================
-    
+
     // Inicializar dashboard
     function initializeDashboard() {
         cargarInterfaces();
@@ -816,13 +890,13 @@
         updateSystemLog('Dashboard IDS Federado iniciado', 'success');
         updateLastUpdateTime();
     }
-    
+
     // Iniciar actualizaciones automáticas
     function startAutoUpdate() {
         if (updateInterval) {
             clearInterval(updateInterval);
         }
-        
+
         updateInterval = setInterval(() => {
             console.log('🔄 Ejecutando actualización automática...');
             updateServiceStatus();
@@ -830,72 +904,158 @@
             updateRecentDetections();
             updateLastUpdateTime();
         }, 10000); // 10 segundos
-        
+
         updateSystemLog('Auto-actualización activada (10s)', 'info');
-        
+
         // Primera actualización inmediata
         setTimeout(() => {
             console.log('🚀 Primera actualización inmediata...');
             updateDashboardCounters();
         }, 1000);
     }
-    
+
     // ========================================
     // ACTUALIZACIÓN DE CONTADORES
     // ========================================
-    
+
     // Actualizar contadores del dashboard
-    async function updateDashboardCounters() {
-        try {
-            updateSystemLog('Actualizando contadores...', 'info');
-            
-            const response = await fetch('/api/dashboard/counters', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
-            });
-            
+    // BUSCAR la función updateDashboardCounters Y AGREGAR el manejo de clientes:
+
+function updateDashboardCounters() {
+    console.log('🔄 Actualizando contadores del dashboard...');
+    
+    fetch('/api/dashboard/counters')
+        .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}`);
             }
-            
-            const data = await response.json();
+            return response.json();
+        })
+        .then(data => {
             console.log('📊 Datos de contadores recibidos:', data);
             
             if (data.success && data.counters) {
                 const counters = data.counters;
                 
-                // Actualizar contadores con animación
-                updateCounterWithAnimation('total-detecciones', counters.total_detecciones);
-                updateCounterWithAnimation('detecciones-24h', counters.detecciones_24h);
-                updateCounterWithAnimation('alertas-criticas', counters.alertas_criticas);
+                // ✅ ACTUALIZAR CONTADORES PRINCIPALES
+                updateCounterElement('total-analizados', counters.total_analizados);
+                updateCounterElement('total-detecciones', counters.total_detecciones);
+                updateCounterElement('sospechosas', counters.sospechosas);
+                updateCounterElement('alertas-criticas', counters.alertas_criticas);
                 
-                const clientesText = `${counters.clientes_activos}/${counters.total_clientes}`;
-                updateCounterWithAnimation('clientes-activos', clientesText);
+                // ✅ ACTUALIZAR CLIENTES ACTIVOS (SI EXISTE EL ELEMENTO)
+                if (document.getElementById('clientes-activos')) {
+                    updateCounterElement('clientes-activos', counters.clientes_activos);
+                }
                 
-                updateSystemLog(`Contadores actualizados: ${counters.total_detecciones} total, ${counters.detecciones_24h} (24h), ${counters.alertas_criticas} críticas, ${clientesText} clientes`, 'success');
+                // ✅ MOSTRAR INFORMACIÓN ADICIONAL DEL DETECTOR
+                if (counters.detector_local) {
+                    const detectorInfo = counters.detector_local;
+                    console.log(`🔧 Detector local: ${detectorInfo.running ? 'Activo' : 'Inactivo'} | Interface: ${detectorInfo.interface} | Uptime: ${detectorInfo.uptime}s`);
+                    
+                    // Actualizar indicador de estado si existe
+                    const statusIndicator = document.getElementById('detector-status');
+                    if (statusIndicator) {
+                        statusIndicator.className = `badge ${detectorInfo.running ? 'bg-success' : 'bg-danger'}`;
+                        statusIndicator.textContent = detectorInfo.running ? 'Activo' : 'Inactivo';
+                    }
+                }
                 
-                updateConnectionStatus(true);
+                // Mostrar información de debug mejorada
+                console.log(`✅ Contadores actualizados:
+                    - Total Analizados: ${counters.total_analizados}
+                    - Total Detecciones: ${counters.total_detecciones}
+                    - Sospechosas: ${counters.sospechosas}
+                    - Críticas: ${counters.alertas_criticas}
+                    - Clientes Activos: ${counters.clientes_activos || 'N/A'}`);
                 
+                updateSystemLog(`Contadores actualizados: ${counters.total_analizados} analizados, ${counters.total_detecciones} detecciones, ${counters.clientes_activos || 0} clientes activos`, 'success');
             } else {
-                throw new Error(data.error || 'Respuesta inválida del servidor');
+                console.error('❌ Error en datos de contadores:', data);
+                updateSystemLog('Error actualizando contadores: ' + (data.error || 'Sin datos'), 'error');
             }
-            
-        } catch (error) {
+        })
+        .catch(error => {
             console.error('❌ Error actualizando contadores:', error);
-            updateSystemLog(`Error actualizando contadores: ${error.message}`, 'error');
-            updateConnectionStatus(false);
-            
-            // Mostrar contadores en 0 si hay error
-            updateCounterWithAnimation('total-detecciones', 0);
-            updateCounterWithAnimation('detecciones-24h', 0);
-            updateCounterWithAnimation('alertas-criticas', 0);
-            updateCounterWithAnimation('clientes-activos', '0/0');
+            updateSystemLog('Error de conexión actualizando contadores', 'error');
+        });
+}
+    function updateCounterElement(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+            console.warn(`⚠️ Elemento no encontrado: ${elementId}`);
+            return;
         }
+
+        // Asegurar que value sea un número válido
+        const numericValue = parseInt(value) || 0;
+
+        // Actualizar con animación simple
+        const currentValue = parseInt(element.textContent) || 0;
+
+        if (currentValue !== numericValue) {
+            element.style.transition = 'all 0.3s ease';
+            element.style.transform = 'scale(1.1)';
+
+            setTimeout(() => {
+                element.textContent = numericValue.toLocaleString();
+                element.style.transform = 'scale(1)';
+            }, 150);
+        } else {
+            element.textContent = numericValue.toLocaleString();
+        }
+
+        console.log(`📈 ${elementId}: ${numericValue}`);
     }
-    
+
+    // ✅ FUNCIÓN PARA VERIFICAR ESTADO DE ELEMENTOS
+    function debugCounterElements() {
+        const elements = ['total-analizados', 'total-detecciones', 'sospechosas', 'alertas-criticas'];
+
+        console.log('🔍 Verificando elementos de contadores:');
+        elements.forEach(id => {
+            const element = document.getElementById(id);
+            console.log(`  ${id}: ${element ? '✅ Encontrado' : '❌ No encontrado'}`);
+            if (element) {
+                console.log(`    Valor actual: "${element.textContent}"`);
+            }
+        });
+    }
+
+    // ✅ LLAMAR DEBUG AL CARGAR LA PÁGINA
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('🚀 Dashboard cargado, verificando elementos...');
+        debugCounterElements();
+
+        // Actualizar contadores inmediatamente
+        setTimeout(updateDashboardCounters, 1000);
+    });
+
+    // ✅ FUNCIÓN AUXILIAR PARA ANIMACIÓN DE CONTADORES
+    function updateCounterWithAnimation(elementId, newValue) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const currentValue = parseInt(element.textContent.replace(/[^\d]/g, '')) || 0;
+        const targetValue = parseInt(newValue) || 0;
+
+        // Si el valor no cambió, no hacer animación
+        if (currentValue === targetValue) return;
+
+        // Animación simple de incremento
+        const increment = Math.ceil((targetValue - currentValue) / 10);
+        let current = currentValue;
+
+        const animation = setInterval(() => {
+            current += increment;
+            if ((increment > 0 && current >= targetValue) || (increment < 0 && current <= targetValue)) {
+                current = targetValue;
+                clearInterval(animation);
+            }
+            element.textContent = current.toLocaleString();
+        }, 50);
+    }
+
     // Actualizar contador con animación
     function updateCounterWithAnimation(elementId, newValue) {
         const element = document.getElementById(elementId);
@@ -903,12 +1063,12 @@
             console.warn(`⚠️ Elemento no encontrado: ${elementId}`);
             return;
         }
-        
+
         const currentValue = element.textContent.trim();
         const newValueStr = String(newValue);
-        
+
         console.log(`🔄 Actualizando ${elementId}: "${currentValue}" -> "${newValueStr}"`);
-        
+
         if (currentValue !== newValueStr) {
             // Animación de actualización
             element.classList.add('counter-updating');
@@ -916,7 +1076,7 @@
             element.style.transition = 'all 0.3s ease';
             element.style.color = '#ffc107';
             element.style.fontWeight = 'bold';
-            
+
             // Actualizar valor después de la animación
             setTimeout(() => {
                 element.textContent = newValueStr;
@@ -925,29 +1085,29 @@
                 element.style.fontWeight = '';
                 element.classList.remove('counter-updating');
             }, 150);
-            
+
             console.log(`✅ Contador ${elementId} actualizado a: ${newValueStr}`);
         }
     }
-    
+
     // ========================================
     // DETECCIONES RECIENTES
     // ========================================
-    
+
     // Actualizar detecciones recientes
     async function updateRecentDetections() {
         try {
             const response = await fetch('/api/dashboard/recent-detections?limit=5');
-            
+
             if (response.ok) {
                 const data = await response.json();
-                
+
                 if (data.success && data.detections) {
                     const tbody = document.querySelector('#tabla-detecciones-recientes tbody');
-                    
+
                     if (tbody) {
                         tbody.innerHTML = '';
-                        
+
                         if (data.detections.length === 0) {
                             tbody.innerHTML = `
                                 <tr>
@@ -966,23 +1126,23 @@
                     }
                 }
             }
-            
+
         } catch (error) {
             console.error('Error actualizando detecciones recientes:', error);
         }
     }
-    
+
     // Crear fila de detección
     function createDetectionRow(detection) {
         const row = document.createElement('tr');
         row.className = 'detection-row-new';
-        
-        const timestamp = detection.timestamp ? 
-            new Date(detection.timestamp).toLocaleString('es-ES') : 
+
+        const timestamp = detection.timestamp ?
+            new Date(detection.timestamp).toLocaleString('es-ES') :
             'N/A';
-        
+
         const severityBadge = getSeverityBadge(detection.severity);
-        
+
         row.innerHTML = `
             <td><small class="text-muted">${detection.client_name}</small></td>
             <td>${severityBadge}</td>
@@ -991,10 +1151,10 @@
             <td><span class="badge bg-secondary">${detection.anomaly_type}</span></td>
             <td><small class="text-muted">${timestamp}</small></td>
         `;
-        
+
         return row;
     }
-    
+
     // Obtener badge de severidad
     function getSeverityBadge(severity) {
         const badges = {
@@ -1005,11 +1165,11 @@
         };
         return badges[severity] || '<span class="badge bg-secondary">Desconocida</span>';
     }
-    
+
     // ========================================
     // CONTROL DE SERVICIOS
     // ========================================
-    
+
     // Actualizar estado de servicios
     async function updateServiceStatus() {
         try {
@@ -1017,58 +1177,58 @@
                 fetch('/api/detector/status').catch(() => ({ ok: false })),
                 fetch('/api/federado/status').catch(() => ({ ok: false }))
             ]);
-            
+
             if (detectorResponse.ok) {
                 const detectorData = await detectorResponse.json();
                 if (detectorData.stats) {
-                    detectorState = {...detectorState, ...detectorData.stats };
+                    detectorState = { ...detectorState, ...detectorData.stats };
                     detectorState.status = detectorData.stats.status || 'stopped';
                 }
                 updateDetectorUI();
-            } else{
+            } else {
                 detectorState.status = 'stopped';
                 updateDetectorUI();
             }
-            
+
             if (federadoResponse.ok) {
                 const federadoData = await federadoResponse.json();
                 if (federadoData.stats) {
-                    federadoState = {...federadoState, ...federadoData.stats };
+                    federadoState = { ...federadoState, ...federadoData.stats };
                     federadoState.status = federadoData.stats.status || 'stopped';
                 }
                 updateFederadoUI();
-            } else{
+            } else {
                 federadoState.status = 'stopped';
                 updateFederadoUI();
             }
-            
+
             updateConnectionStatus(true);
-            
+
         } catch (error) {
             console.error('Error actualizando estado de servicios:', error);
             updateConnectionStatus(false);
-            
+
             detectorState.status = 'stopped';
             federadoState.status = 'stopped';
             updateDetectorUI();
             updateFederadoUI();
         }
     }
-    
+
     // Actualizar interfaz del detector
     function updateDetectorUI() {
         const btn = document.getElementById('btn-detector');
         const icon = document.getElementById('icon-detector');
         const text = document.getElementById('text-detector');
         const status = document.getElementById('detector-status');
-        
+
         if (!btn || !icon || !text) return;
-        
+
         if (detectorState.status === 'running') {
             btn.className = 'btn btn-danger';
             icon.className = 'fas fa-stop';
             text.textContent = 'Detener Detector';
-            
+
             if (status) {
                 status.innerHTML = '<span class="badge bg-success">EJECUTÁNDOSE</span>';
             }
@@ -1076,27 +1236,27 @@
             btn.className = 'btn btn-success';
             icon.className = 'fas fa-play';
             text.textContent = 'Iniciar Detector';
-            
+
             if (status) {
                 status.innerHTML = '<span class="badge bg-secondary">DETENIDO</span>';
             }
         }
     }
-    
+
     // Actualizar interfaz del federado
     function updateFederadoUI() {
         const btn = document.getElementById('btn-federado');
         const icon = document.getElementById('icon-federado');
         const text = document.getElementById('text-federado');
         const status = document.getElementById('federado-status');
-        
+
         if (!btn || !icon || !text) return;
-        
+
         if (federadoState.status === 'running') {
             btn.className = 'btn btn-danger';
             icon.className = 'fas fa-stop';
             text.textContent = 'Detener Federado';
-            
+
             if (status) {
                 status.innerHTML = '<span class="badge bg-success">EJECUTÁNDOSE</span>';
             }
@@ -1104,21 +1264,21 @@
             btn.className = 'btn btn-primary';
             icon.className = 'fas fa-network-wired';
             text.textContent = 'Iniciar Federado';
-            
+
             if (status) {
                 status.innerHTML = '<span class="badge bg-secondary">DETENIDO</span>';
             }
         }
     }
-    
+
     // Toggle detector
     async function toggleDetector() {
         const isRunning = detectorState.status === 'running';
         const action = isRunning ? 'stop' : 'start';
-        
+
         try {
             updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} detector...`, 'info');
-            
+
             // ✅ OBTENER CONFIGURACIÓN DINÁMICA DESDE LOS INPUTS HTML
             const config = {
                 interface: document.getElementById('interface-select')?.value || 'Wi-Fi',
@@ -1127,21 +1287,21 @@
                 // model_path es dinámico en el backend
                 // flask_url es fijo: http://localhost:5000
             };
-            
+
             console.log('🚀 Enviando configuración al detector:', config);
-            
+
             const response = await fetch(`/api/detector/${action}`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 updateSystemLog(data.message, 'success');
                 showNotification('success', data.message, 3000);
-                
+
                 // ✅ MOSTRAR CONFIGURACIÓN APLICADA
                 if (data.config && !isRunning) {
                     updateSystemLog(`Configuración aplicada:`, 'info');
@@ -1150,13 +1310,13 @@
                     updateSystemLog(`  • Modelo: ${data.config.model_path}`, 'info');
                     updateSystemLog(`  • Servidor Federado: ${data.config.servidor_federado}`, 'info');
                 }
-                
+
                 // Actualizar estado inmediatamente
                 setTimeout(updateServiceStatus, 1000);
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error: ${error.message}`, 'error');
             showNotification('error', `Error: ${error.message}`, 5000);
@@ -1165,79 +1325,79 @@
     async function toggleFederado() {
         const isRunning = federadoState.status === 'running';
         const action = isRunning ? 'stop' : 'start';
-        
+
         try {
             updateSystemLog(`${isRunning ? 'Deteniendo' : 'Iniciando'} servidor federado...`, 'info');
-            
+
             const config = {
                 host: document.getElementById('federado-host')?.value || '0.0.0.0',
                 port: parseInt(document.getElementById('federado-puerto')?.value) || 8765,
                 min_clients: parseInt(document.getElementById('min-clientes')?.value) || 1
             };
-            
+
             const response = await fetch(`/api/federado/${action}`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 updateSystemLog(data.message, 'success');
                 showNotification('success', data.message, 3000);
-                
+
                 // Actualizar estado inmediatamente
                 setTimeout(updateServiceStatus, 1000);
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error: ${error.message}`, 'error');
             showNotification('error', `Error: ${error.message}`, 5000);
         }
     }
-    
+
     // ========================================
     // FUNCIONES DE HERRAMIENTAS
     // ========================================
-    
+
     // Cargar interfaces de red
     async function cargarInterfaces() {
         try {
             updateSystemLog('Detectando interfaces de red...', 'info');
-            
+
             const response = await fetch('/api/system/interfaces');
             const data = await response.json();
-            
+
             if (data.success) {
                 const select = document.getElementById('interface-select');
                 if (select) {
                     select.innerHTML = '';
-                    
+
                     data.interfaces.forEach(iface => {
                         const option = document.createElement('option');
                         option.value = iface.name;
                         option.textContent = iface.display_name;
-                        
+
                         if (!iface.is_up) {
                             option.disabled = true;
                             option.textContent += ' (Inactiva)';
                         }
-                        
+
                         select.appendChild(option);
                     });
-                    
+
                     updateSystemLog(`Detectadas ${data.interfaces.length} interfaces`, 'success');
                 }
             } else {
                 throw new Error(data.error || 'Error detectando interfaces');
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error cargando interfaces: ${error.message}`, 'error');
-            
+
             // Fallback con interfaces por defecto
             const select = document.getElementById('interface-select');
             if (select) {
@@ -1248,20 +1408,20 @@
             }
         }
     }
-    
+
     // Verificar conexión
     async function verificarConexion() {
         try {
             updateSystemLog('Verificando conectividad del sistema...', 'info');
             showNotification('info', 'Verificando conexiones...', 2000);
-            
+
             const response = await fetch('/api/dashboard/verify-connection', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 const results = data.results;
                 let message = 'Resultados de conectividad:\n';
@@ -1269,34 +1429,34 @@
                 message += `• Detector: ${results.detector ? '✅ Activo' : '❌ Inactivo'}\n`;
                 message += `• Federado: ${results.federado ? '✅ Activo' : '❌ Inactivo'}\n`;
                 message += `• Red: ${results.network ? '✅ Conectada' : '❌ Sin conexión'}`;
-                
+
                 updateSystemLog(message, 'info');
-                
+
                 const status = Object.values(results).every(Boolean) ? 'success' : 'warning';
                 showNotification(status, 'Verificación de conectividad completada', 5000);
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error verificando conexión: ${error.message}`, 'error');
             showNotification('error', 'Error verificando conexión', 3000);
         }
     }
-    
+
     // Verificar rendimiento
     async function verificarRendimiento() {
         try {
             updateSystemLog('Analizando rendimiento del sistema...', 'info');
             showNotification('info', 'Analizando rendimiento...', 2000);
-            
+
             const response = await fetch('/api/dashboard/performance-check', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 const perf = data.performance;
                 let message = 'Métricas de rendimiento:\n';
@@ -1304,39 +1464,39 @@
                 message += `• Memoria: ${perf.memory_percent.toFixed(1)}%\n`;
                 message += `• Disco: ${perf.disk_percent.toFixed(1)}%\n`;
                 message += `• Procesos: ${perf.process_count}`;
-                
+
                 if (data.issues.length > 0) {
                     message += `\n⚠️ Problemas detectados: ${data.issues.join(', ')}`;
                 }
-                
+
                 updateSystemLog(message, data.status === 'good' ? 'success' : 'warning');
-                
-                const notificationType = data.status === 'good' ? 'success' : 
-                                       data.status === 'warning' ? 'warning' : 'error';
+
+                const notificationType = data.status === 'good' ? 'success' :
+                    data.status === 'warning' ? 'warning' : 'error';
                 showNotification(notificationType, `Rendimiento: ${data.status}`, 4000);
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error verificando rendimiento: ${error.message}`, 'error');
             showNotification('error', 'Error verificando rendimiento', 3000);
         }
     }
-    
+
     // Ejecutar diagnósticos
     async function ejecutarDiagnosticos() {
         try {
             updateSystemLog('Ejecutando diagnósticos completos...', 'info');
             showNotification('info', 'Ejecutando diagnósticos...', 3000);
-            
+
             const response = await fetch('/api/dashboard/diagnostics', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 const diag = data.diagnostics;
                 let message = 'Diagnósticos del sistema:\n';
@@ -1344,82 +1504,82 @@
                 message += `• Plataforma: ${diag.system_info.platform}\n`;
                 message += `• Archivos críticos: ${Object.values(diag.files_check).every(Boolean) ? '✅' : '❌'}\n`;
                 message += `• Procesos activos: Detector(${diag.processes.detector_running ? '✅' : '❌'}) Federado(${diag.processes.federado_running ? '✅' : '❌'})`;
-                
+
                 if (data.problems.length > 0) {
                     message += `\n🔧 Problemas: ${data.problems.join(', ')}`;
                 }
-                
+
                 updateSystemLog(message, data.status === 'healthy' ? 'success' : 'warning');
-                showNotification(data.status === 'healthy' ? 'success' : 'warning', 
-                               'Diagnósticos completados', 4000);
+                showNotification(data.status === 'healthy' ? 'success' : 'warning',
+                    'Diagnósticos completados', 4000);
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error en diagnósticos: ${error.message}`, 'error');
             showNotification('error', 'Error ejecutando diagnósticos', 3000);
         }
     }
-    
+
     // ========================================
     // GESTIÓN DE DATOS
     // ========================================
-    
+
     // Insertar datos de prueba
     async function insertTestData() {
         try {
             updateSystemLog('Insertando datos de prueba...', 'info');
             showNotification('info', 'Generando datos de prueba...', 2000);
-            
+
             const response = await fetch('/api/dashboard/test-data', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 updateSystemLog(`✅ ${data.inserted} registros de prueba insertados`, 'success');
                 showNotification('success', `${data.inserted} registros insertados`, 3000);
-                
+
                 // Actualizar inmediatamente
                 setTimeout(() => {
                     updateDashboardCounters();
                     updateRecentDetections();
                 }, 500);
-                
+
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`❌ Error: ${error.message}`, 'error');
             showNotification('error', 'Error insertando datos', 3000);
         }
     }
-    
+
     // Limpiar datos
     async function limpiarDatos() {
         if (!confirm('¿Está seguro de que desea limpiar todos los datos? Esta acción no se puede deshacer.')) {
             return;
         }
-        
+
         try {
             updateSystemLog('Limpiando datos del sistema...', 'warning');
             showNotification('warning', 'Limpiando datos...', 3000);
-            
+
             const response = await fetch('/api/dashboard/clear-data', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 updateSystemLog('Datos limpiados exitosamente', 'success');
                 showNotification('success', 'Datos limpiados', 3000);
-                
+
                 // Actualizar interfaz
                 setTimeout(() => {
                     updateDashboardCounters();
@@ -1428,17 +1588,17 @@
             } else {
                 throw new Error(data.error);
             }
-            
+
         } catch (error) {
             updateSystemLog(`Error limpiando datos: ${error.message}`, 'error');
             showNotification('error', 'Error limpiando datos', 3000);
         }
     }
-    
+
     // ========================================
     // UTILIDADES
     // ========================================
-    
+
     // Actualizar tiempo de última actualización
     function updateLastUpdateTime() {
         const timeElement = document.getElementById('last-update-time');
@@ -1448,7 +1608,7 @@
             lastUpdate = now;
         }
     }
-    
+
     // Actualizar indicador de conexión
     function updateConnectionStatus(connected = true) {
         const indicator = document.getElementById('connection-indicator');
@@ -1462,42 +1622,42 @@
             }
         }
     }
-    
+
     // Actualizar dashboard completo
     function actualizarDashboard() {
         updateSystemLog('Actualizando dashboard completo...', 'info');
         showNotification('info', 'Actualizando dashboard...', 2000);
-        
+
         updateServiceStatus();
         updateDashboardCounters();
         updateRecentDetections();
         updateLastUpdateTime();
-        
+
         updateSystemLog('Dashboard actualizado completamente', 'success');
         showNotification('success', 'Dashboard actualizado', 2000);
     }
-    
+
     // Sistema de log del sistema
     function updateSystemLog(message, level = 'info') {
         try {
             const logContainer = document.getElementById('system-log');
             if (!logContainer) return;
-            
+
             const timestamp = new Date().toLocaleTimeString();
             const levelClass = {
-                'info': 'text-info', 'success': 'text-success', 
+                'info': 'text-info', 'success': 'text-success',
                 'warning': 'text-warning', 'error': 'text-danger'
             }[level] || 'text-info';
-            
+
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry mb-1';
             logEntry.innerHTML = `
                 <small class="text-muted">[${timestamp}]</small>
                 <span class="${levelClass}">${message}</span>
             `;
-            
+
             logContainer.insertBefore(logEntry, logContainer.firstChild);
-            
+
             const entries = logContainer.querySelectorAll('.log-entry');
             if (entries.length > 50) {
                 for (let i = 50; i < entries.length; i++) {
@@ -1508,15 +1668,15 @@
             console.error('Error actualizando log:', error);
         }
     }
-    
+
     // Sistema de notificaciones
     function showNotification(type, message, duration = 5000) {
         try {
             const alertClass = {
-                'success': 'alert-success', 'error': 'alert-danger', 
+                'success': 'alert-success', 'error': 'alert-danger',
                 'warning': 'alert-warning', 'info': 'alert-info'
             }[type] || 'alert-info';
-            
+
             const notification = document.createElement('div');
             notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
             notification.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
@@ -1524,42 +1684,42 @@
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
-            
+
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), duration);
         } catch (error) {
             console.error('Error mostrando notificación:', error);
         }
     }
-    
+
     // Exportar/Importar configuración (funciones placeholder)
     async function exportarConfiguracion() {
         updateSystemLog('Función de exportar configuración', 'info');
         showNotification('info', 'Exportando configuración...', 2000);
     }
-    
+
     async function importarConfiguracion(event) {
         updateSystemLog('Función de importar configuración', 'info');
         showNotification('info', 'Importando configuración...', 2000);
         event.target.value = '';
     }
-    
+
     // ========================================
     // EVENTOS Y INICIALIZACIÓN
     // ========================================
-    
+
     // Inicialización cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         initializeDashboard();
     });
-    
+
     // Cleanup al salir
-    window.addEventListener('beforeunload', function() {
+    window.addEventListener('beforeunload', function () {
         if (updateInterval) {
             clearInterval(updateInterval);
         }
     });
-    
+
     // Hacer funciones globalmente accesibles
     window.toggleDetector = toggleDetector;
     window.toggleFederado = toggleFederado;

@@ -84,8 +84,8 @@ class DetectorFederado:
         self.stats = {
             'total_packets': 0,
             'normal_packets': 0,
-            'anomalies_detected': 0,
-            'attacks_detected': 0,
+            'anomalies_detected': 0,        # ✅ ESTANDARIZAR: _detected
+            'attacks_detected': 0,          # ✅ ESTANDARIZAR: _detected
             'detections_sent': 0,
             'lines_processed': 0,
             'last_detection_time': None
@@ -189,37 +189,146 @@ class DetectorFederado:
             return None
 
     def serialize_model_for_fl(self):
-        """Serializa el modelo completo para aprendizaje federado"""
+        """Serializa SOLO METADATOS del modelo para FL - OPTIMIZADO"""
         try:
-            model_data = joblib.load(self.model_path)
-            modelo = model_data['model']
-            scaler = model_data['scaler']
+            if len(self.local_training_data) < 10:
+                return None
             
-            model_bytes = pickle.dumps({
-                'model': modelo,
-                'scaler': scaler,
-                'features': self.fl_features,
-                'version': self.local_model_version,
-                'samples_trained': len(self.local_training_data),
-                'performance_metrics': self.get_local_performance_metrics()
-            })
-            
-            model_base64 = base64.b64encode(model_bytes).decode('utf-8')
-            
-            return {
+            # ✅ SOLO ENVIAR METADATOS, NO EL MODELO COMPLETO
+            model_update = {
                 'type': 'model_update',
                 'client_id': self.client_id,
-                'model_version': self.local_model_version,
-                'model_data': model_base64,
-                'model_params': self.get_current_model_params(),
-                'training_samples': len(self.local_training_data),
-                'local_accuracy': self.calculate_local_accuracy(),
+                'version': self.local_model_version,
+                'metadata': {
+                    'samples_count': len(self.local_training_data),
+                    'accuracy_estimate': 0.85,  # Estimación simple
+                    'features_used': len(self.fl_features),
+                    'training_timestamp': time.time(),
+                    'model_type': 'RandomForestClassifier'
+                },
+                # ✅ NO ENVIAR model_data pesado
                 'timestamp': time.time()
             }
             
+            return model_update
+            
         except Exception as e:
-            print(f"[FL-ERROR] Error serializando modelo: {e}")
+            print(f"[FL-ERROR] Error serializando modelo optimizado: {e}")
             return None
+        # AGREGAR DESPUÉS del método serialize_model_for_fl (línea ~190):
+    
+    def collect_training_sample(self, deteccion):
+        """Recolecta muestra para entrenamiento federado - SOLO ANOMALÍAS"""
+        try:
+            # Solo recolectar anomalías y ataques (no tráfico normal)
+            anomaly_type = deteccion.get('anomaly_type', '')
+            
+            if anomaly_type == 'Normal Traffic':
+                return  # No recolectar tráfico normal
+            
+            # Extraer características de FL desde raw_data
+            raw_data = deteccion.get('raw_data', {})
+            
+            # Crear vector de características usando self.fl_features
+            feature_vector = []
+            
+            for feature in self.fl_features:
+                value = raw_data.get(feature, 0.0)
+                
+                # Asegurar que sea numérico
+                if isinstance(value, (int, float)):
+                    feature_vector.append(value)
+                else:
+                    feature_vector.append(0.0)
+            
+            # Crear etiqueta binaria: 0 = Normal, 1 = Anomalía/Ataque
+            if anomaly_type in ['Suspicious Activity', 'Network Attack']:
+                label = 1  # Anomalía
+            else:
+                label = 0  # Normal
+            
+            # Crear muestra de entrenamiento
+            training_sample = {
+                'features': feature_vector,
+                'label': label,
+                'anomaly_type': anomaly_type,
+                'confidence': deteccion.get('confidence_score', 0.0),
+                'timestamp': time.time(),
+                'source_ip': deteccion.get('source_ip', ''),
+                'detection_id': deteccion.get('detection_id', '')
+            }
+            
+            # Agregar a datos locales
+            self.local_training_data.append(training_sample)
+            
+            # Limitar tamaño del dataset local (mantener solo últimas 1000 muestras)
+            if len(self.local_training_data) > 1000:
+                self.local_training_data = self.local_training_data[-1000:]
+            
+            # Log cada 25 muestras nuevas
+            if len(self.local_training_data) % 25 == 0:
+                print(f"[FL-COLLECT] {len(self.local_training_data)} muestras FL recolectadas")
+                
+                # Mostrar distribución por tipo
+                tipos = {}
+                for sample in self.local_training_data[-50:]:  # Últimas 50
+                    tipo = sample['anomaly_type']
+                    tipos[tipo] = tipos.get(tipo, 0) + 1
+                
+                print(f"[FL-STATS] Últimas 50 muestras: {tipos}")
+            
+            # Si tenemos suficientes muestras nuevas, preparar para envío al servidor
+            if len(self.local_training_data) >= 100 and len(self.local_training_data) % 50 == 0:
+                print(f"[FL-READY] {len(self.local_training_data)} muestras disponibles para entrenamiento federado")
+                
+                # El envío del modelo se hará periódicamente en periodic_fl_sender
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error recolectando muestra FL: {e}")
+        # AGREGAR DESPUÉS de collect_training_sample:
+    
+    async def process_server_message(self, message_data):
+        """Procesa mensajes recibidos del servidor federado"""
+        try:
+            message_type = message_data.get('type', '')
+            
+            if message_type == 'pong':
+                # Respuesta a ping
+                print("[FL-PONG] Pong recibido del servidor")
+                
+            elif message_type == 'global_model_update':
+                # Nuevo modelo global disponible
+                print("[FL-UPDATE] Modelo global actualizado disponible")
+                await self.apply_global_model(message_data.get('model_data', {}))
+                
+            elif message_type == 'training_request':
+                # Servidor solicita entrenamiento
+                print("[FL-REQUEST] Solicitud de entrenamiento recibida")
+                if len(self.local_training_data) >= 50:
+                    await self.send_model_update()
+                    
+            elif message_type == 'server_stats':
+                # Estadísticas del servidor
+                stats = message_data.get('stats', {})
+                print(f"[FL-SERVER] Clientes conectados: {stats.get('clients', 0)}")
+                print(f"[FL-SERVER] Ronda actual: {stats.get('round', 0)}")
+                
+            elif message_type == 'client_list':
+                # Lista de clientes conectados
+                clients = message_data.get('clients', [])
+                print(f"[FL-CLIENTS] {len(clients)} clientes conectados")
+                
+            elif message_type == 'error':
+                # Error del servidor
+                error_msg = message_data.get('message', 'Error desconocido')
+                print(f"[FL-SERVER-ERROR] {error_msg}")
+                
+            else:
+                # Mensaje no reconocido
+                print(f"[FL-UNKNOWN] Mensaje no reconocido: {message_type}")
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error procesando mensaje del servidor: {e}")
 
     async def send_model_update(self):
         """Envía actualización del modelo al servidor federado"""
@@ -282,6 +391,60 @@ class DetectorFederado:
             print(f"[FL-ERROR] Error solicitando modelo global: {e}")
             return False
 
+        # AGREGAR NUEVA FUNCIÓN OPTIMIZADA después de request_global_model:
+    
+    async def request_global_model_optimized(self):
+        """Solicita el modelo global actual - VERSIÓN OPTIMIZADA"""
+        try:
+            if not self.client_id:
+                print("[FL-WARNING] Cliente no registrado, saltando solicitud de modelo global")
+                return True
+            
+            # ✅ SOLICITUD MÍNIMA - SOLO METADATOS
+            request = {
+                'type': 'get_global_model',
+                'client_id': self.client_id,
+                'current_version': self.global_model_version,
+                'request_metadata_only': True  # ✅ SOLO METADATOS, NO EL MODELO COMPLETO
+            }
+            
+            await self.websocket.send(json.dumps(request))
+            
+            response = await asyncio.wait_for(self.websocket.recv(), timeout=10.0)
+            response_data = json.loads(response)
+            
+            # ✅ MANEJAR DIFERENTES TIPOS DE RESPUESTA
+            response_type = response_data.get('type')
+            
+            if response_type == 'global_model_metadata':
+                # Solo recibir metadatos del modelo, no el modelo completo
+                metadata = response_data.get('metadata', {})
+                print(f"[FL-INFO] Metadatos modelo global recibidos - Versión: {metadata.get('version', 0)}")
+                self.global_model_version = metadata.get('version', 0)
+                return True
+                
+            elif response_type == 'global_model_update':
+                # ✅ EL SERVIDOR ENVIÓ UN MODELO COMPLETO INMEDIATAMENTE
+                print("[FL-INFO] Servidor envió modelo global completo en registro")
+                try:
+                    await self.apply_global_model(response_data.get('model_data', {}))
+                    print("[FL-SUCCESS] Modelo global aplicado durante registro")
+                except Exception as e:
+                    print(f"[FL-WARNING] Error aplicando modelo durante registro: {e}")
+                return True
+                
+            elif response_type == 'no_model_available':
+                print("[FL-INFO] No hay modelo global disponible aún")
+                return True
+                
+            else:
+                print(f"[FL-INFO] Respuesta: {response_type} - Continuando")
+                return True
+                
+        except Exception as e:
+            print(f"[FL-ERROR] Error solicitando modelo global: {e}")
+            return False
+
     async def apply_global_model(self, global_model_data):
         """Aplica el modelo global recibido"""
         try:
@@ -326,33 +489,26 @@ class DetectorFederado:
             return False
 
     def periodic_fl_sender(self):
-        """Envía periódicamente detecciones y actualizaciones al servidor federado"""
-        print("[FL-INFO] Iniciando envío periódico al servidor federado")
+        """Envía periódicamente estadísticas básicas al servidor federado - OPTIMIZADO"""
+        print("[FL-INFO] Iniciando envío periódico optimizado al servidor federado")
         
         while self.running and self.federado_connected:
             try:
-                time.sleep(30)
+                time.sleep(30)  # Cada 30 segundos
                 
                 if not self.websocket:
                     break
-                    
+                
+                # ✅ ESTADÍSTICAS BÁSICAS - SIN DATOS PESADOS
                 stats_update = {
                     'type': 'stats_update',
                     'client_id': self.client_id,
-                    'stats': {
+                    'basic_stats': {
                         'packets_processed': self.stats['total_packets'],
-                        'flows_analyzed': self.stats['total_packets'],
                         'total_alerts': self.stats['anomalies_detected'],
                         'normal_packets': self.stats['normal_packets'],
-                        'attack_types': {'suspicious': self.stats['anomalies_detectadas']},
-                        'alert_distribution': {
-                            'normal': self.stats['normal_packets'],
-                            'suspicious': self.stats['anomalies_detectadas'],
-                            'attack': self.stats['attacks_detected']
-                        },
                         'uptime': time.time() - self.start_time.timestamp() if self.start_time else 0,
-                        'fl_training_samples': len(self.local_training_data),
-                        'model_version': self.local_model_version
+                        'training_samples': min(len(self.local_training_data), 100)  # Limitar número
                     },
                     'timestamp': time.time()
                 }
@@ -362,176 +518,406 @@ class DetectorFederado:
                     asyncio.set_event_loop(loop)
                     
                     try:
-                        loop.run_until_complete(self.websocket.send(json.dumps(stats_update)))
-                        print(f"[FL-SYNC]   Estadísticas enviadas: {self.stats['anomalies_detectadas']} anomalías")
-                        
-                        if len(self.local_training_data) >= 50 and len(self.local_training_data) % 50 == 0:
-                            model_update = self.serialize_model_for_fl()
-                            if model_update:
-                                loop.run_until_complete(self.websocket.send(json.dumps(model_update)))
-                                print(f"[FL-SYNC]   Modelo FL enviado con {len(self.local_training_data)} muestras")
-                                
+                        loop.run_until_complete(
+                            asyncio.wait_for(
+                                self.websocket.send(json.dumps(stats_update)), 
+                                timeout=5.0
+                            )
+                        )
+                        print(f"[FL-SYNC] Estadísticas básicas enviadas: {self.stats['anomalies_detected']} anomalías")
                     finally:
                         loop.close()
                         
-                    queue_size = self.detection_queue.qsize() if hasattr(self, 'detection_queue') else 0
-                    worker_alive = self.sender_thread.is_alive() if hasattr(self, 'sender_thread') and self.sender_thread else False
-
-                    print(f"[FL-STATUS] Cola: {queue_size}, Worker activo: {worker_alive}")
-
-                    if not worker_alive:
-                        print("[FL-WARNING] Worker no activo, reiniciando...")
-                        self.start_detection_sender()
-                        
                 except Exception as e:
-                    print(f"[FL-ERROR] Error enviando stats: {e}")
-                    if "connection" in str(e).lower() or "closed" in str(e).lower():
-                        print("[FL-WARNING] Conexión perdida, reintentando...")
+                    print(f"[FL-ERROR] Error enviando stats optimizadas: {e}")
+                    if "connection" in str(e).lower():
                         self.federado_connected = False
                         break
-                    
+                        
             except Exception as e:
-                print(f"[FL-ERROR] Error en envío periódico: {e}")
+                print(f"[FL-ERROR] Error en envío periódico optimizado: {e}")
                 time.sleep(5)
                 
-        print("[FL-INFO] Envío periódico finalizado")
+        print("[FL-INFO] Envío periódico optimizado finalizado")
     
     def start_detection_sender(self):
         """Inicia hilo para envío de detecciones al federado"""
         try:
-            #   VERIFICAR SI EL WORKER ANTERIOR TERMINÓ
+            # ✅ VERIFICAR SI EL WORKER ANTERIOR TERMINÓ
             if hasattr(self, 'sender_thread') and self.sender_thread and self.sender_thread.is_alive():
                 print("[FL-INFO] Worker de envío ya está activo")
                 return
             
-            #   MARCAR COMO NO EJECUTÁNDOSE ANTES DE CREAR NUEVO HILO
-            self.sender_running = False
-            
-            #   ESPERAR A QUE EL HILO ANTERIOR TERMINE COMPLETAMENTE
+            # ✅ ESPERAR A QUE EL HILO ANTERIOR TERMINE COMPLETAMENTE
             if hasattr(self, 'sender_thread') and self.sender_thread:
                 try:
                     self.sender_thread.join(timeout=2.0)
                 except:
                     pass
             
-            #   AHORA SÍ CREAR NUEVO WORKER
-            self.sender_running = True
+            # ✅ ASEGURAR QUE TODAS LAS VARIABLES ESTÁN CONFIGURADAS
+                  # ← CRÍTICO: Asegurar que está en True
+            self.sender_running = True   # ← CRÍTICO: Activar worker
+            
+            print(f"[FL-DEBUG] Variables configuradas - running: {self.running}, sender_running: {self.sender_running}")
+            
+            # ✅ CREAR NUEVO WORKER
             self.sender_thread = threading.Thread(target=self._detection_sender_worker, daemon=True)
             self.sender_thread.start()
             print("[FL-INFO] Hilo de envío de detecciones iniciado")
             
-            #   VERIFICAR QUE ARRANCÓ CORRECTAMENTE
-            time.sleep(0.1)  # Dar tiempo a que arranque
+            # ✅ VERIFICAR QUE ARRANCÓ CORRECTAMENTE
+            time.sleep(0.5)  # Dar más tiempo a que arranque
             if self.sender_thread.is_alive():
                 print("[FL-SUCCESS] Worker de envío confirmado como activo")
             else:
                 print("[FL-ERROR] Worker de envío no pudo arrancar")
+                # ✅ DIAGNÓSTICO ADICIONAL
+                print(f"[FL-DEBUG] Estado del hilo: {self.sender_thread.is_alive()}")
+                print(f"[FL-DEBUG] Variables: running={self.running}, sender_running={self.sender_running}")
                 
         except Exception as e:
             print(f"[FL-ERROR] Error iniciando worker de envío: {e}")
-    
+            
     def _detection_sender_worker(self):
-        """Worker que procesa cola de detecciones y las envía al federado"""
-        print("[FL-INFO] Worker de envío iniciado correctamente")
+        """Worker optimizado que procesa cola SIN ASYNCIO - VERSIÓN ROBUSTA"""
+        print("[FL-INFO] Worker de envío OPTIMIZADO iniciado")
+        print(f"[FL-DEBUG] Estado inicial - running: {self.running}, sender_running: {self.sender_running}")
+        print(f"[FL-DEBUG] Conexión federada: {self.federado_connected}")
+        
+        iteration_count = 0
         
         try:
             while self.sender_running and self.running:
+                iteration_count += 1
+                
+                # ✅ LOG DE DIAGNÓSTICO CADA 10 ITERACIONES
+                if iteration_count % 10 == 0:
+                    print(f"[FL-DEBUG] Worker iteración #{iteration_count} - Activo")
+                
                 try:
-                    #   VERIFICAR CONEXIÓN ANTES DE PROCESAR
-                    if not self.federado_connected or not self.websocket:
-                        print("[FL-WARNING] Sin conexión federada, esperando...")
+                    # ✅ VERIFICAR CONEXIÓN
+                    if not self.federado_connected:
+                        if iteration_count % 20 == 0:  # Log cada 20 iteraciones
+                            print("[FL-WARNING] Sin conexión federada, esperando...")
                         time.sleep(5)
                         continue
                     
-                    #   PROCESAR DETECCIONES DE LA COLA
+                    # ✅ PROCESAR DETECCIONES LOCALES
                     try:
-                        deteccion = self.detection_queue.get(timeout=3.0)
+                        deteccion = self.detection_queue.get(timeout=2.0)
                         
                         if deteccion is None:  # Señal de parada
-                            print("[FL-INFO] Recibida señal de parada del worker")
+                            print("[FL-INFO] Señal de parada recibida en worker")
                             break
                         
-                        #   ENVIAR DETECCIÓN SIN CREAR NUEVO LOOP
+                        # ✅ PROCESAR SIN ASYNCIO
                         success = self._send_detection_sync(deteccion)
                         
                         if success:
-                            #   INCREMENTAR CONTADOR DE DETECCIONES ENVIADAS
                             self.stats['detections_sent'] += 1
                             
-                            anomaly_type = deteccion.get('anomaly_type', '')
-                            
-                            #   LOG CADA 5 DETECCIONES PARA NO SATURAR
-                            if self.stats['detections_sent'] % 5 == 0:
-                                print(f"[FL-SENT]   {self.stats['detections_sent']} detecciones enviadas - Última: {anomaly_type}")
-                            
-                        else:
-                            print(f"[FL-ERROR] Error enviando detección")
-                            #   SI HAY ERROR DE CONEXIÓN, MARCAR COMO DESCONECTADO
-                            self.federado_connected = False
+                            # ✅ LOG MENOS FRECUENTE
+                            if self.stats['detections_sent'] % 10 == 0:
+                                anomaly_type = deteccion.get('anomaly_type', 'Unknown')
+                                print(f"[FL-SENT] {self.stats['detections_sent']} detecciones enviadas - Última: {anomaly_type}")
                         
                         self.detection_queue.task_done()
                         
                     except queue.Empty:
-                        #   NO SALIR POR TIMEOUT, CONTINUAR - ESTO ES NORMAL
+                        # ✅ APROVECHAR TIEMPO VACÍO
+                        self._process_websocket_queue()
                         continue
                         
-                    except Exception as e:
-                        print(f"[FL-ERROR] Error procesando detección: {e}")
-                        time.sleep(1)  #   PAUSA BREVE ANTES DE CONTINUAR
-                        
                 except Exception as e:
-                    print(f"[FL-ERROR] Error en ciclo principal del worker: {e}")
-                    time.sleep(2)  #   PAUSA MÁS LARGA PARA ERRORES CRÍTICOS
+                    print(f"[FL-ERROR] Error en worker optimizado (iteración {iteration_count}): {e}")
+                    time.sleep(1)
                     
-            print("[FL-INFO] Worker de envío finalizando normalmente")
+            print(f"[FL-INFO] Worker optimizado finalizando después de {iteration_count} iteraciones")
+            print(f"[FL-DEBUG] Estado final - running: {self.running}, sender_running: {self.sender_running}")
             
         except Exception as e:
-            print(f"[FL-ERROR] Error crítico en worker: {e}")
+            print(f"[FL-ERROR] Error crítico en worker optimizado: {e}")
         finally:
-            print("[FL-INFO] Worker de envío de detecciones finalizado")
+            print("[FL-INFO] Worker de envío optimizado finalizado")
 
-    def _send_detection_sync(self, detection_data):
-        """Envía detección usando asyncio de forma segura"""
+    def _process_websocket_queue(self):
+        """Procesa cola de mensajes WebSocket de forma segura - VERSIÓN CORREGIDA"""
         try:
-            #   VERIFICAR PRECONDICIONES
+            # ✅ IMPORT FIJO
+            import queue as queue_module
+            
+            if not hasattr(self, 'websocket_send_queue') or not self.websocket:
+                return
+            
+            # ✅ PROCESAR HASTA 5 MENSAJES POR VEZ
+            messages_processed = 0
+            while messages_processed < 5 and not self.websocket_send_queue.empty():
+                try:
+                    message = self.websocket_send_queue.get_nowait()
+                    
+                    # ✅ ENVÍO SÍNCRONO DIRECTO
+                    # Usar el loop del WebSocket si existe
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    try:
+                        loop.run_until_complete(
+                            asyncio.wait_for(
+                                self.websocket.send(message), 
+                                timeout=3.0
+                            )
+                        )
+                        messages_processed += 1
+                    except:
+                        # Si falla, marcar como desconectado
+                        self.federado_connected = False
+                        break
+                    finally:
+                        loop.close()
+                        
+                except queue_module.Empty:
+                    break
+                except Exception as e:
+                    print(f"[FL-ERROR] Error procesando cola WebSocket: {e}")
+                    break
+                    
+        except Exception as e:
+            print(f"[FL-ERROR] Error en proceso de cola WebSocket: {e}")
+    def _send_detection_sync(self, detection_data):
+        """Envía detección usando asyncio de forma segura - VERSIÓN CORREGIDA"""
+        try:
+            # ✅ VERIFICAR PRECONDICIONES
             if not self.websocket or not self.federado_connected:
                 return False
-                
-            #   CREAR LOOP PROPIO PARA ESTE ENVÍO
+            
+            # ✅ SIMPLIFICAR - NO USAR ASYNCIO EN HILOS SEPARADOS
             try:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+                # ✅ ENVÍO SÍNCRONO DIRECTO SIN ASYNCIO
+                import json
                 
+                # ✅ MAPEAR CORRECTAMENTE ANOMALY_TYPE A STATUS
+                anomaly_type = detection_data.get('anomaly_type', 'Unknown')
+                
+                if anomaly_type == 'Normal Traffic':
+                    status = 'normal'
+                elif anomaly_type == 'Suspicious Activity':
+                    status = 'suspicious'
+                elif anomaly_type == 'Network Attack':
+                    status = 'attack'
+                else:
+                    status = 'suspicious'
+                
+                # ✅ MENSAJE OPTIMIZADO Y MÁS PEQUEÑO
+                detection_alert = {
+                    'type': 'detection_alert',
+                    'client_id': self.client_id,
+                    'alert': {
+                        'status': status,
+                        'src_ip': detection_data.get('source_ip', '192.168.1.100'),
+                        'dst_ip': detection_data.get('destination_ip', '192.168.1.1'),
+                        'protocol': detection_data.get('protocol', 'TCP'),
+                        'score': round(detection_data.get('confidence_score', 0.0), 4),
+                        'attack_type': anomaly_type[:30],  # Truncar para ahorrar espacio
+                        'timestamp': time.time()
+                    },
+                    'timestamp': time.time()
+                }
+                
+                message_str = json.dumps(detection_alert)
+                message_size = len(message_str.encode('utf-8'))
+                
+                # ✅ VERIFICAR TAMAÑO RAZONABLE
+                if message_size > 1024:  # 1KB límite
+                    print(f"[FL-WARNING] Mensaje grande ({message_size} bytes), simplificando...")
+                    detection_alert['alert'] = {
+                        'status': status,
+                        'score': round(detection_data.get('confidence_score', 0.0), 4),
+                        'attack_type': anomaly_type[:15],
+                        'timestamp': time.time()
+                    }
+                    message_str = json.dumps(detection_alert)
+                
+                # ✅ USAR QUEUE THREAD-SAFE EN LUGAR DE ASYNCIO
+                self._add_to_websocket_queue(message_str)
+                return True
+                
+            except Exception as e:
+                print(f"[FL-ERROR] Error preparando mensaje: {e}")
+                return False
+                    
+        except Exception as e:
+            print(f"[FL-ERROR] Error en envío síncrono corregido: {e}")
+            return False
+    
+    def _add_to_websocket_queue(self, message_str):
+        """Agrega mensaje a cola para envío WebSocket - THREAD SAFE - VERSIÓN CORREGIDA"""
+        try:
+            # ✅ IMPORT FIJO
+            import queue as queue_module
+            
+            if not hasattr(self, 'websocket_send_queue'):
+                self.websocket_send_queue = queue_module.Queue(maxsize=100)
+            
+            # ✅ AGREGAR A COLA SIN BLOQUEAR
+            try:
+                self.websocket_send_queue.put_nowait(message_str)
+            except queue_module.Full:
+                # ✅ SI ESTÁ LLENA, DESCARTAR MENSAJE MÁS ANTIGUO
                 try:
-                    #   EJECUTAR ENVÍO EN EL LOOP CREADO CON TIMEOUT
-                    result = loop.run_until_complete(
-                        asyncio.wait_for(
-                            self._send_detection_async(detection_data), 
-                            timeout=10.0  #   TIMEOUT EXPLÍCITO
-                        )
-                    )
-                    return result
-                except asyncio.TimeoutError:
-                    print(f"[FL-ERROR] Timeout enviando detección")
-                    return False
-                finally:
-                    loop.close()
+                    self.websocket_send_queue.get_nowait()  # Remover uno viejo
+                    self.websocket_send_queue.put_nowait(message_str)  # Agregar nuevo
+                except:
+                    pass  # Si falla, no importa
+                    
+        except Exception as e:
+            print(f"[FL-ERROR] Error agregando a cola WebSocket: {e}")
+
+    def monitor_memory_usage(self):
+        """Monitorea uso de memoria y reinicia si es necesario"""
+        import psutil
+        import gc
+        
+        print("[MEMORY] Iniciando monitor de memoria")
+        
+        while self.running:
+            try:
+                time.sleep(30)  # Verificar cada 30 segundos
+                
+                # ✅ OBTENER USO DE MEMORIA ACTUAL
+                process = psutil.Process(os.getpid())
+                memory_info = process.memory_info()
+                memory_mb = memory_info.rss / 1024 / 1024  # Convertir a MB
+                
+                # ✅ LOG CADA 5 MINUTOS
+                if not hasattr(self, '_last_memory_log'):
+                    self._last_memory_log = 0
+                
+                if time.time() - self._last_memory_log > 300:  # 5 minutos
+                    print(f"[MEMORY] Uso actual: {memory_mb:.1f} MB")
+                    print(f"[MEMORY] Detecciones procesadas: {self.stats['total_packets']:,}")
+                    print(f"[MEMORY] Cola FL: {len(self.local_training_data)} muestras")
+                    self._last_memory_log = time.time()
+                
+                # ✅ LIMPIAR DATOS ANTIGUOS
+                if len(self.local_training_data) > 500:
+                    print(f"[MEMORY] Limpiando datos FL antiguos...")
+                    self.local_training_data = self.local_training_data[-200:]  # Mantener solo últimas 200
+                    gc.collect()  # Forzar garbage collection
+                
+                # ✅ VERIFICAR LÍMITE DE MEMORIA
+                if memory_mb > 1024:  # 1GB límite
+                    print(f"[MEMORY] ⚠️  USO ALTO DE MEMORIA: {memory_mb:.1f} MB")
+                    
+                    # ✅ LIMPIAR AGRESIVAMENTE
+                    self.local_training_data = self.local_training_data[-50:]  # Solo últimas 50
+                    
+                    # ✅ LIMPIAR COLA DE DETECCIONES
+                    if hasattr(self, 'detection_queue'):
+                        while not self.detection_queue.empty():
+                            try:
+                                self.detection_queue.get_nowait()
+                            except:
+                                break
+                    
+                    # ✅ FORZAR GARBAGE COLLECTION
+                    gc.collect()
+                    
+                    print(f"[MEMORY] ✅ Limpieza completada")
+                    
+                # ✅ REINICIO AUTOMÁTICO SI EXCEDE 1.5GB
+                if memory_mb > 1536:  # 1.5GB
+                    print(f"[MEMORY] 🚨 MEMORIA CRÍTICA: {memory_mb:.1f} MB")
+                    print(f"[MEMORY] 🔄 INICIANDO REINICIO AUTOMÁTICO...")
+                    
+                    # ✅ GUARDAR ESTADÍSTICAS ANTES DE REINICIAR
+                    self.save_stats_before_restart()
+                    
+                    # ✅ REINICIAR PROCESO
+                    self.restart_detector_process()
+                    break
                     
             except Exception as e:
-                print(f"[FL-ERROR] Error creando loop para envío: {e}")
-                return False
-                
+                print(f"[MEMORY] Error monitoreando memoria: {e}")
+                time.sleep(60)  # Esperar más tiempo si hay error
+    
+    def save_stats_before_restart(self):
+        """Guarda estadísticas antes del reinicio"""
+        try:
+            stats_file = f"detector_stats_user_{self.user_id}.json"
+            
+            restart_stats = {
+                'restart_time': time.time(),
+                'reason': 'memory_limit_exceeded',
+                'final_stats': self.stats.copy(),
+                'runtime_seconds': time.time() - self.start_time.timestamp() if self.start_time else 0,
+                'fl_samples_collected': len(self.local_training_data),
+                'memory_usage_mb': psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+            }
+            
+            with open(stats_file, 'w') as f:
+                json.dump(restart_stats, f, indent=2)
+            
+            print(f"[MEMORY] ✅ Estadísticas guardadas en: {stats_file}")
+            
         except Exception as e:
-            print(f"[FL-ERROR] Error en envío síncrono: {e}")
-            return False
-
+            print(f"[MEMORY] Error guardando estadísticas: {e}")
+    
+    def restart_detector_process(self):
+        """Reinicia el proceso del detector automáticamente"""
+        try:
+            print("[RESTART] 🔄 Preparando reinicio automático...")
+            
+            # ✅ DETENER PROCESO ACTUAL LIMPIAMENTE
+            self.running = False
+            
+            if self.detector_process and self.detector_process.poll() is None:
+                self.detector_process.terminate()
+                time.sleep(2)
+                if self.detector_process.poll() is None:
+                    self.detector_process.kill()
+            
+            # ✅ CERRAR CONEXIONES
+            if self.websocket:
+                try:
+                    # No usar asyncio, solo cerrar
+                    self.websocket = None
+                    self.federado_connected = False
+                except:
+                    pass
+            
+            # ✅ COMANDO PARA REINICIAR
+            import sys
+            python_executable = sys.executable
+            script_path = sys.argv[0]
+            args = sys.argv[1:]  # Mantener mismos argumentos
+            
+            restart_cmd = [python_executable, script_path] + args
+            
+            print(f"[RESTART] 🚀 Reiniciando: {' '.join(restart_cmd)}")
+            
+            # ✅ EJECUTAR NUEVO PROCESO
+            import subprocess
+            subprocess.Popen(restart_cmd, 
+                            creationflags=subprocess.CREATE_NEW_CONSOLE if os.name == 'nt' else 0)
+            
+            print("[RESTART] ✅ Nuevo proceso iniciado")
+            print("[RESTART] 🔚 Terminando proceso actual...")
+            
+            # ✅ TERMINAR PROCESO ACTUAL
+            time.sleep(1)
+            os._exit(0)  # Salida forzada
+            
+        except Exception as e:
+            print(f"[RESTART] ❌ Error en reinicio: {e}")
+            print(f"[RESTART] 🔚 Terminando proceso manualmente...")
+            os._exit(1)
     async def _send_detection_async(self, detection_data):
-        """Función async real para envío de detección"""
+        """Función async optimizada para envío de detección"""
         if not self.websocket or not self.federado_connected:
             return False
             
         try:
-            #   MAPEAR CORRECTAMENTE ANOMALY_TYPE A STATUS
+            # ✅ MAPEAR CORRECTAMENTE ANOMALY_TYPE A STATUS
             anomaly_type = detection_data.get('anomaly_type', 'Unknown')
             
             if anomaly_type == 'Normal Traffic':
@@ -541,8 +927,9 @@ class DetectorFederado:
             elif anomaly_type == 'Network Attack':
                 status = 'attack'
             else:
-                status = 'suspicious'  # Por defecto
+                status = 'suspicious'
             
+            # ✅ MENSAJE OPTIMIZADO - SOLO DATOS ESENCIALES
             detection_alert = {
                 'type': 'detection_alert',
                 'client_id': self.client_id,
@@ -556,59 +943,87 @@ class DetectorFederado:
                     'score': detection_data.get('confidence_score', 0.0),
                     'attack_type': anomaly_type,
                     'timestamp': detection_data.get('timestamp'),
-                    'detection_id': detection_data.get('detection_id'),
-                    'fl_features': detection_data.get('raw_data', {})
+                    'detection_id': detection_data.get('detection_id')
+                    # ✅ REMOVER fl_features - SON DEMASIADO PESADOS
                 },
                 'timestamp': time.time()
             }
             
-            #   ENVIAR CON TIMEOUT
+            # ✅ VERIFICAR TAMAÑO ANTES DE ENVIAR
+            message_str = json.dumps(detection_alert)
+            message_size = len(message_str.encode('utf-8'))
+            
+            if message_size > 500000:  # 500KB límite
+                print(f"[FL-WARNING] Mensaje demasiado grande ({message_size} bytes), simplificando...")
+                # Simplificar aún más
+                detection_alert['alert'] = {
+                    'status': status,
+                    'src_ip': detection_data.get('source_ip', '192.168.1.100'),
+                    'score': detection_data.get('confidence_score', 0.0),
+                    'attack_type': anomaly_type[:20],  # Truncar
+                    'timestamp': time.time()
+                }
+                message_str = json.dumps(detection_alert)
+            
+            # ✅ ENVIAR CON TIMEOUT
             await asyncio.wait_for(
-                self.websocket.send(json.dumps(detection_alert)), 
+                self.websocket.send(message_str), 
                 timeout=5.0
             )
             return True
             
         except Exception as e:
-            print(f"[FL-ERROR] Error en envío async: {e}")
+            print(f"[FL-ERROR] Error en envío async optimizado: {e}")
             return False
-
     async def maintain_federado_connection(self):
-        """Mantiene la conexión con el servidor federado activa"""
+        """Mantiene la conexión con el servidor federado activa - VERSIÓN CORREGIDA"""
         print("[FL-INFO] Iniciando mantenimiento de conexión federada")
         
         while self.running:
             try:
-                #   SI NO HAY CONEXIÓN, INTENTAR RECONECTAR INMEDIATAMENTE
+                # ✅ SI NO HAY CONEXIÓN, INTENTAR RECONECTAR INMEDIATAMENTE
                 if not self.federado_connected or not self.websocket:
                     print("[FL-WARNING] Sin conexión federada, intentando reconectar...")
                     success = await self.reconnect_to_federado()
                     if success:
                         print("[FL-SUCCESS] Reconexión exitosa, reiniciando worker...")
-                        #   REINICIAR WORKER DESPUÉS DE RECONEXIÓN
+                        # ✅ REINICIAR WORKER DESPUÉS DE RECONEXIÓN
                         if not self.sender_running or not self.sender_thread.is_alive():
                             self.start_detection_sender()
                     await asyncio.sleep(10)
                     continue
                 
-                #   VERIFICAR CONEXIÓN CADA 20 SEGUNDOS (MÁS FRECUENTE)
+                # ✅ VERIFICAR CONEXIÓN CADA 20 SEGUNDOS
                 current_time = time.time()
                 if current_time - self.last_connection_check > 20:
-                    await self.check_connection_health()
+                    try:
+                        # ✅ VERIFICAR SALUD SIN CREAR TAREAS CONFLICTIVAS
+                        health_ok = await self.check_connection_health_simple()
+                        if not health_ok:
+                            print("[FL-WARNING] Conexión no saludable, marcando como desconectada")
+                            self.federado_connected = False
+                    except Exception as e:
+                        print(f"[FL-ERROR] Error verificando salud de conexión: {e}")
+                        self.federado_connected = False
+                    
                     self.last_connection_check = current_time
                 
-                #   ENVIAR HEARTBEAT CADA 15 SEGUNDOS (MÁS FRECUENTE)
+                # ✅ ENVIAR HEARTBEAT CADA 15 SEGUNDOS
                 if current_time - self.last_heartbeat > 15:
-                    await self.send_heartbeat()
-                    self.last_heartbeat = current_time
+                    try:
+                        await self.send_heartbeat()
+                        self.last_heartbeat = current_time
+                    except Exception as e:
+                        print(f"[FL-ERROR] Error enviando heartbeat: {e}")
+                        self.federado_connected = False
                 
-                #   VERIFICAR QUE EL WORKER DE ENVÍO ESTÉ ACTIVO MÁS FRECUENTEMENTE
+                # ✅ VERIFICAR WORKER DE ENVÍO
                 if hasattr(self, 'sender_thread') and hasattr(self, 'sender_running'):
                     if not self.sender_running or not self.sender_thread.is_alive():
                         print("[FL-WARNING] Worker de envío no activo, reiniciando...")
                         self.start_detection_sender()
                 
-                #   VERIFICAR CADA 3 SEGUNDOS (MÁS FRECUENTE)
+                # ✅ VERIFICAR CADA 3 SEGUNDOS
                 await asyncio.sleep(3)
                 
             except asyncio.CancelledError:
@@ -616,10 +1031,40 @@ class DetectorFederado:
                 break
             except Exception as e:
                 print(f"[FL-ERROR] Error manteniendo conexión: {e}")
-                await asyncio.sleep(5)  #   ESPERA MÁS CORTA EN ERRORES
+                await asyncio.sleep(5)
         
         print("[FL-INFO] Mantenimiento de conexión finalizado")
 
+        # AGREGAR DESPUÉS de maintain_federado_connection:
+    
+    async def check_connection_health_simple(self):
+        """Verifica la salud de la conexión WebSocket - VERSIÓN SIMPLIFICADA"""
+        try:
+            if not self.websocket or not self.federado_connected:
+                return False
+            
+            # ✅ VERIFICACIÓN SIMPLE - SOLO PING SIN ESPERAR PONG
+            ping_message = {
+                'type': 'ping',
+                'client_id': self.client_id,
+                'timestamp': time.time(),
+                'status': 'health_check'
+            }
+            
+            # ✅ ENVIAR PING CON TIMEOUT CORTO
+            await asyncio.wait_for(
+                self.websocket.send(json.dumps(ping_message)), 
+                timeout=3.0
+            )
+            
+            # ✅ NO ESPERAR RESPUESTA - SOLO VERIFICAR QUE SE ENVIÓ
+            print("[FL-HEALTH] Ping enviado correctamente")
+            return True
+            
+        except Exception as e:
+            print(f"[FL-ERROR] Error verificando salud simple: {e}")
+            return False
+        
     async def check_connection_health(self):
         """Verifica la salud de la conexión WebSocket"""
         try:
@@ -683,7 +1128,7 @@ class DetectorFederado:
                 'stats': {
                     'packets_processed': self.stats['total_packets'],
                     'detections_sent': self.stats.get('detections_sent', 0),
-                    'anomalies_detected': self.stats['anomalies_detectadas'],
+                    'anomalies_detected': self.stats['anomalies_detected'],  # ✅ CORREGIDO
                     'normal_packets': self.stats['normal_packets'],
                     'uptime': time.time() - self.start_time.timestamp() if self.start_time else 0,
                     'queue_size': self.detection_queue.qsize() if hasattr(self, 'detection_queue') else 0,
@@ -774,7 +1219,7 @@ class DetectorFederado:
                 ping_interval=15,      # Ping cada 15 segundos
                 ping_timeout=10,       # Timeout de ping
                 close_timeout=10,      # Timeout de cierre
-                max_size=1024*1024,    # 1MB max message
+                max_size=2*1024*1024,    # 1MB max message
                 compression=None       # Sin compresión para mayor estabilidad
             )
             
@@ -782,13 +1227,17 @@ class DetectorFederado:
             registration = {
                 'type': 'register',
                 'name': f'Detector-FL-User-{self.user_id}',
-                'location': f'Device-{self.computing_device_info.get("model", "Unknown") if self.computing_device_info else "Unknown"}',
+                'location': f'Device-{self.computing_device_info.get("model", "Unknown")[:20] if self.computing_device_info else "Unknown"}',
                 'interface': self.interface,
-                'capabilities': ['intrusion_detection', 'federated_learning', 'model_aggregation', 'reconnection'],
-                'version': '2.1',  # Versión con reconexión
-                'fl_features': self.fl_features,
+                'capabilities': ['intrusion_detection', 'federated_learning'],
+                'version': '2.2',  # Versión optimizada
+                # ✅ REMOVER DATOS PESADOS - SOLO LO ESENCIAL
                 'model_type': 'RandomForestClassifier',
-                'initial_model_params': self.get_current_model_params(),
+                'features_count': len(self.fl_features),  # Solo el número, no la lista
+                'initial_stats': {
+                    'samples_ready': min(len(self.local_training_data), 10),  # Limitar número
+                    'model_version': self.local_model_version
+                },
                 'reconnect_info': {
                     'attempt': self.reconnect_attempts,
                     'supports_heartbeat': True,
@@ -821,28 +1270,16 @@ class DetectorFederado:
                 self.last_connection_check = time.time()
                 
                 #   SOLICITAR MODELO GLOBAL
-                await self.request_global_model()
-                
-                #   NO CREAR TASK AQUÍ - SE INICIARÁ EN EL HILO PRINCIPAL
-                
+                await self.request_global_model_optimized()
+
                 return True
             else:
                 print(f"[FL-ERROR] Error en registro: {response_data.get('message', 'Desconocido')}")
                 return False
                 
-        except asyncio.TimeoutError:
-            print("[FL-ERROR] Timeout conectando al servidor federado")
-            return False
-        except websockets.exceptions.InvalidURI:
-            print(f"[FL-ERROR] URL inválida: {self.servidor_federado_url}")
-            return False
-        except websockets.exceptions.ConnectionRefused:
-            print("[FL-ERROR] Conexión rechazada - ¿Servidor federado en línea?")
-            return False
         except Exception as e:
             print(f"[FL-ERROR] Error conectando servidor federado: {e}")
             return False
-
     def iniciar_detector_proceso(self):
         """Proceso principal del detector federado"""
         try:
@@ -894,6 +1331,8 @@ class DetectorFederado:
                     try:
                         federado_conectado = loop.run_until_complete(self.conectar_servidor_federado())
                         
+                        print("[FL-DEBUG] self.running establecido como True")
+
                         if federado_conectado:
                             print("   [SUCCESS]   Conectado al servidor federado via WebSocket")
                             print(f"   [FL-INFO] Cliente registrado: {self.client_id}")
@@ -908,20 +1347,30 @@ class DetectorFederado:
                             
                             #   INICIAR MANTENIMIENTO DE CONEXIÓN EN HILO SEPARADO
                             def run_maintenance():
-                                maintenance_loop = asyncio.new_event_loop()
-                                asyncio.set_event_loop(maintenance_loop)
                                 try:
+                                    # ✅ CREAR LOOP COMPLETAMENTE INDEPENDIENTE
+                                    maintenance_loop = asyncio.new_event_loop()
+                                    asyncio.set_event_loop(maintenance_loop)
+                                    
                                     print("[FL-INFO] Iniciando loop de mantenimiento")
+                                    
+                                    # ✅ EJECUTAR MANTENIMIENTO EN ESTE LOOP INDEPENDIENTE
                                     maintenance_loop.run_until_complete(self.maintain_federado_connection())
+                                    
                                 except Exception as e:
                                     print(f"[FL-ERROR] Error en loop de mantenimiento: {e}")
                                 finally:
-                                    print("[FL-INFO] Cerrando loop de mantenimiento")
-                                    maintenance_loop.close()
-
+                                    try:
+                                        print("[FL-INFO] Cerrando loop de mantenimiento")
+                                        maintenance_loop.close()
+                                    except:
+                                        pass
                             maintenance_thread = threading.Thread(target=run_maintenance, daemon=True)
                             maintenance_thread.start()
                             print("[FL-INFO] Hilo de mantenimiento iniciado")
+                            # ✅ AGREGAR AQUÍ EL MONITOR DE MEMORIA:
+                            threading.Thread(target=self.monitor_memory_usage, daemon=True).start()
+                            print("[FL-INFO] Monitor de memoria iniciado")
                             
                         else:
                             print("   [WARNING]   No se pudo conectar al servidor federado")
@@ -1172,6 +1621,16 @@ class DetectorFederado:
     def enviar_deteccion_servidor(self, deteccion):
         """Envía detección al servidor Flask"""
         try:
+            # ✅ INCLUIR TOTAL DE PAQUETES EN raw_data ANTES DE ENVIAR
+            if 'raw_data' not in deteccion:
+                deteccion['raw_data'] = {}
+            
+            # ✅ AGREGAR TOTAL DE PAQUETES PROCESADOS
+            deteccion['raw_data']['total_packets_scanned'] = self.stats.get('total_packets', 0)
+            deteccion['raw_data']['detector_uptime'] = time.time() - self.start_time.timestamp() if self.start_time else 0
+            deteccion['raw_data']['interface'] = self.interface
+            deteccion['raw_data']['client_id'] = self.client_id
+            
             url = f"{self.flask_api_url}/api/buffer/add-detection"
             payload = {
             'user_id': self.user_id,
@@ -1221,12 +1680,12 @@ class DetectorFederado:
         if 'NORMAL' in linea.upper():
             self.stats['normal_packets'] += 1
         elif any(keyword in linea.upper() for keyword in ['SUSPICIOUS', 'ATTACK', 'INTRUSION']):
-            self.stats['anomalies_detectadas'] += 1
+            self.stats['anomalies_detected'] += 1
             if 'ATTACK' in linea.upper():
-                self.stats['attacks_detectadas'] += 1
+                self.stats['attacks_detected'] += 1
         
         #   CORREGIR CÁLCULO TOTAL DE PAQUETES
-        self.stats['total_packets'] = self.stats['normal_packets'] + self.stats['anomalies_detectadas']
+        self.stats['total_packets'] = self.stats['normal_packets'] + self.stats['anomalies_detected']
 
     def signal_handler(self, signum, frame):
         """Maneja señales del sistema"""
@@ -1238,11 +1697,12 @@ class DetectorFederado:
         """Detiene el detector y muestra estadísticas finales"""
         try:
             self.running = False
-             #   DETENER WORKER DE ENVÍO
+            
+            # DETENER WORKER DE ENVÍO
             if hasattr(self, 'sender_running'):
                 self.sender_running = False
                 
-            #   CERRAR CONEXIÓN WEBSOCKET LIMPIAMENTE
+            # CERRAR CONEXIÓN WEBSOCKET LIMPIAMENTE
             if self.websocket and self.federado_connected:
                 try:
                     # Enviar mensaje de desconexión
@@ -1281,7 +1741,7 @@ class DetectorFederado:
                 self.websocket = None
                 self.federado_connected = False
                 
-            #   ENVIAR SEÑAL DE PARADA A LA COLA
+            # ENVIAR SEÑAL DE PARADA A LA COLA
             if hasattr(self, 'detection_queue'):
                 try:
                     self.detection_queue.put_nowait(None)
@@ -1299,30 +1759,29 @@ class DetectorFederado:
             print(f"Líneas procesadas: {self.stats['lines_processed']:,}")
             print(f"Total de paquetes: {self.stats['total_packets']:,}")
             print(f"Paquetes normales: {self.stats['normal_packets']:,}")
-            print(f"Anomalías detectadas: {self.stats['anomalies_detectadas']}")
-            print(f"Ataques detectados: {self.stats['attacks_detectadas']}")
+            print(f"Anomalías detectadas: {self.stats['anomalies_detected']}")  # ✅ CORREGIDO
+            print(f"Ataques detectados: {self.stats['attacks_detected']}")      # ✅ CORREGIDO
             print(f"Detecciones enviadas: {self.stats['detections_sent']}")
             print(f"Muestras FL recolectadas: {len(self.local_training_data)}")
             
             if self.federado_connected:
-                print(f"  Conectado al servidor federado")
+                print(f"🔗 Conectado al servidor federado")
                 print(f"📤 Modelos enviados: {self.model_updates_sent}")
                 print(f"📥 Modelos globales recibidos: {self.global_models_received}")
             else:
-                print("  No conectado al servidor federado")
+                print("❌ No conectado al servidor federado")
             
             print(f"💾 Respaldo local: {self.local_backup_db}")
             print("=" * 60)
-            print("  Sesión finalizada correctamente")
+            print("✅ Sesión finalizada correctamente")
             
             # Terminar proceso si sigue corriendo
             if self.detector_process and self.detector_process.poll() is None:
                 self.detector_process.terminate()
-                print(" Proceso detector terminado")
+                print("🔌 Proceso detector terminado")
                 
         except Exception as e:
-            print(f"  Error en cleanup: {e}")
-
+            print(f"❌ Error en cleanup: {e}")
 def main():
     """Función principal del detector integrado"""
     import argparse

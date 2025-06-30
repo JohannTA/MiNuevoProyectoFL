@@ -622,6 +622,19 @@ CREATE TABLE device_connections (
     UNIQUE(medical_device_id, computing_device_id)
 );
 
-
+-- Crear tabla para estadísticas de detecciones
+CREATE TABLE detection_stats (
+    id SERIAL PRIMARY KEY,
+    total_packets_scanned INTEGER DEFAULT 0,      -- Total de paquetes analizados
+    total_detections INTEGER DEFAULT 0,           -- Solo detecciones (no Normal Traffic)
+    total_suspicious INTEGER DEFAULT 0,           -- Solo Suspicious Activity
+    total_critical INTEGER DEFAULT 0,             -- Solo severidad critical
+    total_high INTEGER DEFAULT 0,                 -- Solo severidad high
+    total_medium INTEGER DEFAULT 0,               -- Solo severidad medium
+    total_low INTEGER DEFAULT 0,                  -- Solo severidad low
+    normal_traffic INTEGER DEFAULT 0,             -- Tráfico normal (para referencia)
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 ALTER TABLE users ADD COLUMN allowed_computing_device_id INTEGER REFERENCES computing_devices(id);
