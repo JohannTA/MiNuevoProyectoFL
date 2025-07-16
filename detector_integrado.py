@@ -1692,7 +1692,67 @@ class DetectorFederado:
         print(f"\n Señal {signum} recibida - Deteniendo detector...")
         self.detener()
         sys.exit(0)
-
+    def enviar_alerta_critica_email(self, deteccion):
+        """Envía email de alerta crítica cuando score >= 0.500"""
+        try:
+            # ✅ DATOS DE LA DETECCIÓN
+            confidence_score = deteccion.get('confidence_score', 0)
+            source_ip = deteccion.get('source_ip', 'Desconocida')
+            anomaly_type = deteccion.get('anomaly_type', 'Desconocido')
+            timestamp = deteccion.get('timestamp', '')
+            
+            # ✅ PREPARAR PAYLOAD PARA ENVÍO AL SERVIDOR FLASK
+            email_payload = {
+                'user_id': self.user_id,
+                'detection_data': {
+                    'detection_id': deteccion.get('detection_id'),
+                    'timestamp': timestamp,
+                    'anomaly_type': anomaly_type,
+                    'severity': 'critical',  # Siempre crítica si >= 0.500
+                    'confidence_score': confidence_score,
+                    'source_ip': source_ip,
+                    'destination_ip': deteccion.get('destination_ip', 'Desconocida'),
+                    'source_port': deteccion.get('source_port', 0),
+                    'destination_port': deteccion.get('destination_port', 0),
+                    'protocol': deteccion.get('protocol', 'TCP'),
+                    'client_info': {
+                        'client_id': self.client_id,
+                        'interface': self.interface,
+                        'device': self.computing_device_info.get('model', 'Unknown') if self.computing_device_info else 'Unknown'
+                    }
+                },
+                'alert_type': 'critical_detection',
+                'email_config': {
+                    'priority': 'high',
+                    'send_immediately': True
+                }
+            }
+            
+            # ✅ ENVIAR AL ENDPOINT DE EMAIL DEL SERVIDOR FLASK
+            url = f"{self.flask_api_url}/api/email/send-critical-alert"
+            
+            response = requests.post(
+                url,
+                json=email_payload,
+                timeout=5,  # Timeout corto para no bloquear
+                headers={'Content-Type': 'application/json'}
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    print(f"[EMAIL-SUCCESS] ✅ Email crítico enviado para {source_ip}")
+                    return True
+                else:
+                    print(f"[EMAIL-ERROR] ❌ Error enviando email: {result.get('error')}")
+                    return False
+            else:
+                print(f"[EMAIL-ERROR] ❌ HTTP {response.status_code} al enviar email")
+                return False
+                
+        except Exception as e:
+            print(f"[EMAIL-ERROR] ❌ Error enviando alerta crítica: {e}")
+            return False
     def detener(self):
         """Detiene el detector y muestra estadísticas finales"""
         try:

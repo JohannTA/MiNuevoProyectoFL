@@ -34,12 +34,6 @@
                                 <label class="form-label">Rango de Fechas y Horas</label>
                                 <input type="text" class="form-control" id="rango-fechas"
                                     placeholder="DD/MM/YYYY HH:MM - DD/MM/YYYY HH:MM">
-                                <div class="form-text">
-                                    <strong>Formatos soportados:</strong><br>
-                                    • <code>29/06/2025 14:30 - 29/06/2025 16:30</code> (con horas específicas)<br>
-                                    • <code>29/06/2025 - 30/06/2025</code> (días completos)<br>
-                                    • <code>29/06/2025 14:30</code> (hora específica ±30min)
-                                </div>
                             </div>
                         </div>
 
@@ -61,12 +55,11 @@
                                 </div>
                             </div>
 
+                            <!-- ✅ QUITAR EL CHECKBOX DE ESTADÍSTICAS -->
                             <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" checked id="incluir-estadisticas">
-                                    <label class="form-check-label" for="incluir-estadisticas">
-                                        Incluir hoja de estadísticas (solo Excel)
-                                    </label>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    El reporte incluirá todas las detecciones del rango seleccionado.
                                 </div>
                             </div>
                         </div>
@@ -126,6 +119,26 @@
                         <!-- Generado dinámicamente -->
                     </ul>
                 </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contenedor para resultados de generación -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div id="contenedor-resultados"></div>
+    </div>
+</div>
+
+<!-- Reportes disponibles para descarga -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="card-body">
+                <div id="reportes-disponibles">
+                    <h6>Cargando reportes disponibles...</h6>
+                </div>
             </div>
         </div>
     </div>
@@ -438,19 +451,32 @@
     }
 
     // Generar reporte para descarga
+    // Función para generar reporte MEJORADA
+    // Función para generar reporte SÚPER SIMPLIFICADA
     async function generarReporte() {
-        try {
-            const filtros = obtenerFiltrosFechas();
-            const formato = document.querySelector('input[name="formato"]:checked').value;
-            const incluirEstadisticas = document.getElementById('incluir-estadisticas').checked;
+        const btnGenerar = document.querySelector('button[onclick="generarReporte()"]');
+        const textoOriginal = btnGenerar ? btnGenerar.innerHTML : '<i class="fas fa-download me-1"></i>Generar Reporte';
 
-            if (!filtros.rango_fechas && !filtros.periodo) {
-                mostrarError('Por favor selecciona un rango de fechas');
+        try {
+            const formato = document.querySelector('input[name="formato"]:checked')?.value || 'excel';
+            const rangoFechas = document.getElementById('rango-fechas')?.value || '';
+
+            if (!rangoFechas.trim()) {
+                mostrarNotificacion('warning', 'Por favor seleccione un rango de fechas', 3000);
                 return;
             }
 
-            console.log('📊 Generando reporte:', { filtros, formato, incluirEstadisticas });
-            mostrarNotificacion('info', `Generando reporte en formato ${formato.toUpperCase()}...`, 3000);
+            // ✅ MOSTRAR ESTADO DE CARGA
+            if (btnGenerar) {
+                btnGenerar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generando...';
+                btnGenerar.disabled = true;
+            }
+
+            mostrarNotificacion('info', 'Generando reporte, por favor espere...', 3000);
+
+            // ✅ LLAMADA A LA API CON TIMEOUT
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos timeout
 
             const response = await fetch('/api/reportes/generar-fechas', {
                 method: 'POST',
@@ -458,35 +484,188 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    filtros: filtros,
-                    formato: formato,
-                    incluir_estadisticas: incluirEstadisticas
-                })
+                    filtros: {
+                        rango_fechas: rangoFechas
+                    },
+                    formato: formato
+                }),
+                signal: controller.signal
             });
 
-            const data = await response.json();
+            clearTimeout(timeoutId);
 
-            if (data.success) {
-                mostrarNotificacion('success', 'Reporte generado exitosamente', 3000);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
 
-                // Iniciar descarga
-                if (data.download_url) {
-                    const link = document.createElement('a');
-                    link.href = data.download_url;
-                    link.download = data.filename || `reporte_fechas.${formato}`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+            const result = await response.json();
+
+            if (result.success) {
+                // ✅ LIMPIAR NOTIFICACIÓN ANTERIOR
+                mostrarNotificacion('success', 'Reporte generado exitosamente', 2000);
+
+                // ✅ MOSTRAR INFORMACIÓN DEL REPORTE
+                const info = `
+                <div class="alert alert-success alert-dismissible fade show">
+                    <h6><i class="fas fa-file-${formato === 'excel' ? 'excel text-success' : 'csv text-info'} me-1"></i>Reporte ${result.formato} Generado</h6>
+                    <ul class="mb-2">
+                        <li><strong>Registros:</strong> ${result.registros_incluidos}</li>
+                        <li><strong>Período:</strong> ${result.rango_fechas}</li>
+                        <li><strong>Tamaño:</strong> ${result.tamaño_archivo}</li>
+                        <li><strong>Archivo:</strong> <code>${result.filename}</code></li>
+                    </ul>
+                    <div class="d-flex gap-2">
+                        <a href="${result.download_url}" class="btn btn-success btn-sm">
+                            <i class="fas fa-download me-1"></i>Descargar ${result.formato.toUpperCase()}
+                        </a>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times me-1"></i>Cerrar
+                        </button>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+                // ✅ MOSTRAR RESULTADO
+                const contenedorResultados = document.getElementById('contenedor-resultados');
+                if (contenedorResultados) {
+                    contenedorResultados.innerHTML = info;
                 }
+
+                // ✅ INICIAR DESCARGA AUTOMÁTICAMENTE DESPUÉS DE UN BREVE DELAY
+                setTimeout(() => {
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = result.download_url;
+                    downloadLink.download = result.filename;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+
+                    console.log(`📥 Descarga iniciada: ${result.filename}`);
+                }, 1500);
+
+                // ✅ RECARGAR LISTA DE REPORTES DISPONIBLES
+                setTimeout(() => {
+                    cargarReportesDisponibles();
+                }, 2000);
+
             } else {
-                throw new Error(data.error);
+                throw new Error(result.error || 'Error desconocido del servidor');
             }
 
         } catch (error) {
             console.error('❌ Error generando reporte:', error);
-            mostrarError('Error al generar reporte: ' + error.message);
+
+            let errorMessage = 'Error de conexión al generar reporte';
+
+            if (error.name === 'AbortError') {
+                errorMessage = 'La generación del reporte tomó demasiado tiempo. Inténtelo nuevamente.';
+            } else if (error.message) {
+                errorMessage = `Error: ${error.message}`;
+            }
+
+            mostrarNotificacion('error', errorMessage, 5000);
+
+        } finally {
+            // ✅ RESTAURAR BOTÓN SIEMPRE
+            if (btnGenerar) {
+                btnGenerar.innerHTML = textoOriginal;
+                btnGenerar.disabled = false;
+            }
+
+            console.log('🔄 Estado del botón restaurado');
         }
     }
+    // Función para listar reportes disponibles
+    async function cargarReportesDisponibles() {
+        try {
+            const response = await fetch('/api/reportes/listar-archivos');
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                const contenedor = document.getElementById('reportes-disponibles');
+                if (contenedor) {
+                    if (result.archivos && result.archivos.length > 0) {
+                        let html = `
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">
+                                <i class="fas fa-folder-open me-2"></i>Reportes Disponibles
+                                <span class="badge bg-primary ms-2">${result.total}</span>
+                            </h6>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="cargarReportesDisponibles()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="list-group">
+                    `;
+
+                        result.archivos.forEach(archivo => {
+                            const iconClass = archivo.tipo.toLowerCase() === 'excel' ? 'excel text-success' : 'csv text-info';
+                            html += `
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-file-${iconClass} me-2 fa-lg"></i>
+                                        <div>
+                                            <strong class="d-block">${archivo.nombre}</strong>
+                                            <small class="text-muted">
+                                                ${archivo.tamaño} • Creado: ${archivo.fecha_creacion}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <a href="${archivo.download_url}" class="btn btn-outline-primary btn-sm" title="Descargar">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        });
+
+                        html += '</div>';
+                        contenedor.innerHTML = html;
+                    } else {
+                        contenedor.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No hay reportes disponibles</h6>
+                            <p class="text-muted small">Los reportes generados aparecerán aquí</p>
+                        </div>
+                    `;
+                    }
+                }
+            } else {
+                throw new Error(result.error || 'Error obteniendo lista de reportes');
+            }
+
+        } catch (error) {
+            console.error('❌ Error cargando reportes disponibles:', error);
+
+            const contenedor = document.getElementById('reportes-disponibles');
+            if (contenedor) {
+                contenedor.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error cargando reportes: ${error.message}
+                    <button class="btn btn-outline-warning btn-sm ms-2" onclick="cargarReportesDisponibles()">
+                        <i class="fas fa-retry"></i> Reintentar
+                    </button>
+                </div>
+            `;
+            }
+        }
+    }
+
+    // Cargar reportes disponibles al inicializar
+    document.addEventListener('DOMContentLoaded', function () {
+        cargarReportesDisponibles();
+    });
 
     // Funciones auxiliares
     function obtenerBadgeSeveridad(severity) {
@@ -523,14 +702,30 @@
     `;
     }
 
-    function mostrarNotificacion(tipo, mensaje, duracion = 5000) {
-        console.log(`${tipo.toUpperCase()}: ${mensaje}`);
+    function mostrarNotificacion(tipo, mensaje, duracion = 3000) {
+        // Remover notificaciones anteriores del mismo tipo
+        const notificacionesExistentes = document.querySelectorAll(`.alert.notification-${tipo}`);
+        notificacionesExistentes.forEach(notif => notif.remove());
 
-        // Crear notificación visual
+        const alertTypes = {
+            'success': 'alert-success',
+            'error': 'alert-danger',
+            'warning': 'alert-warning',
+            'info': 'alert-info'
+        };
+
+        const iconTypes = {
+            'success': 'fas fa-check-circle',
+            'error': 'fas fa-exclamation-circle',
+            'warning': 'fas fa-exclamation-triangle',
+            'info': 'fas fa-info-circle'
+        };
+
         const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${tipo === 'error' ? 'danger' : tipo} alert-dismissible fade show position-fixed`;
-        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.className = `alert ${alertTypes[tipo]} notification-${tipo} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
         alertDiv.innerHTML = `
+        <i class="${iconTypes[tipo]} me-2"></i>
         ${mensaje}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
@@ -539,8 +734,13 @@
 
         // Auto-remover después de la duración especificada
         setTimeout(() => {
-            if (alertDiv.parentNode) {
-                alertDiv.parentNode.removeChild(alertDiv);
+            if (alertDiv && alertDiv.parentNode) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 150);
             }
         }, duracion);
     }

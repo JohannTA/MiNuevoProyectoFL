@@ -1,3 +1,4 @@
+#REVISADO 16.07.25 
 from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify, send_from_directory
 from functools import wraps
 from db.db import obtener_conexion
@@ -20,6 +21,18 @@ import threading
 import requests
 import sys
 import uuid
+try:
+    from enviar_correo import enviarcorreoalerta
+    CORREO_DISPONIBLE = True
+    print("📧 Sistema de correo cargado correctamente")
+except ImportError:
+    CORREO_DISPONIBLE = False
+    print("⚠️ Sistema de correo no disponible")
+    
+    # Función dummy si no está disponible
+    def enviarcorreoalerta():
+        print("📧 Sistema de correo no configurado")
+        return False
 if sys.platform == 'win32':
     # Configurar UTF-8 para Windows
     import locale
@@ -1688,43 +1701,790 @@ def reportes():
         return render_template('reportes.html', user=user)
 
 @app.route('/admin')
-@admin_required
+@login_required
 def admin():
-    """Panel de administración del sistema"""
+    """Panel de administración unificado"""
     try:
-        user = obtener_usuario_por_id(session['user_id'])
-        if not user:
-            flash('Error al obtener información del usuario', 'danger')
-            return redirect(url_for('login'))
+        # Verificar si es admin
+        if session.get('role') != 'admin':
+            flash('Acceso denegado. Se requieren permisos de administrador.', 'danger')
+            return redirect(url_for('dashboard'))
         
-        # Obtener datos para el panel de administración
-        datos_admin = {
-            'usuarios': listar_usuarios(),
-            'roles': obtener_roles(),
-            'permisos': obtener_permisos(),
-            'configuracion': obtener_configuracion_sistema(),
-            'logs_recientes': obtener_logs_sistema(limit=20)
+        # Obtener usuarios para la tabla
+        usuarios = listar_usuarios_basico()
+        
+        logger.info(f"🔧 Admin {session.get('username')} accedió al panel de configuración")
+        
+        return render_template('admin.html', 
+                             user={'username': session.get('username', 'Admin')},
+                             usuarios=usuarios)
+        
+    except Exception as e:
+        logger.error(f"❌ Error en panel admin: {e}")
+        flash('Error al cargar el panel de administración', 'danger')
+        return redirect(url_for('dashboard'))
+    
+def guardar_configuracion_federado(data):
+    """Guarda configuración del servidor federado"""
+    try:
+        global federado_stats
+        
+        config = {
+            'servidor_host': data.get('servidor_host', '0.0.0.0'),
+            'servidor_puerto': int(data.get('servidor_puerto', 8765)),
+            'max_clientes': int(data.get('max_clientes', 10)),
+            'rondas_agregacion': int(data.get('rondas_agregacion', 10)),
+            'min_clientes_ronda': int(data.get('min_clientes_ronda', 3)),
+            'timeout_cliente': int(data.get('timeout_cliente', 30))
         }
         
-        # Registrar actividad
+        # ✅ VALIDACIONES
+        if not (1024 <= config['servidor_puerto'] <= 65535):
+            return jsonify({'success': False, 'error': 'Puerto debe estar entre 1024 y 65535'})
+        
+        if config['max_clientes'] < 1 or config['max_clientes'] > 50:
+            return jsonify({'success': False, 'error': 'Máximo de clientes debe estar entre 1 y 50'})
+        
+        # ✅ ACTUALIZAR STATS GLOBALES
+        federado_stats.update({
+            'host': config['servidor_host'],
+            'port': config['servidor_puerto'],
+            'server': f"ws://{config['servidor_host']}:{config['servidor_puerto']}",
+            'max_clients': config['max_clientes']
+        })
+        
+        # ✅ GUARDAR EN BD
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                # Insertar configuración federada individualmente
+                federado_config_map = {
+                    'federado_host': config['servidor_host'],
+                    'federado_puerto': str(config['servidor_puerto']),
+                    'federado_max_clientes': str(config['max_clientes']),
+                    'federado_rondas': str(config['rondas_agregacion']),
+                    'federado_min_clientes': str(config['min_clientes_ronda']),
+                    'federado_timeout': str(config['timeout_cliente'])
+                }
+                
+                for key, value in federado_config_map.items():
+                    try:
+                        cursor.execute("""
+                            INSERT INTO system_config (config_key, config_value, data_type, updated_at)
+                            VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
+                            ON CONFLICT (config_key) 
+                            DO UPDATE SET 
+                                config_value = EXCLUDED.config_value,
+                                updated_at = CURRENT_TIMESTAMP
+                        """, (key, value, 'string'))
+                        
+                    except Exception as e:
+                        logger.error(f"Error insertando {key}: {e}")
+                        continue
+                
+                conn.commit()
+            conn.close()
+        
+        # ✅ REGISTRAR ACTIVIDAD
         registrar_actividad_usuario(
             session['user_id'],
-            'access_admin',
-            'Acceso al panel de administración',
+            'update_config_federado',
+            f'Configuración federada actualizada: {config["servidor_host"]}:{config["servidor_puerto"]}',
             request.remote_addr
         )
         
-        return render_template('admin.html', 
-                             user=user, 
-                             datos=datos_admin)
+        logger.info(f"✅ Configuración federada guardada: {config}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Configuración federada guardada correctamente',
+            'config': config,
+            'restart_required': federado_process and federado_process.poll() is None
+        })
         
     except Exception as e:
-        logger.error(f"Error en panel de administración: {e}")
-        flash('Error al cargar el panel de administración', 'danger')
-        return render_template('admin.html', 
-                             user={'username': session.get('username', 'Usuario')}, 
-                             datos={})
+        logger.error(f"❌ Error guardando config federada: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
+def guardar_configuracion_seguridad(data):
+    """Guarda configuración de seguridad"""
+    try:
+        config = {
+            'tiempo_sesion': int(data.get('tiempo_sesion', 8)),
+            'max_intentos_login': int(data.get('max_intentos_login', 5)),
+            'forzar_ssl': data.get('forzar_ssl') == 'on',
+            'habilitar_api': data.get('habilitar_api') == 'on',
+            'token_expiracion': int(data.get('token_expiracion', 2)),
+            'rate_limit': int(data.get('rate_limit', 100))
+        }
+        
+        # ✅ VALIDACIONES
+        if not (1 <= config['tiempo_sesion'] <= 24):
+            return jsonify({'success': False, 'error': 'Tiempo de sesión debe estar entre 1 y 24 horas'})
+        
+        if not (3 <= config['max_intentos_login'] <= 10):
+            return jsonify({'success': False, 'error': 'Intentos de login deben estar entre 3 y 10'})
+        
+        # ✅ APLICAR CONFIGURACIÓN INMEDIATAMENTE
+        if config['tiempo_sesion'] != 8:  # Si cambió el tiempo de sesión
+            app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(hours=config['tiempo_sesion'])
+        
+        if config['token_expiracion'] != 2:  # Si cambió la expiración del token
+            app.config['JWT_EXPIRATION_DELTA'] = datetime.timedelta(hours=config['token_expiracion'])
+        
+        # ✅ GUARDAR EN BD
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                # Insertar configuración de seguridad individualmente
+                seguridad_config_map = {
+                    'seguridad_tiempo_sesion': str(config['tiempo_sesion']),
+                    'seguridad_max_intentos': str(config['max_intentos_login']),
+                    'seguridad_ssl': str(config['forzar_ssl']).lower(),
+                    'seguridad_api': str(config['habilitar_api']).lower(),
+                    'seguridad_token_exp': str(config['token_expiracion']),
+                    'seguridad_rate_limit': str(config['rate_limit'])
+                }
+                
+                for key, value in seguridad_config_map.items():
+                    try:
+                        cursor.execute("""
+                            INSERT INTO system_config (config_key, config_value, data_type, updated_at)
+                            VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
+                            ON CONFLICT (config_key) 
+                            DO UPDATE SET 
+                                config_value = EXCLUDED.config_value,
+                                updated_at = CURRENT_TIMESTAMP
+                        """, (key, value, 'string'))
+                        
+                    except Exception as e:
+                        logger.error(f"Error insertando {key}: {e}")
+                        continue
+                
+                conn.commit()
+            conn.close()
+        
+        # ✅ REGISTRAR ACTIVIDAD
+        registrar_actividad_usuario(
+            session['user_id'],
+            'update_config_seguridad',
+            f'Configuración de seguridad actualizada: sesión {config["tiempo_sesion"]}h',
+            request.remote_addr
+        )
+        
+        logger.info(f"✅ Configuración de seguridad guardada: {config}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Configuración de seguridad guardada correctamente',
+            'config': config,
+            'applied_immediately': True
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error guardando config seguridad: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+    
+@app.route('/admin/configuracion/<tipo>', methods=['GET'])
+@login_required
+def cargar_configuracion(tipo):
+    """Carga configuración actual del sistema"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'})
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'})
+        
+        with conn.cursor() as cursor:
+            if tipo == 'general':
+                # Cargar configuración general
+                keys = ['sistema_nombre', 'max_detecciones_dia', 'umbral_confianza', 
+                       'alertas_email', 'email_admin', 'intervalo_reportes']
+                
+            elif tipo == 'federado':
+                # Cargar configuración federada
+                keys = ['federado_host', 'federado_puerto', 'federado_max_clientes',
+                       'federado_rondas', 'federado_min_clientes', 'federado_timeout']
+                
+            elif tipo == 'seguridad':
+                # Cargar configuración de seguridad
+                keys = ['seguridad_tiempo_sesion', 'seguridad_max_intentos', 'seguridad_ssl',
+                       'seguridad_api', 'seguridad_token_exp', 'seguridad_rate_limit']
+            else:
+                return jsonify({'success': False, 'error': 'Tipo no válido'})
+            
+            # Obtener valores de configuración
+            config = {}
+            for key in keys:
+                try:
+                    cursor.execute("""
+                        SELECT config_value FROM system_config WHERE config_key = %s
+                    """, (key,))
+                    result = cursor.fetchone()
+                    config[key] = result[0] if result else None
+                except Exception as e:
+                    logger.error(f"Error cargando {key}: {e}")
+                    config[key] = None
+        
+        conn.close()
+        
+        # Devolver configuración con valores por defecto si no existen
+        defaults = {
+            'general': {
+                'sistema_nombre': 'IDS Federado v1.0',
+                'max_detecciones_dia': '10000',
+                'umbral_confianza': '75',
+                'alertas_email': 'on',
+                'email_admin': 'admin@empresa.com',
+                'intervalo_reportes': '6'
+            },
+            'federado': {
+                'federado_host': '0.0.0.0',
+                'federado_puerto': '8765',
+                'federado_max_clientes': '10',
+                'federado_rondas': '10',
+                'federado_min_clientes': '3',
+                'federado_timeout': '30'
+            },
+            'seguridad': {
+                'seguridad_tiempo_sesion': '8',
+                'seguridad_max_intentos': '5',
+                'seguridad_ssl': 'off',
+                'seguridad_api': 'on',
+                'seguridad_token_exp': '2',
+                'seguridad_rate_limit': '100'
+            }
+        }
+        
+        # Aplicar valores por defecto para campos vacíos
+        for key in config:
+            if config[key] is None:
+                config[key] = defaults[tipo].get(key, '')
+        
+        return jsonify({
+            'success': True,
+            'config': config,
+            'tipo': tipo
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error cargando configuración {tipo}: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+    
+@app.route('/admin/configuracion/<tipo>', methods=['POST'])
+@login_required  
+def guardar_configuracion(tipo):
+    """Guardar configuración del sistema - FUNCIONAL"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'})
+        
+        data = request.form.to_dict()
+        logger.info(f"💾 Guardando configuración {tipo}: {data}")
+        
+        # ✅ PROCESAR SEGÚN EL TIPO DE CONFIGURACIÓN
+        if tipo == 'general':
+            return guardar_configuracion_general(data)
+        elif tipo == 'federado':
+            return guardar_configuracion_federado(data)
+        elif tipo == 'seguridad':
+            return guardar_configuracion_seguridad(data)
+        else:
+            return jsonify({'success': False, 'error': f'Tipo de configuración no válido: {tipo}'})
+        
+    except Exception as e:
+        logger.error(f"❌ Error guardando configuración {tipo}: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+@app.route('/admin/usuarios/crear', methods=['POST'])
+@login_required
+def crear_usuario_admin():
+    """Crear nuevo usuario desde panel admin - FUNCIONAL"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'})
+        
+        # ✅ OBTENER Y VALIDAR DATOS
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        first_name = request.form.get('first_name', '').strip()
+        last_name = request.form.get('last_name', '').strip()
+        role = request.form.get('role', 'user')
+        is_active = request.form.get('is_active') == 'on'
+        
+        # ✅ VALIDACIONES
+        if not username or len(username) < 3:
+            return jsonify({'success': False, 'error': 'El nombre de usuario debe tener al menos 3 caracteres'})
+        
+        if not email or '@' not in email:
+            return jsonify({'success': False, 'error': 'Email inválido'})
+        
+        if not password or len(password) < 6:
+            return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'})
+        
+        if role not in ['admin', 'user', 'viewer']:
+            return jsonify({'success': False, 'error': 'Rol inválido'})
+        
+        # ✅ VERIFICAR SI EL USUARIO YA EXISTE
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'})
+        
+        try:
+            with conn.cursor() as cursor:
+                # Verificar duplicados
+                cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
+                if cursor.fetchone():
+                    return jsonify({'success': False, 'error': 'El usuario o email ya existe'})
+                
+                # ✅ CREAR USUARIO
+                password_hash = hashlib.sha256(password.encode()).hexdigest()
+                
+                cursor.execute("""
+                    INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active, created_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                    RETURNING id
+                """, (username, email, password_hash, first_name, last_name, role, is_active))
+                
+                user_id = cursor.fetchone()[0]
+                conn.commit()
+                
+                # ✅ REGISTRAR ACTIVIDAD
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'create_user',
+                    f'Usuario creado: {username} ({role})',
+                    request.remote_addr
+                )
+                
+                logger.info(f"✅ Usuario creado: {username} (ID: {user_id})")
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Usuario {username} creado correctamente',
+                    'user_id': user_id,
+                    'username': username,
+                    'role': role
+                })
+                
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"❌ Error creando usuario: {e}")
+            return jsonify({'success': False, 'error': str(e)})
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error en crear usuario admin: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+def guardar_configuracion_general(data):
+    """Guarda configuración general del sistema"""
+    try:
+        # ✅ VALIDAR Y PROCESAR DATOS
+        config = {
+            'sistema_nombre': data.get('sistema_nombre', 'IDS Federado v1.0'),
+            'max_detecciones_dia': int(data.get('max_detecciones_dia', 10000)),
+            'umbral_confianza': float(data.get('umbral_confianza', 75)) / 100,
+            'alertas_email': data.get('alertas_email') == 'on',
+            'email_admin': data.get('email_admin', 'admin@empresa.com'),
+            'intervalo_reportes': int(data.get('intervalo_reportes', 6))
+        }
+        
+        logger.info(f"✅ Configuración procesada: {config}")
+        
+        # ✅ GUARDAR EN BASE DE DATOS CON ESTRUCTURA CORRECTA
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                # Verificar si la tabla existe con la estructura correcta
+                cursor.execute("""
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name = 'system_config'
+                """)
+                columns = [row[0] for row in cursor.fetchall()]
+                logger.info(f"🔍 Columnas existentes en system_config: {columns}")
+                
+                # ✅ INSERTAR CONFIGURACIÓN INDIVIDUALMENTE POR CONFIG_KEY
+                for key, value in config.items():
+                    try:
+                        cursor.execute("""
+                            INSERT INTO system_config (config_key, config_value, data_type, updated_at)
+                            VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
+                            ON CONFLICT (config_key) 
+                            DO UPDATE SET 
+                                config_value = EXCLUDED.config_value,
+                                updated_at = CURRENT_TIMESTAMP
+                        """, (key, str(value), 'string'))
+                        
+                    except Exception as e:
+                        logger.error(f"Error insertando {key}: {e}")
+                        continue
+                
+                conn.commit()
+            conn.close()
+        
+        # ✅ REGISTRAR ACTIVIDAD
+        registrar_actividad_usuario(
+            session['user_id'],
+            'update_config_general',
+            f'Configuración general actualizada: {config["sistema_nombre"]}',
+            request.remote_addr
+        )
+        
+        logger.info(f"✅ Configuración general guardada: {config}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Configuración general guardada correctamente',
+            'config': config
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error guardando config general: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/admin/usuarios/<int:user_id>/editar', methods=['POST'])
+@login_required
+def editar_usuario_admin(user_id):
+    """Editar usuario existente"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'})
+        
+        # No permitir que se edite a sí mismo por seguridad
+        if user_id == session['user_id']:
+            return jsonify({'success': False, 'error': 'No puede editarse a sí mismo'})
+        
+        # ✅ OBTENER DATOS
+        data = request.get_json()
+        username = data.get('username', '').strip()
+        email = data.get('email', '').strip()
+        first_name = data.get('first_name', '').strip()
+        last_name = data.get('last_name', '').strip()
+        role = data.get('role', 'user')
+        is_active = data.get('is_active', True)
+        
+        # ✅ VALIDACIONES
+        if not username or len(username) < 3:
+            return jsonify({'success': False, 'error': 'El nombre de usuario debe tener al menos 3 caracteres'})
+        
+        if not email or '@' not in email:
+            return jsonify({'success': False, 'error': 'Email inválido'})
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'})
+        
+        try:
+            with conn.cursor() as cursor:
+                # Verificar que el usuario existe
+                cursor.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+                old_user = cursor.fetchone()
+                if not old_user:
+                    return jsonify({'success': False, 'error': 'Usuario no encontrado'})
+                
+                # Verificar duplicados (excluyendo el usuario actual)
+                cursor.execute("""
+                    SELECT id FROM users 
+                    WHERE (username = %s OR email = %s) AND id != %s
+                """, (username, email, user_id))
+                
+                if cursor.fetchone():
+                    return jsonify({'success': False, 'error': 'El usuario o email ya existe'})
+                
+                # ✅ ACTUALIZAR USUARIO
+                cursor.execute("""
+                    UPDATE users SET 
+                        username = %s,
+                        email = %s,
+                        first_name = %s,
+                        last_name = %s,
+                        role = %s,
+                        is_active = %s,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = %s
+                """, (username, email, first_name, last_name, role, is_active, user_id))
+                
+                conn.commit()
+                
+                # ✅ REGISTRAR ACTIVIDAD
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'update_user',
+                    f'Usuario actualizado: {old_user[0]} → {username}',
+                    request.remote_addr
+                )
+                
+                logger.info(f"✅ Usuario actualizado: {username} (ID: {user_id})")
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Usuario {username} actualizado correctamente'
+                })
+                
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"❌ Error actualizando usuario: {e}")
+            return jsonify({'success': False, 'error': str(e)})
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error en editar usuario: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/admin/usuarios/<int:user_id>/eliminar', methods=['DELETE'])
+@login_required
+def eliminar_usuario_admin(user_id):
+    """Eliminar usuario (soft delete)"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'})
+        
+        # No permitir eliminar el propio usuario o el admin principal
+        if user_id == session['user_id']:
+            return jsonify({'success': False, 'error': 'No puede eliminarse a sí mismo'})
+        
+        if user_id == 1:  # Proteger admin principal
+            return jsonify({'success': False, 'error': 'No se puede eliminar el administrador principal'})
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'})
+        
+        try:
+            with conn.cursor() as cursor:
+                # Verificar que el usuario existe
+                cursor.execute("SELECT username, role FROM users WHERE id = %s", (user_id,))
+                user_info = cursor.fetchone()
+                if not user_info:
+                    return jsonify({'success': False, 'error': 'Usuario no encontrado'})
+                
+                username, role = user_info
+                
+                # ✅ SOFT DELETE - DESACTIVAR EN LUGAR DE ELIMINAR
+                cursor.execute("""
+                    UPDATE users SET 
+                        is_active = FALSE,
+                        deleted_at = CURRENT_TIMESTAMP,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = %s
+                """, (user_id,))
+                
+                conn.commit()
+                
+                # ✅ REGISTRAR ACTIVIDAD
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'delete_user',
+                    f'Usuario eliminado: {username} ({role})',
+                    request.remote_addr
+                )
+                
+                logger.info(f"✅ Usuario eliminado: {username} (ID: {user_id})")
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Usuario {username} eliminado correctamente'
+                })
+                
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"❌ Error eliminando usuario: {e}")
+            return jsonify({'success': False, 'error': str(e)})
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error en eliminar usuario: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+
+@app.route('/admin/logs/sistema')
+@login_required
+def obtener_logs_sistema():
+    """Obtiene logs del sistema para el panel admin"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'})
+        
+        limit = request.args.get('limit', 50, type=int)
+        filtro = request.args.get('filter', '')
+        
+        logs = []
+        
+        # ✅ LOGS DE ACTIVIDAD DE USUARIOS
+        conn = obtener_conexion()
+        if conn:
+            with conn.cursor() as cursor:
+                query = """
+                    SELECT 
+                        ua.timestamp,
+                        u.username,
+                        ua.action,
+                        ua.details,
+                        ua.ip_address
+                    FROM user_activity ua
+                    LEFT JOIN users u ON ua.user_id = u.id
+                    WHERE 1=1
+                """
+                params = []
+                
+                if filtro:
+                    query += " AND (ua.action ILIKE %s OR ua.details ILIKE %s OR u.username ILIKE %s)"
+                    params.extend([f'%{filtro}%', f'%{filtro}%', f'%{filtro}%'])
+                
+                query += " ORDER BY ua.timestamp DESC LIMIT %s"
+                params.append(limit)
+                
+                cursor.execute(query, params)
+                
+                for row in cursor.fetchall():
+                    logs.append({
+                        'timestamp': row[0].isoformat() if row[0] else '',
+                        'user': row[1] or 'Sistema',
+                        'action': row[2] or 'unknown',
+                        'details': row[3] or '',
+                        'ip_address': row[4] or 'N/A',
+                        'type': 'user_activity'
+                    })
+            
+            conn.close()
+        
+        # ✅ LOGS DE ARCHIVO SI ESTÁN DISPONIBLES
+        try:
+            if os.path.exists('app.log'):
+                with open('app.log', 'r', encoding='utf-8', errors='ignore') as f:
+                    lines = f.readlines()[-limit:]
+                    
+                    for line in lines:
+                        if line.strip() and (not filtro or filtro.lower() in line.lower()):
+                            # Parsear línea de log
+                            parts = line.strip().split(' - ', 2)
+                            if len(parts) >= 2:
+                                logs.append({
+                                    'timestamp': datetime.datetime.now().isoformat(),
+                                    'user': 'Sistema',
+                                    'action': parts[0],
+                                    'details': parts[1] if len(parts) > 1 else '',
+                                    'ip_address': 'localhost',
+                                    'type': 'system_log'
+                                })
+        except Exception as e:
+            logger.debug(f"Error leyendo app.log: {e}")
+        
+        # ✅ ORDENAR Y LIMITAR
+        logs.sort(key=lambda x: x['timestamp'], reverse=True)
+        logs = logs[:limit]
+        
+        return jsonify({
+            'success': True,
+            'logs': logs,
+            'total': len(logs),
+            'filtered': bool(filtro)
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error obteniendo logs: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+def listar_usuarios_basico():
+    """Función auxiliar para listar usuarios desde la BD"""
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            logger.warning("⚠️ Sin conexión BD - usando datos por defecto")
+            # Fallback con datos por defecto
+            return [
+                {
+                    'id': 1,
+                    'username': 'admin',
+                    'email': 'admin@empresa.com',
+                    'first_name': 'Super',
+                    'last_name': 'Admin',
+                    'role': 'admin',
+                    'is_active': True,
+                    'last_login': datetime.datetime.now(),  # ✅ CORREGIDO
+                    'created_at': datetime.datetime.now()
+                }
+            ]
+        
+        usuarios = []
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT 
+                        u.id,
+                        u.username,
+                        u.email,
+                        u.first_name,
+                        u.last_name,
+                        COALESCE(r.name, 'user') as role,
+                        u.is_active,
+                        u.last_login,
+                        u.created_at
+                    FROM users u
+                    LEFT JOIN roles r ON u.role_id = r.id
+                    ORDER BY u.created_at DESC
+                """)
+                
+                rows = cursor.fetchall()
+                
+                for row in rows:
+                    usuarios.append({
+                        'id': row['id'],
+                        'username': row['username'],
+                        'email': row['email'],
+                        'first_name': row['first_name'] or '',
+                        'last_name': row['last_name'] or '',
+                        'role': row['role'],
+                        'is_active': bool(row['is_active']),
+                        'last_login': row['last_login'],
+                        'created_at': row['created_at']
+                    })
+                
+        except Exception as e:
+            logger.error(f"Error en consulta usuarios: {e}")
+            # Si hay error en la consulta, usar datos por defecto
+            usuarios = [
+                {
+                    'id': 1,
+                    'username': 'admin',
+                    'email': 'admin@empresa.com',
+                    'first_name': 'Super',
+                    'last_name': 'Admin',
+                    'role': 'admin',
+                    'is_active': True,
+                    'last_login': datetime.datetime.now(),
+                    'created_at': datetime.datetime.now()
+                }
+            ]
+        
+        finally:
+            conn.close()
+        
+        logger.info(f"✅ Usuarios listados: {len(usuarios)}")
+        return usuarios
+        
+    except Exception as e:
+        logger.error(f"❌ Error listando usuarios: {e}")
+        # Fallback final
+        return [
+            {
+                'id': 1,
+                'username': 'admin',
+                'email': 'admin@empresa.com',
+                'first_name': 'Super',
+                'last_name': 'Admin',
+                'role': 'admin',
+                'is_active': True,
+                'last_login': datetime.datetime.now(),
+                'created_at': datetime.datetime.now()
+            }
+        ]
 #---------------------------------------------------------
 # Rutas adicionales de administración
 #---------------------------------------------------------
@@ -2101,7 +2861,7 @@ def get_dashboard_counters():
                         total_packets_scanned,
                         total_detections,
                         total_suspicious,
-                        total_critical,
+                        total_high,
                         last_updated
                     FROM detection_stats
                     ORDER BY last_updated DESC
@@ -2549,7 +3309,7 @@ def api_reportes_datos_fechas():
         FROM detections d
         WHERE d.timestamp BETWEEN %s AND %s
         ORDER BY d.timestamp DESC
-        LIMIT 1000
+        --LIMIT 1000
         """
         
         # ✅ PARSING MEJORADO DE FECHAS CON SOPORTE PARA "a"
@@ -2741,25 +3501,28 @@ def parsear_fecha_con_hora_mejorada(fecha_str, es_inicio=True):
 @app.route('/api/reportes/generar-fechas', methods=['POST'])
 @login_required
 def api_reportes_generar_fechas():
-    """API para generar y descargar reporte por fechas - CORREGIDA"""
-    from datetime import datetime , timedelta
+    """API SIMPLIFICADA para generar reportes - SOLO EXPORTAR CONSULTA"""
+    from datetime import datetime, timedelta
+    import pandas as pd
+    import os
+    
     try:
         data = request.get_json()
         filtros = data.get('filtros', {})
         formato = data.get('formato', 'excel')
-        incluir_estadisticas = data.get('incluir_estadisticas', True)
         
-        logger.info(f"📊 Generando reporte: {filtros}, formato: {formato}")
+        logger.info(f"📊 Generando reporte simple: {filtros}, formato: {formato}")
         
-        # Obtener datos usando la misma lógica que la API de datos
+        # ✅ OBTENER CONEXIÓN
         conn = obtener_conexion()
         if not conn:
             return jsonify({'success': False, 'error': 'Error de conexión a BD'}), 500
         
-        # Parsear fechas (MISMA LÓGICA CORREGIDA)
+        # ✅ PARSEAR FECHAS (LÓGICA SIMPLE)
         rango_fechas = filtros.get('rango_fechas', '').strip()
+        
         if rango_fechas:
-            # ✅ NORMALIZAR "a" POR "-"
+            # Normalizar "a" por "-"
             if ' a ' in rango_fechas:
                 rango_fechas = rango_fechas.replace(' a ', ' - ')
             
@@ -2776,58 +3539,705 @@ def api_reportes_generar_fechas():
                     fecha_inicio = parsear_fecha_con_hora_mejorada(rango_fechas, es_inicio=True)
                     fecha_fin = parsear_fecha_con_hora_mejorada(rango_fechas, es_inicio=False)
         else:
+            # Últimos 30 días por defecto
             fecha_fin = datetime.now()
             fecha_inicio = fecha_fin - timedelta(days=30)
         
-        # ✅ CONSULTA CORREGIDA SIN ERROR UUID
+        # ✅ CONSULTA SIMPLE - IGUAL QUE LA DE VISTA PREVIA
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute("""
                 SELECT 
                     CASE 
                         WHEN d.detection_id IS NULL THEN 'N/A'
                         ELSE d.detection_id::text 
-                    END as detection_id,
-                    d.timestamp,
-                    d.source_ip,
-                    d.destination_ip,
-                    d.source_port,
-                    d.destination_port,
-                    d.protocol,
-                    d.anomaly_type,
-                    d.severity,
-                    d.confidence_score,
-                    d.client_id,
-                    COALESCE(fc.name, 'Cliente-' || d.client_id::text) as client_name
+                    END as "ID Detección",
+                    d.timestamp as "Fecha/Hora",
+                    COALESCE(d.anomaly_type, 'Desconocido') as "Tipo de Amenaza",
+                    COALESCE(d.severity, 'medium') as "Severidad",
+                    COALESCE(d.confidence_score, 0.5) as "Confianza",
+                    COALESCE(d.source_ip::text, '0.0.0.0') as "IP Origen",
+                    COALESCE(d.source_port, 0) as "Puerto Origen",
+                    COALESCE(d.destination_ip::text, '0.0.0.0') as "IP Destino",
+                    COALESCE(d.destination_port, 0) as "Puerto Destino",
+                    COALESCE(d.protocol, 'TCP') as "Protocolo",
+                    COALESCE(d.client_id, 1) as "Cliente ID"
                 FROM detections d
-                LEFT JOIN federated_clients fc ON d.client_id = fc.id
                 WHERE d.timestamp BETWEEN %s AND %s
                 ORDER BY d.timestamp DESC
             """, [fecha_inicio, fecha_fin])
             
-            datos = cursor.fetchall()
+            resultados = cursor.fetchall()
         
         conn.close()
         
-        # Generar archivo (simulado por ahora)
+        # ✅ VERIFICAR SI HAY DATOS
+        if not resultados:
+            return jsonify({
+                'success': False,
+                'error': 'No se encontraron detecciones en el rango de fechas especificado'
+            }), 400
+        
+        # ✅ CONVERTIR A DATAFRAME
+        df = pd.DataFrame([dict(row) for row in resultados])
+        
+        # ✅ FORMATEAR FECHA/HORA PARA MEJOR VISUALIZACIÓN
+        if 'Fecha/Hora' in df.columns:
+            df['Fecha/Hora'] = pd.to_datetime(df['Fecha/Hora']).dt.strftime('%d/%m/%Y %H:%M:%S')
+        
+        if 'Confianza' in df.columns:
+            df['Confianza'] = df['Confianza'].round(3)
+        
+        # ✅ CREAR DIRECTORIO DE REPORTES
+        reports_dir = os.path.join(app.config.get('UPLOAD_FOLDER', 'uploads'), 'reportes')
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        # ✅ GENERAR NOMBRE DE ARCHIVO
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"reporte_fechas_{timestamp}.{formato}"
+        fecha_rango_str = f"{fecha_inicio.strftime('%d%m%Y')}_{fecha_fin.strftime('%d%m%Y')}"
+        
+        if formato.lower() == 'excel':
+            filename = f"detecciones_{fecha_rango_str}_{timestamp}.xlsx"
+            filepath = os.path.join(reports_dir, filename)
+            
+            # ✅ EXPORTAR A EXCEL SIMPLE
+            df.to_excel(filepath, index=False, engine='openpyxl')
+            
+        elif formato.lower() == 'csv':
+            filename = f"detecciones_{fecha_rango_str}_{timestamp}.csv"
+            filepath = os.path.join(reports_dir, filename)
+            
+            # ✅ EXPORTAR A CSV CON UTF-8
+            df.to_csv(filepath, index=False, encoding='utf-8-sig', sep=';')
+            
+        else:
+            return jsonify({'success': False, 'error': f'Formato no soportado: {formato}'}), 400
+        
+        # ✅ REGISTRAR ACTIVIDAD
+        try:
+            registrar_actividad_usuario(
+                session['user_id'],
+                'generar_reporte',
+                f'Reporte {formato.upper()} generado: {len(resultados)} detecciones',
+                request.remote_addr
+            )
+        except:
+            pass  # No fallar si hay error en el registro
+        
+        # ✅ RESPUESTA EXITOSA
+        download_url = f'/api/reportes/descargar/{filename}'
+        file_size = os.path.getsize(filepath) / 1024 if os.path.exists(filepath) else 0
+        
+        logger.info(f"✅ Reporte generado: {filepath} ({len(resultados)} registros)")
         
         return jsonify({
             'success': True,
-            'message': f'Reporte generado exitosamente ({len(datos)} registros)',
-            'download_url': f'/static/reportes/{filename}',
+            'message': f'Reporte {formato.upper()} generado exitosamente',
+            'download_url': download_url,
             'filename': filename,
-            'registros_incluidos': len(datos),
-            'rango_fechas': f"{fecha_inicio.strftime('%d/%m/%Y %H:%M')} - {fecha_fin.strftime('%d/%m/%Y %H:%M')}"
+            'registros_incluidos': len(resultados),
+            'rango_fechas': f"{fecha_inicio.strftime('%d/%m/%Y %H:%M')} - {fecha_fin.strftime('%d/%m/%Y %H:%M')}",
+            'formato': formato.upper(),
+            'tamaño_archivo': f"{file_size:.1f} KB"
         })
         
     except Exception as e:
         logger.error(f"❌ Error generando reporte: {e}")
+        import traceback
+        logger.error(f"❌ Traceback: {traceback.format_exc()}")
+        return jsonify({
+            'success': False,
+            'error': f'Error generando reporte: {str(e)}'
+        }), 500
+
+@app.route('/api/reportes/descargar/<filename>')
+@login_required
+def descargar_reporte(filename):
+    """Descarga un archivo de reporte generado"""
+    try:
+        reports_dir = os.path.join(app.config.get('UPLOAD_FOLDER', 'uploads'), 'reportes')
+        filepath = os.path.join(reports_dir, filename)
+        
+        if not os.path.exists(filepath):
+            return jsonify({'error': 'Archivo no encontrado'}), 404
+        
+        # Determinar tipo MIME
+        if filename.lower().endswith('.xlsx'):
+            mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        elif filename.lower().endswith('.csv'):
+            mimetype = 'text/csv'
+        else:
+            mimetype = 'application/octet-stream'
+        
+        logger.info(f"📥 Descargando: {filename}")
+        
+        return send_from_directory(
+            reports_dir,
+            filename,
+            as_attachment=True,
+            mimetype=mimetype
+        )
+        
+    except Exception as e:
+        logger.error(f"❌ Error descargando: {e}")
+        return jsonify({'error': 'Error descargando archivo'}), 500
+    
+@app.route('/api/reportes/listar-archivos')
+@login_required 
+def listar_reportes_generados():
+    """Lista archivos de reportes disponibles para descarga"""
+    try:
+        reports_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'reportes')
+        
+        if not os.path.exists(reports_dir):
+            return jsonify({'success': True, 'archivos': []})
+        
+        archivos = []
+        for filename in os.listdir(reports_dir):
+            if filename.lower().endswith(('.xlsx', '.csv')):
+                filepath = os.path.join(reports_dir, filename)
+                stat = os.stat(filepath)
+                
+                # ✅ CORREGIR EL IMPORT - USAR datetime.datetime
+                archivos.append({
+                    'nombre': filename,
+                    'tamaño': f"{stat.st_size / 1024:.1f} KB",
+                    'fecha_creacion': datetime.datetime.fromtimestamp(stat.st_ctime).strftime('%d/%m/%Y %H:%M'),
+                    'fecha_modificacion': datetime.datetime.fromtimestamp(stat.st_mtime).strftime('%d/%m/%Y %H:%M'),
+                    'tipo': 'Excel' if filename.lower().endswith('.xlsx') else 'CSV',
+                    'download_url': f'/api/reportes/descargar/{filename}'
+                })
+        
+        # Ordenar por fecha de creación (más recientes primero)
+        archivos.sort(key=lambda x: x['fecha_creacion'], reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'archivos': archivos,
+            'total': len(archivos)
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error listando reportes: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/reportes/limpiar-archivos', methods=['POST'])
+@admin_required
+def limpiar_reportes_antiguos():
+    """Limpia reportes antiguos (solo admin)"""
+    try:
+        reports_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'reportes')
+        
+        if not os.path.exists(reports_dir):
+            return jsonify({'success': True, 'message': 'No hay reportes para limpiar'})
+        
+        archivos_eliminados = 0
+        ahora = time.time()
+        dias_limite = 30  # Eliminar archivos de más de 30 días
+        
+        for filename in os.listdir(reports_dir):
+            if filename.lower().endswith(('.xlsx', '.csv')):
+                filepath = os.path.join(reports_dir, filename)
+                
+                # Verificar antigüedad
+                if (ahora - os.path.getctime(filepath)) > (dias_limite * 24 * 60 * 60):
+                    try:
+                        os.remove(filepath)
+                        archivos_eliminados += 1
+                        logger.info(f"🗑️ Archivo eliminado: {filename}")
+                    except Exception as e:
+                        logger.error(f"Error eliminando {filename}: {e}")
+        
+        # Registrar actividad
+        registrar_actividad_usuario(
+            session['user_id'],
+            'limpiar_reportes',
+            f'Limpieza de reportes: {archivos_eliminados} archivos eliminados',
+            request.remote_addr
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': f'Limpieza completada: {archivos_eliminados} archivos eliminados',
+            'archivos_eliminados': archivos_eliminados
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error limpiando reportes: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+# AGREGAR ESTAS RUTAS API DESPUÉS DE LA LÍNEA 3008 EN main.py
+
+# ========================================
+# 📅 APIS PARA CALENDARIO DE DETECCIONES - CORREGIDAS
+# ========================================
+
+@app.route('/api/calendario/datos', methods=['POST'])
+@login_required
+def api_calendario_datos():
+    """API para obtener datos del calendario de detecciones"""
+    try:
+        from datetime import datetime  # Import local para evitar conflictos
+        
+        data = request.get_json()
+        year = int(data.get('year', datetime.now().year))
+        month = int(data.get('month', datetime.now().month))
+        
+        logger.info(f"📅 Solicitud de datos calendario: {month}/{year}")
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({
+                'success': False,
+                'error': 'No se pudo conectar a la base de datos'
+            })
+        
+        calendario_data = {}
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Obtener detecciones agrupadas por día
+                cursor.execute("""
+                    SELECT 
+                        DATE(timestamp) as fecha,
+                        COUNT(*) as total,
+                        COUNT(CASE WHEN severity = 'critical' THEN 1 END) as critical,
+                        COUNT(CASE WHEN severity = 'high' THEN 1 END) as suspicious,
+                        COUNT(CASE WHEN severity = 'medium' THEN 1 END) as medium,
+                        COUNT(CASE WHEN severity = 'low' THEN 1 END) as low
+                    FROM detections 
+                    WHERE EXTRACT(YEAR FROM timestamp) = %s 
+                      AND EXTRACT(MONTH FROM timestamp) = %s
+                    GROUP BY DATE(timestamp)
+                    ORDER BY fecha
+                """, (year, month))
+                
+                rows = cursor.fetchall()
+                
+                for row in rows:
+                    if row['fecha']:  # Verificar que la fecha no sea None
+                        fecha_key = row['fecha'].strftime('%Y-%m-%d')
+                        calendario_data[fecha_key] = {
+                            'total': int(row['total'] or 0),
+                            'critical': int(row['critical'] or 0),
+                            'suspicious': int(row['suspicious'] or 0),  # high = sospechosas
+                            'high': int(row['suspicious'] or 0),
+                            'medium': int(row['medium'] or 0),
+                            'low': int(row['low'] or 0)
+                        }
+            
+        except Exception as e:
+            logger.error(f"❌ Error en consulta calendario: {e}")
+            calendario_data = {}
+        
+        finally:
+            conn.close()
+        
+        logger.info(f"✅ Datos calendario enviados: {len(calendario_data)} días con actividad")
+        
+        return jsonify({
+            'success': True,
+            'datos': calendario_data,
+            'mes': month,
+            'año': year
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error en API calendario: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
-        }), 500
-       
+        })
+
+@app.route('/api/calendario/detalles-dia', methods=['POST'])
+@login_required
+def api_calendario_detalles_dia():
+    """API para obtener detalles de detecciones de un día específico"""
+    try:
+        data = request.get_json()
+        fecha = data.get('fecha')  # Formato: YYYY-MM-DD
+        
+        if not fecha:
+            return jsonify({
+                'success': False,
+                'error': 'Fecha requerida'
+            })
+            
+        logger.info(f"🔍 Solicitud detalles día: {fecha}")
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({
+                'success': False,
+                'error': 'No se pudo conectar a la base de datos'
+            })
+        
+        detecciones = []
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT 
+                        d.id,
+                        d.timestamp,
+                        COALESCE(d.anomaly_type, 'Desconocido') as anomaly_type,
+                        COALESCE(d.severity, 'medium') as severity,
+                        COALESCE(d.confidence_score, 0.5) as confidence_score,
+                        COALESCE(d.source_ip::text, '0.0.0.0') as source_ip,
+                        COALESCE(d.destination_ip::text, '0.0.0.0') as destination_ip,
+                        COALESCE(d.source_port, 0) as source_port,
+                        COALESCE(d.destination_port, 0) as destination_port,
+                        COALESCE(d.protocol, 'TCP') as protocol,
+                        COALESCE(fc.name, 'Cliente ' || d.client_id::text) as client_name
+                    FROM detections d
+                    LEFT JOIN federated_clients fc ON d.client_id = fc.id
+                    WHERE DATE(d.timestamp) = %s
+                    ORDER BY d.timestamp DESC
+                    LIMIT 50
+                """, (fecha,))
+                
+                rows = cursor.fetchall()
+                
+                for row in rows:
+                    detecciones.append({
+                        'id': row['id'],
+                        'timestamp': row['timestamp'].isoformat() if row['timestamp'] else None,
+                        'anomaly_type': row['anomaly_type'],
+                        'severity': row['severity'],
+                        'confidence_score': float(row['confidence_score']),
+                        'source_ip': str(row['source_ip']),
+                        'destination_ip': str(row['destination_ip']),
+                        'source_port': int(row['source_port']),
+                        'destination_port': int(row['destination_port']),
+                        'protocol': row['protocol'],
+                        'client_name': row['client_name']
+                    })
+        
+        except Exception as e:
+            logger.error(f"❌ Error en consulta detalles: {e}")
+            detecciones = []
+        
+        finally:
+            conn.close()
+        
+        logger.info(f"✅ Detalles día enviados: {len(detecciones)} detecciones")
+        
+        return jsonify({
+            'success': True,
+            'detecciones': detecciones,
+            'fecha': fecha,
+            'total': len(detecciones)
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error en API detalles día: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+
+    
+@app.route('/reportes/calendario')
+@login_required
+def reportes_calendario():
+    """Página de calendario de detecciones"""
+    try:
+        user = obtener_usuario_por_id(session['user_id'])
+        if not user:
+            flash('Error al obtener información del usuario', 'danger')
+            return redirect(url_for('login'))
+        
+        # Registrar actividad
+        registrar_actividad_usuario(
+            session['user_id'],
+            'access_calendario',
+            'Acceso al calendario de detecciones',
+            request.remote_addr
+        )
+        
+        return render_template('reportes_calendario.html', user=user)
+        
+    except Exception as e:
+        logger.error(f"Error en calendario: {e}")
+        flash('Error al cargar el calendario', 'danger')
+        return render_template('reportes_calendario.html', 
+                             user={'username': session.get('username', 'Usuario')})
+
+@app.route('/api/reportes/generar-dia-excel', methods=['POST'])
+@login_required
+def api_generar_dia_excel():
+    """API para generar reporte Excel de un día específico"""
+    try:
+        data = request.get_json()
+        fecha = data.get('fecha')  # Formato: YYYY-MM-DD
+        
+        if not fecha:
+            return jsonify({
+                'success': False,
+                'error': 'Fecha requerida'
+            })
+        
+        logger.info(f"📊 Generando Excel para día: {fecha}")
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({
+                'success': False,
+                'error': 'No se pudo conectar a la base de datos'
+            })
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Obtener detecciones del día
+                cursor.execute("""
+                    SELECT 
+                        d.timestamp,
+                        d.anomaly_type,
+                        d.severity,
+                        d.confidence_score,
+                        d.source_ip,
+                        d.destination_ip,
+                        d.source_port,
+                        d.destination_port,
+                        d.protocol,
+                        COALESCE(fc.name, 'Cliente ' || d.client_id::text) as client_name
+                    FROM detections d
+                    LEFT JOIN federated_clients fc ON d.client_id = fc.id
+                    WHERE DATE(d.timestamp) = %s
+                    ORDER BY d.timestamp DESC
+                """, (fecha,))
+                
+                detecciones = cursor.fetchall()
+                
+        finally:
+            conn.close()
+        
+        if not detecciones:
+            return jsonify({
+                'success': False,
+                'error': 'No se encontraron detecciones para esta fecha'
+            })
+        
+        # ✅ GENERAR ARCHIVO EXCEL
+        import pandas as pd
+        from datetime import datetime
+        import os
+        
+        # Convertir datos a DataFrame
+        df_data = []
+        for det in detecciones:
+            df_data.append({
+                'Fecha/Hora': det['timestamp'].strftime('%d/%m/%Y %H:%M:%S') if det['timestamp'] else '',
+                'Cliente': det['client_name'],
+                'Tipo de Anomalía': det['anomaly_type'],
+                'Severidad': det['severity'],
+                'Confianza (%)': round(float(det['confidence_score']) * 100, 1) if det['confidence_score'] else 0,
+                'IP Origen': str(det['source_ip']) if det['source_ip'] else '',
+                'Puerto Origen': det['source_port'] if det['source_port'] else '',
+                'IP Destino': str(det['destination_ip']) if det['destination_ip'] else '',
+                'Puerto Destino': det['destination_port'] if det['destination_port'] else '',
+                'Protocolo': det['protocol'] if det['protocol'] else ''
+            })
+        
+        df = pd.DataFrame(df_data)
+        
+        # Crear directorio si no existe
+        reports_dir = os.path.join(os.getcwd(), 'static', 'reports')
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        # Generar nombre de archivo
+        fecha_formateada = datetime.strptime(fecha, '%Y-%m-%d').strftime('%d-%m-%Y')
+        filename = f"detecciones_dia_{fecha_formateada}_{datetime.now().strftime('%H%M%S')}.xlsx"
+        filepath = os.path.join(reports_dir, filename)
+        
+        # Guardar Excel con formato
+        with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Detecciones', index=False)
+            
+            # Obtener workbook y worksheet para formato
+            workbook = writer.book
+            worksheet = writer.sheets['Detecciones']
+            
+            # Aplicar formato a headers
+            from openpyxl.styles import Font, PatternFill, Alignment
+            
+            header_font = Font(bold=True, color='FFFFFF')
+            header_fill = PatternFill(start_color='366092', end_color='366092', fill_type='solid')
+            
+            for cell in worksheet[1]:
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal='center')
+            
+            # Ajustar ancho de columnas
+            column_widths = {
+                'A': 20, 'B': 15, 'C': 25, 'D': 12, 'E': 12,
+                'F': 15, 'G': 12, 'H': 15, 'I': 12, 'J': 10
+            }
+            
+            for col, width in column_widths.items():
+                worksheet.column_dimensions[col].width = width
+        
+        # Calcular tamaño del archivo
+        file_size = os.path.getsize(filepath)
+        size_mb = round(file_size / (1024 * 1024), 2)
+        size_str = f"{size_mb} MB" if size_mb >= 1 else f"{round(file_size / 1024, 1)} KB"
+        
+        logger.info(f"✅ Excel generado: {filename} ({len(detecciones)} registros)")
+        
+        return jsonify({
+            'success': True,
+            'filename': filename,
+            'download_url': f'/static/reports/{filename}',
+            'registros_incluidos': len(detecciones),
+            'fecha': fecha_formateada,
+            'tamaño_archivo': size_str,
+            'formato': 'excel'
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error generando Excel día: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/email/send-critical-alert', methods=['POST'])
+def send_critical_alert_email():
+    """Recibe alertas críticas y envía emails automáticamente"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'})
+        
+        detection_data = data.get('detection_data', {})
+        confidence_score = detection_data.get('confidence_score', 0)
+        
+        # ✅ VERIFICAR UMBRAL
+        if confidence_score < 0.500:
+            return jsonify({
+                'success': False, 
+                'error': f'Score {confidence_score:.3f} por debajo del umbral crítico (0.500)'
+            })
+        
+        # ✅ IMPORTAR SISTEMA DE EMAILS
+        try:
+            from email_alerts import verificar_y_enviar_alerta_critica
+        except ImportError:
+            # Si no existe email_alerts.py, crear función básica
+            return enviar_email_basico(detection_data)
+        
+        # ✅ ENVIAR EMAIL USANDO SISTEMA AVANZADO
+        success = verificar_y_enviar_alerta_critica(detection_data)
+        
+        if success:
+            # ✅ REGISTRAR ACTIVIDAD
+            try:
+                registrar_actividad_usuario(
+                    data.get('user_id', 1),
+                    'critical_email_sent',
+                    f"Email crítico enviado: {detection_data.get('source_ip')} (Score: {confidence_score:.3f})",
+                    detection_data.get('source_ip', 'unknown')
+                )
+            except:
+                pass  # No fallar si hay error en el registro
+            
+            logger.info(f"📧 ✅ Email crítico enviado: {detection_data.get('source_ip')} (Score: {confidence_score:.3f})")
+            
+            return jsonify({
+                'success': True,
+                'message': 'Email crítico enviado correctamente',
+                'details': {
+                    'source_ip': detection_data.get('source_ip'),
+                    'confidence_score': confidence_score,
+                    'anomaly_type': detection_data.get('anomaly_type'),
+                    'timestamp': detection_data.get('timestamp')
+                }
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Error enviando email crítico',
+                'details': {
+                    'source_ip': detection_data.get('source_ip'),
+                    'confidence_score': confidence_score
+                }
+            })
+            
+    except Exception as e:
+        logger.error(f"❌ Error en endpoint de email crítico: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+def enviar_email_basico(detection_data):
+    """Función básica de email si no está disponible el sistema avanzado"""
+    try:
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        import datetime
+        
+        # ✅ CONFIGURACIÓN BÁSICA (CAMBIAR POR TUS DATOS)
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 587
+        email_user = 'johannaguinaga20@gmail.com'  # ← TU EMAIL
+        email_password = 'TU_CONTRASEÑA_DE_APLICACION'  # ← TU CONTRASEÑA DE APP
+        destinatarios = ['johannaguinaga20@gmail.com']  # ← DESTINATARIOS
+        
+        # ✅ CREAR MENSAJE
+        confidence = detection_data.get('confidence_score', 0)
+        source_ip = detection_data.get('source_ip', 'Desconocida')
+        anomaly_type = detection_data.get('anomaly_type', 'Desconocido')
+        
+        subject = f"🚨 ALERTA IDS CRÍTICA - {anomaly_type} desde {source_ip}"
+        
+        body = f"""
+🚨 ALERTA CRÍTICA DEL SISTEMA IDS
+
+📊 DETALLES DE LA DETECCIÓN:
+• Nivel de Confianza: {confidence:.1%}
+• Tipo de Amenaza: {anomaly_type}
+• IP de Origen: {source_ip}
+• IP de Destino: {detection_data.get('destination_ip', 'N/A')}
+• Protocolo: {detection_data.get('protocol', 'N/A')}
+• Timestamp: {detection_data.get('timestamp', 'N/A')}
+
+⚠️ ACCIÓN REQUERIDA:
+Esta detección ha superado el umbral crítico de confianza (≥ 50%).
+Se recomienda investigar inmediatamente esta actividad.
+
+🔗 Sistema IDS Federado
+Generado automáticamente el {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}
+"""
+        
+        # ✅ CREAR EMAIL
+        msg = MIMEMultipart()
+        msg['From'] = email_user
+        msg['To'] = ', '.join(destinatarios)
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+        
+        # ✅ ENVIAR EMAIL
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(email_user, email_password)
+            server.sendmail(email_user, destinatarios, msg.as_string())
+        
+        logger.info(f"📧 ✅ Email básico enviado: {source_ip} (Score: {confidence:.3f})")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Email básico enviado correctamente'
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Error enviando email básico: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Error email básico: {str(e)}'
+        })
 if __name__ == "__main__":
     inicializar_sistema()
     

@@ -1,37 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}IDS Federado{% endblock %}</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Flatpickr para date picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    
+    {% block extra_css %}{% endblock %}
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
         }
-        
+
         .sidebar {
             background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
             min-height: 100vh;
             color: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .sidebar-link {
             color: rgba(255, 255, 255, 0.75);
             text-decoration: none;
@@ -42,30 +43,30 @@
             margin: 3px 10px;
             font-weight: 500;
         }
-        
+
         .sidebar-link:hover {
             color: white !important;
             background-color: rgba(255, 255, 255, 0.15);
             transform: translateX(3px);
         }
-        
+
         .sidebar-link.active {
             color: white !important;
             background-color: #3498db;
             box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
         }
-        
+
         .sidebar-link i {
             margin-right: 10px;
             width: 20px;
             text-align: center;
         }
-        
+
         .content-wrapper {
             padding: 20px;
             min-height: 100vh;
         }
-        
+
         .page-header {
             background-color: white;
             padding: 20px 25px;
@@ -74,7 +75,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border-left: 4px solid #3498db;
         }
-        
+
         .dashboard-card {
             background-color: white;
             border-radius: 10px;
@@ -82,12 +83,12 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         .dashboard-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        
+
         .card-header {
             background-color: transparent;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -96,7 +97,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         /* ========================================
            SIDEBAR DROPDOWN STYLES
            ======================================== */
@@ -156,7 +157,7 @@
         .sidebar-dropdown.open .sidebar-submenu {
             max-height: 500px;
             border-left-color: #2ecc71;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-sublink {
@@ -176,7 +177,7 @@
             color: white !important;
             background-color: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         .sidebar-sublink.active {
@@ -213,7 +214,7 @@
             font-weight: 600;
             font-size: 1.3em;
             margin-bottom: 0;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         /* Footer del sidebar */
@@ -235,12 +236,12 @@
                 margin-left: 15px;
                 margin-right: 10px;
             }
-            
+
             .sidebar-sublink {
                 padding: 8px 12px;
                 font-size: 0.85em;
             }
-            
+
             .sidebar-dropdown-toggle {
                 padding: 10px 12px !important;
             }
@@ -254,302 +255,297 @@
             border-radius: 50%;
             margin-right: 5px;
         }
-        
-        .status-success { background-color: #28a745; }
-        .status-warning { background-color: #ffc107; }
-        .status-alert { background-color: #dc3545; }
-        .status-neutral { background-color: #6c757d; }
+
+        .status-success {
+            background-color: #28a745;
+        }
+
+        .status-warning {
+            background-color: #ffc107;
+        }
+
+        .status-alert {
+            background-color: #dc3545;
+        }
+
+        .status-neutral {
+            background-color: #6c757d;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="sidebar col-lg-2 col-md-3 d-flex flex-column">
-            <div class="p-3 text-center border-bottom border-secondary">
-                <h4>🛡️ IDS Federado</h4>
-                <small class="text-muted">v1.0.0</small>
-            </div>
-            
-            <nav class="mt-3 flex-grow-1">
-                <!-- Dashboard Principal -->
-                <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.path == '/' or request.path == '/dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-                
-                <!-- REPORTES CON PESTAÑAS DESPLEGABLES -->
-                <div class="sidebar-dropdown">
-                    <a href="javascript:void(0)" class="sidebar-link sidebar-dropdown-toggle {% if '/reportes' in request.path %}active{% endif %}" 
-                       onclick="toggleSidebarDropdown(this)">
-                        <span>
-                            <i class="fas fa-chart-bar"></i> Reportes
-                        </span>
-                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="sidebar col-lg-2 col-md-3 d-flex flex-column">
+                <div class="p-3 text-center border-bottom border-secondary">
+                    <h4>🛡️ IDS Federado</h4>
+                    <small class="text-muted">v1.0.0</small>
+                </div>
+
+                <nav class="mt-3 flex-grow-1">
+                    <!-- Dashboard Principal -->
+                    <a href="{{ url_for('dashboard') }}"
+                        class="sidebar-link {% if request.path == '/' or request.path == '/dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
-                    <div class="sidebar-submenu">
-                        <a href="{{ url_for('reportes_fechas') }}" class="sidebar-sublink {% if request.path == '/reportes/fechas' %}active{% endif %}">
-                            <i class="fas fa-calendar text-primary"></i> Por Fechas
+
+                    <!-- REPORTES CON PESTAÑAS DESPLEGABLES -->
+                    <div class="sidebar-dropdown">
+                        <a href="javascript:void(0)"
+                            class="sidebar-link sidebar-dropdown-toggle {% if '/reportes' in request.path %}active{% endif %}"
+                            onclick="toggleSidebarDropdown(this)">
+                            <span>
+                                <i class="fas fa-chart-bar"></i> Reportes
+                            </span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
                         </a>
-                        <a href="{{ url_for('reportes') }}#actividad" class="sidebar-sublink" onclick="activarTabReporte('actividad')">
-                            <i class="fas fa-chart-line text-success"></i> Actividad
-                        </a>
-                        <a href="{{ url_for('reportes') }}#amenazas" class="sidebar-sublink" onclick="activarTabReporte('amenazas')">
-                            <i class="fas fa-exclamation-triangle text-warning"></i> Amenazas
-                        </a>
-                        <a href="{{ url_for('reportes') }}#trafico" class="sidebar-sublink" onclick="activarTabReporte('trafico')">
-                            <i class="fas fa-network-wired text-info"></i> Tráfico
-                        </a>
-                        <a href="{{ url_for('reportes') }}#ejecutivo" class="sidebar-sublink" onclick="activarTabReporte('ejecutivo')">
-                            <i class="fas fa-chart-pie text-secondary"></i> Ejecutivo
-                        </a>
-                        <a href="{{ url_for('reportes') }}#rendimiento" class="sidebar-sublink" onclick="activarTabReporte('rendimiento')">
-                            <i class="fas fa-tachometer-alt text-dark"></i> Rendimiento
-                        </a>
-                        <a href="{{ url_for('reportes') }}#ataques" class="sidebar-sublink" onclick="activarTabReporte('ataques')">
-                            <i class="fas fa-shield-alt text-danger"></i> Ataques
-                        </a>
-                    </div>
-                </div>
-                
-                {% if session.role == 'admin' %}
-                <!-- ADMINISTRACIÓN CON SUBOPCIONES -->
-                <div class="sidebar-dropdown">
-                    <a href="javascript:void(0)" class="sidebar-link sidebar-dropdown-toggle {% if request.path == '/admin' %}active{% endif %}" 
-                       onclick="toggleSidebarDropdown(this)">
-                        <span>
-                            <i class="fas fa-cog"></i> Administración
-                        </span>
-                        <i class="fas fa-chevron-down dropdown-arrow"></i>
-                    </a>
-                    <div class="sidebar-submenu">
-                        <a href="{{ url_for('admin') }}#users" class="sidebar-sublink" onclick="activarTabAdmin('users')">
-                            <i class="fas fa-users"></i> Usuarios
-                        </a>
-                        <a href="{{ url_for('admin') }}#roles" class="sidebar-sublink" onclick="activarTabAdmin('roles')">
-                            <i class="fas fa-user-tag"></i> Roles
-                        </a>
-                        <a href="{{ url_for('admin') }}#config" class="sidebar-sublink" onclick="activarTabAdmin('config')">
-                            <i class="fas fa-cogs"></i> Configuración
-                        </a>
-                        <a href="{{ url_for('admin') }}#logs" class="sidebar-sublink" onclick="activarTabAdmin('logs')">
-                            <i class="fas fa-list"></i> Logs
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
-            </nav>
-            
-            <!-- Footer del sidebar pegado abajo -->
-            <div class="mt-auto p-3 text-center">
-                <a href="{{ url_for('logout') }}" class="sidebar-link text-danger">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                </a>
-                <hr class="my-3">
-                <div class="mt-3">
-                    <p class="mb-1">© 2025 IDS Federado</p>
-                    <p class="mb-0"><small>Sistema de Detección</small></p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Main content -->
-        <div class="col-lg-10 col-md-9 content-wrapper">
-            <!-- Page header -->
-            <div class="page-header d-flex justify-content-between align-items-center">
-                <h3>{% block page_title %}{% endblock %}</h3>
-                <div>
-                    {% block page_actions %}{% endblock %}
-                </div>
-            </div>
-            
-            <!-- Flash messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <div class="sidebar-submenu">
+                            <a href="{{ url_for('reportes_fechas') }}"
+                                class="sidebar-sublink {% if request.path == '/reportes/fechas' %}active{% endif %}">
+                                <i class="fas fa-calendar text-primary"></i> Por Fechas
+                            </a>
+                            <a href="{{ url_for('reportes_calendario') }}"
+                                class="sidebar-sublink {% if request.path == '/reportes/calendario' %}active{% endif %}">
+                                <i class="fas fa-calendar text-primary"></i> Por Calendario
+                            </a>
                         </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
+                    </div>
+
+                    {% if session.role == 'admin' %}
+                    <!-- ADMINISTRACIÓN CON SUBOPCIONES -->
+                    <div class="sidebar-dropdown">
+                        <a href="javascript:void(0)"
+                            class="sidebar-link sidebar-dropdown-toggle {% if request.path == '/admin' %}active{% endif %}"
+                            onclick="toggleSidebarDropdown(this)">
+                            <span>
+                                <i class="fas fa-cog"></i> Administración
+                            </span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </a>
+                        <div class="sidebar-submenu">
+                            <a href="{{ url_for('admin') }}#users" class="sidebar-sublink"
+                                onclick="activarTabAdmin('users')">
+                                <i class="fas fa-users"></i> Configuracion
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </nav>
+
+                <!-- Footer del sidebar pegado abajo -->
+                <div class="mt-auto p-3 text-center">
+                    <a href="{{ url_for('logout') }}" class="sidebar-link text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                    <hr class="my-3">
+                    <div class="mt-3">
+                        <p class="mb-1">© 2025 IDS Federado</p>
+                        <p class="mb-0"><small>Sistema de Detección</small></p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Main content -->
-            {% block content %}{% endblock %}
+            <div class="col-lg-10 col-md-9 content-wrapper">
+                <!-- Page header -->
+                <div class="page-header d-flex justify-content-between align-items-center">
+                    <h3>{% block page_title %}{% endblock %}</h3>
+                    <div>
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                </div>
+
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <!-- Main content -->
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- JavaScript para funcionalidad del sidebar -->
-<script>
-// ========================================
-// SIDEBAR DROPDOWN FUNCTIONALITY
-// ========================================
+    <!-- JavaScript para funcionalidad del sidebar -->
+    <script>
+        // ========================================
+        // SIDEBAR DROPDOWN FUNCTIONALITY
+        // ========================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 Inicializando sidebar...');
-    
-    // Restaurar estado de dropdowns guardados
-    restaurarEstadoDropdowns();
-    
-    // Marcar sublink activo según la página actual
-    marcarSubmenuActivo();
-    
-    // Activar tab guardado en reportes
-    if (window.location.pathname === '/reportes') {
-        const tabActivo = localStorage.getItem('reporteTabActivo');
-        if (tabActivo) {
-            setTimeout(() => activarTabEspecifico('reportes', tabActivo), 200);
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔧 Inicializando sidebar...');
+
+            // Restaurar estado de dropdowns guardados
+            restaurarEstadoDropdowns();
+
+            // Marcar sublink activo según la página actual
+            marcarSubmenuActivo();
+
+            // Activar tab guardado en reportes
+            if (window.location.pathname === '/reportes') {
+                const tabActivo = localStorage.getItem('reporteTabActivo');
+                if (tabActivo) {
+                    setTimeout(() => activarTabEspecifico('reportes', tabActivo), 200);
+                }
+            }
+
+            // Activar tab guardado en admin
+            if (window.location.pathname === '/admin') {
+                const tabActivo = localStorage.getItem('adminTabActivo');
+                if (tabActivo) {
+                    setTimeout(() => activarTabEspecifico('admin', tabActivo), 200);
+                }
+            }
+
+            console.log('✅ Sidebar inicializado correctamente');
+        });
+
+        // Función para toggle de dropdown en sidebar
+        function toggleSidebarDropdown(element) {
+            console.log('🔄 Toggle dropdown');
+
+            const dropdown = element.closest('.sidebar-dropdown');
+            const allDropdowns = document.querySelectorAll('.sidebar-dropdown');
+
+            // Cerrar otros dropdowns
+            allDropdowns.forEach(dd => {
+                if (dd !== dropdown) {
+                    dd.classList.remove('open');
+                }
+            });
+
+            // Toggle del dropdown actual
+            dropdown.classList.toggle('open');
+
+            // Guardar estado en localStorage
+            const isOpen = dropdown.classList.contains('open');
+            const dropdownId = element.textContent.trim().split(' ')[0].toLowerCase();
+            localStorage.setItem(`sidebar_${dropdownId}_open`, isOpen);
+
+            console.log(`📁 Dropdown "${dropdownId}" ${isOpen ? 'abierto' : 'cerrado'}`);
         }
-    }
-    
-    // Activar tab guardado en admin
-    if (window.location.pathname === '/admin') {
-        const tabActivo = localStorage.getItem('adminTabActivo');
-        if (tabActivo) {
-            setTimeout(() => activarTabEspecifico('admin', tabActivo), 200);
-        }
-    }
-    
-    console.log('✅ Sidebar inicializado correctamente');
-});
 
-// Función para toggle de dropdown en sidebar
-function toggleSidebarDropdown(element) {
-    console.log('🔄 Toggle dropdown');
-    
-    const dropdown = element.closest('.sidebar-dropdown');
-    const allDropdowns = document.querySelectorAll('.sidebar-dropdown');
-    
-    // Cerrar otros dropdowns
-    allDropdowns.forEach(dd => {
-        if (dd !== dropdown) {
-            dd.classList.remove('open');
-        }
-    });
-    
-    // Toggle del dropdown actual
-    dropdown.classList.toggle('open');
-    
-    // Guardar estado en localStorage
-    const isOpen = dropdown.classList.contains('open');
-    const dropdownId = element.textContent.trim().split(' ')[0].toLowerCase();
-    localStorage.setItem(`sidebar_${dropdownId}_open`, isOpen);
-    
-    console.log(`📁 Dropdown "${dropdownId}" ${isOpen ? 'abierto' : 'cerrado'}`);
-}
+        // Función para activar tab específico de reportes
+        function activarTabReporte(tabId) {
+            console.log(`📊 Activando tab de reporte: ${tabId}`);
+            localStorage.setItem('reporteTabActivo', tabId);
 
-// Función para activar tab específico de reportes
-function activarTabReporte(tabId) {
-    console.log(`📊 Activando tab de reporte: ${tabId}`);
-    localStorage.setItem('reporteTabActivo', tabId);
-    
-    // Si ya estamos en la página de reportes, activar el tab
-    if (window.location.pathname === '/reportes') {
-        activarTabEspecifico('reportes', tabId);
-    }
-}
-
-// Función para activar tab específico de admin
-function activarTabAdmin(tabId) {
-    console.log(`⚙️ Activando tab de admin: ${tabId}`);
-    localStorage.setItem('adminTabActivo', tabId);
-    
-    // Si ya estamos en la página de admin, activar el tab
-    if (window.location.pathname === '/admin') {
-        activarTabEspecifico('admin', tabId);
-    }
-}
-
-// Función genérica para activar tabs
-function activarTabEspecifico(modulo, tabId) {
-    try {
-        const tabButton = document.querySelector(`#${tabId}-tab`);
-        if (tabButton && typeof bootstrap !== 'undefined') {
-            const tab = new bootstrap.Tab(tabButton);
-            tab.show();
-            console.log(`✅ Tab "${tabId}" activado en módulo "${modulo}"`);
-        } else {
-            console.log(`⚠️ Tab button "#${tabId}-tab" no encontrado`);
-        }
-    } catch (error) {
-        console.error(`❌ Error activando tab "${tabId}":`, error);
-    }
-}
-
-// Restaurar estado de dropdowns al cargar la página
-function restaurarEstadoDropdowns() {
-    const dropdowns = document.querySelectorAll('.sidebar-dropdown');
-    dropdowns.forEach(dropdown => {
-        const link = dropdown.querySelector('.sidebar-dropdown-toggle');
-        if (link) {
-            const dropdownId = link.textContent.trim().split(' ')[0].toLowerCase();
-            const isOpen = localStorage.getItem(`sidebar_${dropdownId}_open`) === 'true';
-            
-            if (isOpen) {
-                dropdown.classList.add('open');
-                console.log(`📂 Restaurado dropdown "${dropdownId}" como abierto`);
+            // Si ya estamos en la página de reportes, activar el tab
+            if (window.location.pathname === '/reportes') {
+                activarTabEspecifico('reportes', tabId);
             }
         }
-    });
-}
 
-// Función para marcar el submenu activo
-function marcarSubmenuActivo() {
-    const currentPath = window.location.pathname;
-    const currentParams = new URLSearchParams(window.location.search);
-    
-    // Limpiar todos los active de sublinks
-    document.querySelectorAll('.sidebar-sublink').forEach(link => {
-        link.classList.remove('active');
-    });
-    
-    // Marcar activo según la página actual
-    if (currentPath === '/reportes/fechas') {
-        const sublink = document.querySelector('.sidebar-sublink[href$="/reportes/fechas"]');
-        if (sublink) {
-            sublink.classList.add('active');
-            // Abrir el dropdown padre
-            const dropdown = sublink.closest('.sidebar-dropdown');
-            if (dropdown) {
-                dropdown.classList.add('open');
-                console.log('📊 Dropdown de reportes abierto automáticamente');
+        // Función para activar tab específico de admin
+        function activarTabAdmin(tabId) {
+            console.log(`⚙️ Activando tab de admin: ${tabId}`);
+            localStorage.setItem('adminTabActivo', tabId);
+
+            // Si ya estamos en la página de admin, activar el tab
+            if (window.location.pathname === '/admin') {
+                activarTabEspecifico('admin', tabId);
             }
         }
-    }
-    
-    // Marcar dropdown principal activo
-    document.querySelectorAll('.sidebar-dropdown-toggle').forEach(toggle => {
-        const href = toggle.getAttribute('href');
-        if (href && currentPath.startsWith(href.replace('#', ''))) {
-            toggle.classList.add('active');
+
+        // Función genérica para activar tabs
+        function activarTabEspecifico(modulo, tabId) {
+            try {
+                const tabButton = document.querySelector(`#${tabId}-tab`);
+                if (tabButton && typeof bootstrap !== 'undefined') {
+                    const tab = new bootstrap.Tab(tabButton);
+                    tab.show();
+                    console.log(`✅ Tab "${tabId}" activado en módulo "${modulo}"`);
+                } else {
+                    console.log(`⚠️ Tab button "#${tabId}-tab" no encontrado`);
+                }
+            } catch (error) {
+                console.error(`❌ Error activando tab "${tabId}":`, error);
+            }
         }
-    });
-}
 
-// Función para limpiar tabs guardados (opcional)
-function limpiarTabsGuardados() {
-    localStorage.removeItem('reporteTabActivo');
-    localStorage.removeItem('adminTabActivo');
-    console.log('🧹 Tabs guardados limpiados');
-}
+        // Restaurar estado de dropdowns al cargar la página
+        function restaurarEstadoDropdowns() {
+            const dropdowns = document.querySelectorAll('.sidebar-dropdown');
+            dropdowns.forEach(dropdown => {
+                const link = dropdown.querySelector('.sidebar-dropdown-toggle');
+                if (link) {
+                    const dropdownId = link.textContent.trim().split(' ')[0].toLowerCase();
+                    const isOpen = localStorage.getItem(`sidebar_${dropdownId}_open`) === 'true';
 
-// Hacer funciones globales
-window.toggleSidebarDropdown = toggleSidebarDropdown;
-window.activarTabReporte = activarTabReporte;
-window.activarTabAdmin = activarTabAdmin;
-window.marcarSubmenuActivo = marcarSubmenuActivo;
-window.limpiarTabsGuardados = limpiarTabsGuardados;
+                    if (isOpen) {
+                        dropdown.classList.add('open');
+                        console.log(`📂 Restaurado dropdown "${dropdownId}" como abierto`);
+                    }
+                }
+            });
+        }
 
-console.log('🚀 JavaScript del sidebar cargado');
-</script>
+        // Función para marcar el submenu activo
+        function marcarSubmenuActivo() {
+            const currentPath = window.location.pathname;
+            const currentParams = new URLSearchParams(window.location.search);
 
-<!-- Custom JS -->
-{% block extra_js %}{% endblock %}
+            // Limpiar todos los active de sublinks
+            document.querySelectorAll('.sidebar-sublink').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Marcar activo según la página actual
+            if (currentPath === '/reportes/fechas') {
+                const sublink = document.querySelector('.sidebar-sublink[href$="/reportes/fechas"]');
+                if (sublink) {
+                    sublink.classList.add('active');
+                    // Abrir el dropdown padre
+                    const dropdown = sublink.closest('.sidebar-dropdown');
+                    if (dropdown) {
+                        dropdown.classList.add('open');
+                        console.log('📊 Dropdown de reportes abierto automáticamente');
+                    }
+                }
+            }
+
+            // Marcar dropdown principal activo
+            document.querySelectorAll('.sidebar-dropdown-toggle').forEach(toggle => {
+                const href = toggle.getAttribute('href');
+                if (href && currentPath.startsWith(href.replace('#', ''))) {
+                    toggle.classList.add('active');
+                }
+            });
+        }
+
+        // Función para limpiar tabs guardados (opcional)
+        function limpiarTabsGuardados() {
+            localStorage.removeItem('reporteTabActivo');
+            localStorage.removeItem('adminTabActivo');
+            console.log('🧹 Tabs guardados limpiados');
+        }
+
+        // Hacer funciones globales
+        window.toggleSidebarDropdown = toggleSidebarDropdown;
+        window.activarTabReporte = activarTabReporte;
+        window.activarTabAdmin = activarTabAdmin;
+        window.marcarSubmenuActivo = marcarSubmenuActivo;
+        window.limpiarTabsGuardados = limpiarTabsGuardados;
+
+        console.log('🚀 JavaScript del sidebar cargado');
+    </script>
+
+    <!-- Custom JS -->
+    {% block extra_js %}{% endblock %}
 
 </body>
+
 </html>

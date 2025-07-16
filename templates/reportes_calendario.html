@@ -1,0 +1,1411 @@
+{% extends "maestra.html" %}
+
+{% block title %}Calendario de Detecciones - IDS Federado{% endblock %}
+
+{% block page_title %}
+<i class="fas fa-calendar-alt me-2"></i>Calendario de Detecciones
+{% endblock %}
+
+{% block content %}
+<!-- ESTILOS CSS DIRECTOS CORREGIDOS -->
+<style>
+    /* ===========================================
+       🗓️ CALENDARIO DE DETECCIONES - VERSIÓN CORREGIDA
+       =========================================== */
+
+    .content-wrapper {
+        padding: 20px !important;
+        background: #f8f9fa !important;
+    }
+
+    /* Panel de controles FIJO */
+    .calendar-controls-panel {
+        background: white !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 12px !important;
+        padding: 25px !important;
+        margin-bottom: 30px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+
+    .controls-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 20px !important;
+    }
+
+    .control-group {
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
+    }
+
+    .calendar-btn {
+        background: #2c3e50 !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        font-weight: 600 !important;
+        font-size: 0.95em !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        text-decoration: none !important;
+    }
+
+    .calendar-btn:hover {
+        background: #34495e !important;
+        color: white !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .calendar-btn.btn-today {
+        background: #3498db !important;
+    }
+
+    .month-selector-input {
+        padding: 12px 16px !important;
+        border: 2px solid #ced4da !important;
+        border-radius: 8px !important;
+        background: white !important;
+        font-size: 1em !important;
+        min-width: 200px !important;
+        font-weight: 500 !important;
+    }
+
+    /* Resumen mensual FIJO */
+    .summary-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+        gap: 25px !important;
+        margin-bottom: 40px !important;
+        position: relative !important;
+        z-index: 5 !important;
+    }
+
+    .summary-card {
+        background: white !important;
+        border-radius: 15px !important;
+        padding: 30px !important;
+        text-align: center !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+        border-left: 6px solid !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+    }
+
+    .summary-card.card-total {
+        border-left-color: #3498db !important;
+    }
+
+    .summary-card.card-suspicious {
+        border-left-color: #f39c12 !important;
+    }
+
+    .summary-card.card-critical {
+        border-left-color: #e74c3c !important;
+    }
+
+    .summary-card.card-average {
+        border-left-color: #27ae60 !important;
+    }
+
+    .summary-number {
+        font-size: 3.2em !important;
+        font-weight: 900 !important;
+        margin-bottom: 10px !important;
+        line-height: 1 !important;
+    }
+
+    .summary-card.card-total .summary-number {
+        color: #3498db !important;
+    }
+
+    .summary-card.card-suspicious .summary-number {
+        color: #f39c12 !important;
+    }
+
+    .summary-card.card-critical .summary-number {
+        color: #e74c3c !important;
+    }
+
+    .summary-card.card-average .summary-number {
+        color: #27ae60 !important;
+    }
+
+    .summary-text {
+        color: #6c757d !important;
+        font-size: 1em !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1.5px !important;
+    }
+
+    /* Contenedor del calendario FIJO */
+    .calendar-wrapper {
+        background: white !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+        overflow: hidden !important;
+        margin-bottom: 30px !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    /* Header del calendario */
+    .calendar-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+        color: white !important;
+        padding: 40px !important;
+        text-align: center !important;
+        position: relative !important;
+    }
+
+    .calendar-title {
+        font-size: 2.8em !important;
+        font-weight: 900 !important;
+        margin: 0 !important;
+        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .calendar-subtitle {
+        font-size: 1.1em !important;
+        opacity: 0.9 !important;
+        margin-top: 15px !important;
+        font-weight: 500 !important;
+    }
+
+    /* Grid del calendario CORREGIDO */
+    .calendar-grid {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        background: #f8f9fa !important;
+        gap: 2px !important;
+        padding: 2px !important;
+        width: 100% !important;
+        position: relative !important;
+    }
+
+    /* Headers de días FIJOS */
+    .day-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+        color: white !important;
+        text-align: center !important;
+        padding: 20px 8px !important;
+        font-weight: 800 !important;
+        font-size: 0.9em !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        position: relative !important;
+    }
+
+    /* Celdas de días CORREGIDAS */
+    .day-cell {
+        background: white !important;
+        min-height: 140px !important;
+        padding: 12px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        flex-direction: column !important;
+        border: 2px solid transparent !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .day-cell:hover {
+        background: #f8f9fa !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+        z-index: 15 !important;
+        border-color: #3498db !important;
+    }
+
+    /* Estados de días */
+    .day-cell.other-month {
+        background: #f1f3f4 !important;
+        color: #adb5bd !important;
+        opacity: 0.6 !important;
+    }
+
+    .day-cell.today {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4) !important;
+        border-color: #2ecc71 !important;
+    }
+
+    .day-cell.today .day-number {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .day-cell.has-activity {
+        border-left: 6px solid #3498db !important;
+        background: linear-gradient(135deg, #ffffff 0%, #eef7ff 100%) !important;
+    }
+
+    .day-cell.high-activity {
+        border-left: 6px solid #f39c12 !important;
+        background: linear-gradient(135deg, #ffffff 0%, #fef9e7 100%) !important;
+    }
+
+    .day-cell.critical-activity {
+        border-left: 6px solid #e74c3c !important;
+        background: linear-gradient(135deg, #ffffff 0%, #fdedec 100%) !important;
+        animation: pulse-critical 3s infinite !important;
+    }
+
+    @keyframes pulse-critical {
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4) !important;
+        }
+
+        50% {
+            box-shadow: 0 0 0 15px rgba(231, 76, 60, 0) !important;
+        }
+    }
+
+    /* Contenido del día CORREGIDO */
+    .day-number {
+        font-size: 1.6em !important;
+        font-weight: 900 !important;
+        margin-bottom: 8px !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        color: inherit !important;
+    }
+
+    .day-stats {
+        flex-grow: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        min-height: 80px !important;
+    }
+
+    /* Badges MEJORADOS Y FIJOS */
+    .stat-badge {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 5px 8px !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 0.65em !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        margin-bottom: 2px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+    }
+
+    .stat-badge:hover {
+        transform: translateX(2px) scale(1.02) !important;
+    }
+
+    .stat-badge.badge-total {
+        background: rgba(52, 152, 219, 0.12) !important;
+        color: #2980b9 !important;
+        border: 1px solid rgba(52, 152, 219, 0.3) !important;
+    }
+
+    .stat-badge.badge-suspicious {
+        background: rgba(243, 156, 18, 0.12) !important;
+        color: #d68910 !important;
+        border: 1px solid rgba(243, 156, 18, 0.3) !important;
+    }
+
+    .stat-badge.badge-critical {
+        background: rgba(231, 76, 60, 0.12) !important;
+        color: #c0392b !important;
+        border: 1px solid rgba(231, 76, 60, 0.3) !important;
+    }
+
+    .stat-badge.badge-normal {
+        background: rgba(39, 174, 96, 0.12) !important;
+        color: #c0392b !important;
+        border: 1px solid rgba(235, 15, 15, 0.3) !important;
+    }
+
+    .stat-icon {
+        width: 10px !important;
+        height: 10px !important;
+        border-radius: 50% !important;
+        flex-shrink: 0 !important;
+        margin-right: 4px !important;
+    }
+
+    .stat-label {
+        font-size: 0.9em !important;
+        font-weight: 600 !important;
+    }
+
+    .stat-value {
+        font-weight: 800 !important;
+        font-size: 1em !important;
+        text-align: right !important;
+    }
+
+    /* Sin actividad MEJORADO */
+    .no-activity {
+        color: #95a5a6 !important;
+        font-size: 0.75em !important;
+        font-style: italic !important;
+        text-align: center !important;
+        padding: 15px 5px !important;
+        background: rgba(149, 165, 166, 0.08) !important;
+        border-radius: 6px !important;
+        border: 1px dashed #bdc3c7 !important;
+    }
+
+    /* Estado de carga */
+    .loading-state {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: 600px !important;
+        flex-direction: column !important;
+        color: #6c757d !important;
+        background: white !important;
+    }
+
+    .loading-spinner {
+        width: 60px !important;
+        height: 60px !important;
+        border: 6px solid #f3f3f3 !important;
+        border-top: 6px solid #3498db !important;
+        border-radius: 50% !important;
+        animation: spin-animation 1s linear infinite !important;
+        margin-bottom: 20px !important;
+    }
+
+    @keyframes spin-animation {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Leyenda */
+    .calendar-legend {
+        background: #f8f9fa !important;
+        padding: 25px !important;
+        border-top: 1px solid #e9ecef !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 40px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .legend-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-weight: 600 !important;
+        font-size: 0.9em !important;
+    }
+
+    .legend-color {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 6px !important;
+        border: 2px solid rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Modal personalizado */
+    .modal-custom-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+        color: white !important;
+        margin: -1rem -1rem 2rem -1rem !important;
+        padding: 2rem !important;
+        border-radius: 12px 12px 0 0 !important;
+    }
+
+    /* Responsive MEJORADO */
+    @media (max-width: 1200px) {
+        .controls-row {
+            flex-direction: column !important;
+            text-align: center !important;
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .day-cell {
+            min-height: 120px !important;
+            padding: 8px !important;
+        }
+
+        .day-number {
+            font-size: 1.4em !important;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .stat-badge {
+            font-size: 0.6em !important;
+            padding: 3px 6px !important;
+        }
+
+        .calendar-legend {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .day-cell {
+            min-height: 100px !important;
+            padding: 6px !important;
+        }
+
+        .day-number {
+            font-size: 1.2em !important;
+            margin-bottom: 4px !important;
+        }
+
+        .stat-badge {
+            font-size: 0.55em !important;
+            padding: 2px 4px !important;
+        }
+    }
+</style>
+
+<!-- Panel de controles -->
+<div class="calendar-controls-panel">
+    <div class="controls-row">
+        <div class="control-group">
+            <input type="month" id="month-selector" class="month-selector-input">
+            <button class="calendar-btn btn-today" onclick="irAHoy()">
+                <i class="fas fa-calendar-day"></i>Hoy
+            </button>
+        </div>
+
+        <div class="control-group">
+            <button class="calendar-btn" onclick="cambiarMes(-1)" title="Mes anterior">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="calendar-btn" onclick="cambiarMes(1)" title="Mes siguiente">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="calendar-btn" onclick="actualizarCalendario()" title="Actualizar">
+                <i class="fas fa-sync-alt"></i>Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen mensual 
+<div class="summary-grid">
+    <div class="summary-card card-total">
+        <div class="summary-number" id="summary-total">0</div>
+        <div class="summary-text">Total Detecciones</div>
+    </div>
+    <div class="summary-card card-critical">
+        <div class="summary-number" id="summary-critical">0</div>
+        <div class="summary-text">Críticas</div>
+    </div>
+    <div class="summary-card card-suspicious">
+        <div class="summary-number" id="summary-suspicious">0</div>
+        <div class="summary-text">Medias</div>
+    </div>
+    <div class="summary-card card-average">
+        <div class="summary-number" id="summary-average">0</div>
+        <div class="summary-text">Promedio/Día</div>
+    </div>
+</div>-->
+
+<!-- Calendario principal -->
+<div class="calendar-wrapper">
+    <div class="calendar-header">
+        <h2 class="calendar-title">
+            <span id="month-year">Cargando...</span>
+        </h2>
+        <div class="calendar-subtitle">
+            Última actualización: <span id="last-updated">-</span>
+        </div>
+    </div>
+
+    <!-- Estado de carga -->
+    <!-- Contenido del calendario -->
+    <div id="calendar-content" style="display: none;">
+        <div class="calendar-grid" id="calendar-grid">
+            <!-- Headers de días -->
+            <div class="day-header">Lun</div>
+            <div class="day-header">Mar</div>
+            <div class="day-header">Mié</div>
+            <div class="day-header">Jue</div>
+            <div class="day-header">Vie</div>
+            <div class="day-header">Sáb</div>
+            <div class="day-header">Dom</div>
+            <!-- Los días se generan dinámicamente -->
+        </div>
+
+        <!-- Leyenda -->
+        <div class="calendar-legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3498db;"></div>
+                <span>Con actividad</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f39c12;"></div>
+                <span>Alta actividad</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e74c3c;"></div>
+                <span>Actividad crítica</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #27ae60;"></div>
+                <span>Día actual</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para detalles del día -->
+<div class="modal fade" id="dayDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header p-0">
+                <div class="modal-custom-header w-100">
+                    <h5 class="modal-title mb-0">
+                        <i class="fas fa-calendar-day me-2"></i>
+                        Detalles del <span id="modal-day-date">día</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- Estadísticas del día 
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="card border-primary">
+                            <div class="card-body">
+                                <h3 class="text-primary" id="modal-total">0</h3>
+                                <small>Total</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <h3 class="text-warning" id="modal-suspicious">0</h3>
+                                <small>Alertas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="card border-danger">
+                            <div class="card-body">
+                                <h3 class="text-danger" id="modal-critical">0</h3>
+                                <small>Críticas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="card border-info">
+                            <div class="card-body">
+                                <h3 class="text-info" id="modal-percentage">0%</h3>
+                                <small>Criticidad</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <hr>
+
+                <!-- Lista de detecciones -->
+                <h6><i class="fas fa-list me-2"></i>Detecciones del día:</h6>
+                <div id="modal-detections-list" style="max-height: 400px; overflow-y: auto;">
+                    <div class="text-center text-muted py-4">
+                        <div class="loading-spinner mx-auto mb-3"></div>
+                        <p>Cargando detalles...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" onclick="generarReporteDia()">
+                    <i class="fas fa-file-export me-1"></i>Exportar día
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ============================================
+    // 📅 CALENDARIO DE DETECCIONES - VERSIÓN DEFINITIVA
+    // ============================================
+
+    // Variables globales
+    let currentDate = new Date();
+    let calendarData = {};
+    let selectedDay = null;
+
+    // Meses en español
+    const MONTH_NAMES = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    // ✅ FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('📅 🚀 INICIANDO CALENDARIO DEFINITIVO...');
+
+        // Configurar selector de mes
+        configurarSelectorMes();
+
+        // ✅ FORZAR CARGA INMEDIATA CON TIMEOUT
+        setTimeout(() => {
+            console.log('🔥 Iniciando carga forzada del calendario...');
+            actualizarCalendario();
+        }, 100);
+
+        // ✅ TIMEOUT DE EMERGENCIA ABSOLUTO
+        setTimeout(() => {
+            console.log('🚨 TIMEOUT ABSOLUTO - Verificando estado...');
+            const loadingElement = document.getElementById('calendar-loading');
+            if (loadingElement && loadingElement.style.display !== 'none') {
+                console.log('💀 Loading aún visible, forzando ocultamiento total');
+                forzarMostrarCalendario();
+            }
+        }, 8000);
+    });
+
+    // ✅ CONFIGURAR SELECTOR DE MES
+    function configurarSelectorMes() {
+        const monthSelector = document.getElementById('month-selector');
+        if (monthSelector) {
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            monthSelector.value = `${year}-${month}`;
+
+            monthSelector.addEventListener('change', function () {
+                const [yearSelected, monthSelected] = this.value.split('-');
+                currentDate = new Date(parseInt(yearSelected), parseInt(monthSelected) - 1, 1);
+                actualizarCalendario();
+            });
+        }
+    }
+
+    // ✅ FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN - SIMPLIFICADA AL MÁXIMO
+    async function actualizarCalendario() {
+        console.log('🔄 === INICIANDO ACTUALIZACIÓN CALENDARIO ===');
+
+        try {
+            // ✅ PASO 1: Mostrar loading inmediatamente
+            mostrarLoading();
+
+            // ✅ PASO 2: Actualizar título inmediatamente
+            actualizarTitulo();
+
+            // ✅ PASO 3: Intentar cargar datos con timeout agresivo
+            console.log('📡 Intentando cargar datos...');
+            const datosObtenidos = await cargarDatosConTimeout();
+
+            // ✅ PASO 4: Generar calendario con o sin datos
+            console.log('🎨 Generando calendario...');
+            generarCalendario();
+            actualizarResumen();
+
+            console.log('✅ Calendario procesado exitosamente');
+
+        } catch (error) {
+            console.error('❌ Error en actualización:', error);
+        } finally {
+            // ✅ PASO 5: OCULTAR LOADING SIEMPRE
+            setTimeout(() => {
+                ocultarLoading();
+            }, 500);
+        }
+    }
+
+    // ✅ MOSTRAR LOADING
+    function mostrarLoading() {
+        const loadingElement = document.getElementById('calendar-loading');
+        const contentElement = document.getElementById('calendar-content');
+
+        if (loadingElement) {
+            loadingElement.style.display = 'flex';
+            console.log('📱 Loading mostrado');
+        }
+        if (contentElement) {
+            contentElement.style.display = 'none';
+            console.log('📱 Contenido ocultado');
+        }
+    }
+
+    // ✅ OCULTAR LOADING
+    function ocultarLoading() {
+        const loadingElement = document.getElementById('calendar-loading');
+        const contentElement = document.getElementById('calendar-content');
+
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+            console.log('✅ Loading ocultado');
+        }
+        if (contentElement) {
+            contentElement.style.display = 'block';
+            console.log('✅ Contenido mostrado');
+        }
+
+        // Actualizar timestamp
+        const lastUpdatedElement = document.getElementById('last-updated');
+        if (lastUpdatedElement) {
+            lastUpdatedElement.textContent = new Date().toLocaleString('es-ES');
+        }
+
+        console.log('🎉 === CALENDARIO COMPLETAMENTE CARGADO ===');
+    }
+
+    // ✅ ACTUALIZAR TÍTULO
+    function actualizarTitulo() {
+        const monthYearElement = document.getElementById('month-year');
+        if (monthYearElement) {
+            monthYearElement.textContent = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            console.log('📅 Título actualizado');
+        }
+    }
+
+    // ✅ CARGAR DATOS CON TIMEOUT AGRESIVO
+    async function cargarDatosConTimeout() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+
+        console.log(`📡 Cargando datos para ${month}/${year}...`);
+
+        try {
+            // ✅ PROMISE CON TIMEOUT DE 3 SEGUNDOS
+            const response = await Promise.race([
+                fetch('/api/calendario/datos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ year, month })
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Timeout de 3 segundos')), 3000)
+                )
+            ]);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success && result.datos) {
+                calendarData = result.datos;
+                console.log(`✅ Datos obtenidos: ${Object.keys(calendarData).length} días`);
+                return true;
+            } else {
+                throw new Error(result.error || 'Sin datos válidos');
+            }
+
+        } catch (error) {
+            console.warn(`⚠️ Error cargando datos: ${error.message}`);
+            calendarData = {}; // Limpiar datos
+            return false;
+        }
+    }
+
+    // ✅ GENERAR ESTRUCTURA DEL CALENDARIO
+    function generarCalendario() {
+        console.log('🎨 Generando estructura del calendario...');
+
+        const calendarGrid = document.getElementById('calendar-grid');
+        if (!calendarGrid) {
+            console.error('❌ No se encontró el grid del calendario');
+            return;
+        }
+
+        // Guardar headers y limpiar contenido
+        const headers = Array.from(calendarGrid.querySelectorAll('.day-header'));
+        calendarGrid.innerHTML = '';
+        headers.forEach(header => calendarGrid.appendChild(header));
+
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        // Calcular fechas
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const startDayOfWeek = (firstDay.getDay() + 6) % 7; // Lunes = 0
+
+        // Días del mes anterior
+        const prevMonth = new Date(year, month, 0);
+        for (let i = startDayOfWeek - 1; i >= 0; i--) {
+            const day = prevMonth.getDate() - i;
+            const dayElement = crearDiaCalendario(day, 'prev-month', new Date(year, month - 1, day));
+            calendarGrid.appendChild(dayElement);
+        }
+
+        // Días del mes actual
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const dayElement = crearDiaCalendario(day, 'current-month', new Date(year, month, day));
+            calendarGrid.appendChild(dayElement);
+        }
+
+        // Días del mes siguiente (máximo 14 para no sobrecargar)
+        const usedCells = startDayOfWeek + lastDay.getDate();
+        const remainingCells = Math.min(42 - usedCells, 14);
+
+        for (let day = 1; day <= remainingCells; day++) {
+            const dayElement = crearDiaCalendario(day, 'next-month', new Date(year, month + 1, day));
+            calendarGrid.appendChild(dayElement);
+        }
+
+        console.log('✅ Calendario generado correctamente');
+    }
+
+    // ✅ CREAR ELEMENTO DE DÍA
+    // ✅ CREAR ELEMENTO DE DÍA CON DATOS REALES DE LA BD
+    function crearDiaCalendario(dayNumber, monthType, fullDate) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day-cell';
+
+        // Clases de estado
+        if (monthType !== 'current-month') {
+            dayElement.classList.add('other-month');
+        }
+
+        // Verificar si es hoy
+        const today = new Date();
+        if (fullDate.toDateString() === today.toDateString()) {
+            dayElement.classList.add('today');
+        }
+
+        // ✅ OBTENER DATOS DEL DÍA DESDE LA BD
+        const dateKey = formatDateKey(fullDate);
+        const dayData = calendarData[dateKey] || {
+            total: 0,
+            critical: 0,      // 🔴 CRÍTICAS (severity = 'critical')
+            suspicious: 0,    // 🟡 SOSPECHOSAS (severity = 'high')  
+            medium: 0,        // 🔵 MEDIAS (severity = 'medium')
+            low: 0           // 🟢 BAJAS (severity = 'low')
+        };
+
+        console.log(`📅 Día ${dayNumber}: Total=${dayData.total}, Críticas=${dayData.critical}, Sospechosas=${dayData.suspicious}, Medias=${dayData.medium}, Bajas=${dayData.low}`);
+
+        // ✅ APLICAR CLASES DE ACTIVIDAD BASADAS EN DATOS REALES
+        // ✅ APLICAR CLASES DE ACTIVIDAD BASADAS EN DATOS REALES
+        if (dayData.total > 0) {
+            dayElement.classList.add('has-activity');
+
+            // 🚨 ACTIVIDAD CRÍTICA: Si hay críticas O total muy alto
+            if (dayData.critical > 0 || dayData.total >= 1000) {
+                dayElement.classList.add('critical-activity');
+            }
+            // ⚠️ ACTIVIDAD ALTA: Si hay sospechosas O total moderadamente alto
+            else if (dayData.suspicious > 0 || dayData.total >= 500) {
+                dayElement.classList.add('high-activity');
+            }
+            // 📊 ACTIVIDAD NORMAL: Para totales más bajos
+            else if (dayData.total >= 100) {
+                dayElement.classList.add('medium-activity');
+            }
+        }
+
+        // ✅ CREAR CONTENIDO VISUAL CON LOS 4 BADGES PRINCIPALES
+        let statsHTML = '';
+
+        if (dayData.total > 0) {
+            // 🔵 TOTAL DETECTADO (AZUL)
+            statsHTML += `
+        <div class="stat-badge badge-total">
+            <div style="display: flex; align-items: center;">
+                <span class="stat-icon" style="background: #3498db; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;"></span>
+                <span class="stat-label" style="font-size: 0.65em;">Total</span>
+            </div>
+            <span class="stat-value" style="font-weight: 800;">${dayData.total.toLocaleString()}</span>
+        </div>
+    `;
+
+            // 🔴 CRÍTICAS (ROJO) - severity = 'critical'
+            if (dayData.critical > 0) {
+                statsHTML += `
+            <div class="stat-badge badge-critical">
+                <div style="display: flex; align-items: center;">
+                    <span class="stat-icon" style="background: #e74c3c; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;"></span>
+                    <span class="stat-label" style="font-size: 0.65em;">Críticas</span>
+                </div>
+                <span class="stat-value" style="font-weight: 800; color: #c0392b;">${dayData.critical}</span>
+            </div>
+        `;
+            }
+
+            // 🟡 MEDIAS (AMARILLO) - severity = 'medium'
+            if (dayData.medium > 0) {
+                statsHTML += `
+            <div class="stat-badge badge-suspicious">
+                <div style="display: flex; align-items: center;">
+                    <span class="stat-icon" style="background: #f39c12; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;"></span>
+                    <span class="stat-label" style="font-size: 0.65em;">Medias</span>
+                </div>
+                <span class="stat-value" style="font-weight: 800; color: #d68910;">${dayData.medium}</span>
+            </div>
+        `;
+            }
+
+            // 🟢 SOSPECHOSAS (VERDE) - severity = 'high' 
+            if (dayData.suspicious > 0) {
+                statsHTML += `
+            <div class="stat-badge badge-normal">
+                <div style="display: flex; align-items: center;">
+                    <span class="stat-icon" style="background: #a72845; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;"></span>
+                    <span class="stat-label" style="font-size: 0.65em;">Alerta.</span>
+                </div>
+                <span class="stat-value" style="font-weight: 800; color: #dc3545;">${dayData.suspicious}</span>
+            </div>
+        `;
+            }
+
+        } else {
+            // ✅ DÍA SIN DETECCIONES
+            statsHTML = `
+        <div class="no-activity" style="text-align: center; padding: 10px; color: #95a5a6; font-size: 0.7em;">
+            📊 Sin detecciones
+        </div>
+    `;
+        }
+
+        // ✅ ESTRUCTURA FINAL DEL DÍA
+        dayElement.innerHTML = `
+        <div class="day-number" style="font-size: 1.4em; font-weight: 900; text-align: center; margin-bottom: 6px;">
+            ${dayNumber}
+        </div>
+        <div class="day-stats" style="display: flex; flex-direction: column; gap: 2px; min-height: 70px;">
+            ${statsHTML}
+        </div>
+    `;
+
+        // ✅ EVENTO CLICK PARA MOSTRAR DETALLES
+        dayElement.addEventListener('click', () => {
+            console.log(`🖱️ Click en día ${dayNumber} - Datos:`, dayData);
+            mostrarDetallesDia(fullDate, dayData);
+        });
+
+        return dayElement;
+    }
+
+    // ✅ ACTUALIZAR RESUMEN MENSUAL
+    function actualizarResumen() {
+        let totalMonth = 0;
+        let criticalMonth = 0;     // 🔴 CRÍTICAS
+        let suspiciousMonth = 0;   // 🟡 SOSPECHOSAS  
+        let mediumMonth = 0;       // 🔵 MEDIAS
+        let lowMonth = 0;          // 🟢 BAJAS
+        let daysWithData = 0;
+
+        // ✅ SUMAR TODOS LOS DATOS DEL MES
+        Object.values(calendarData).forEach(dayData => {
+            if (dayData.total > 0) {
+                totalMonth += dayData.total;
+                criticalMonth += dayData.critical || 0;      // 🔴 CRÍTICAS
+                suspiciousMonth += dayData.suspicious || 0;  // 🟡 SOSPECHOSAS
+                mediumMonth += dayData.medium || 0;          // 🔵 MEDIAS
+                lowMonth += dayData.low || 0;                // 🟢 BAJAS
+                daysWithData++;
+            }
+        });
+
+        const averagePerDay = daysWithData > 0 ? Math.round(totalMonth / daysWithData) : 0;
+
+        console.log(`📊 RESUMEN DEL MES:
+    🔵 Total: ${totalMonth}
+    🔴 Críticas: ${criticalMonth} 
+    🟡 Sospechosas: ${suspiciousMonth}
+    🔵 Medias: ${mediumMonth}
+    🟢 Bajas: ${lowMonth}
+    📈 Promedio/día: ${averagePerDay}
+    📅 Días con datos: ${daysWithData}`);
+
+        // ✅ ACTUALIZAR ELEMENTOS EN LA INTERFAZ
+        actualizarElemento('summary-total', totalMonth);
+        actualizarElemento('summary-critical', criticalMonth);      // 🔴 Críticas
+        actualizarElemento('summary-suspicious', mediumMonth);     // 🟡 Medias (ahora en amarillo)
+        actualizarElemento('summary-average', averagePerDay);
+    }
+
+    // ✅ ACTUALIZAR ELEMENTO CON ANIMACIÓN
+    function actualizarElemento(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            // Animación simple
+            element.style.transform = 'scale(1.1)';
+            element.style.transition = 'all 0.3s ease';
+
+            setTimeout(() => {
+                element.textContent = value.toLocaleString();
+                element.style.transform = 'scale(1)';
+            }, 150);
+        }
+    }
+
+    // ✅ FUNCIONES DE NAVEGACIÓN
+    function cambiarMes(direction) {
+        currentDate.setMonth(currentDate.getMonth() + direction);
+
+        const monthSelector = document.getElementById('month-selector');
+        if (monthSelector) {
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            monthSelector.value = `${year}-${month}`;
+        }
+
+        actualizarCalendario();
+    }
+
+    function irAHoy() {
+        currentDate = new Date();
+
+        const monthSelector = document.getElementById('month-selector');
+        if (monthSelector) {
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            monthSelector.value = `${year}-${month}`;
+        }
+
+        actualizarCalendario();
+    }
+
+    // ✅ MOSTRAR DETALLES DEL DÍA
+    // ✅ MOSTRAR DETALLES DEL DÍA CON DATOS REALES
+    async function mostrarDetallesDia(date, dayData) {
+        selectedDay = date;
+
+        console.log(`🔍 Mostrando detalles para: ${date.toDateString()}`);
+        console.log(`📊 Datos del día:`, dayData);
+
+        // Actualizar fecha en el modal
+        const modalDateElement = document.getElementById('modal-day-date');
+        if (modalDateElement) {
+            modalDateElement.textContent = date.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // ✅ ACTUALIZAR ESTADÍSTICAS DEL MODAL CON DATOS REALES
+        const totalElement = document.getElementById('modal-total');
+        const alertasElement = document.getElementById('modal-suspicious');
+        const criticalElement = document.getElementById('modal-critical');
+        const percentageElement = document.getElementById('modal-percentage');
+
+        if (totalElement) totalElement.textContent = dayData.total || 0;
+        if (alertasElement) alertasElement.textContent = dayData.medium || 0; // 🟡 Medias en lugar de sospechosas
+        if (criticalElement) criticalElement.textContent = dayData.critical || 0;  // 🔴 CRÍTICAS INCLUIDAS
+
+        // ✅ CALCULAR PORCENTAJE DE CRITICIDAD (críticas + medias)
+        const totalAlerts = (dayData.critical || 0) + (dayData.suspicious || 0);  // ✅ CAMBIAR A suspicious
+        const criticalPercentage = dayData.total > 0 ?
+            Math.round((totalAlerts / dayData.total) * 100) : 0;
+
+
+        if (percentageElement) {
+            percentageElement.textContent = criticalPercentage + '%';
+        }
+
+        console.log(`📈 Porcentaje criticidad: ${criticalPercentage}% (${totalAlerts}/${dayData.total})`);
+        console.log(`🔴 Críticas: ${dayData.critical || 0}`);
+        console.log(`🟡 Medias: ${dayData.medium || 0}`);
+        await cargarDetallesDia(date);
+
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('dayDetailsModal'));
+        modal.show();
+    }
+    // ✅ CARGAR DETALLES DEL DÍA
+    async function cargarDetallesDia(date) {
+        const detailsList = document.getElementById('modal-detections-list');
+        if (!detailsList) return;
+
+        try {
+            detailsList.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mx-auto mb-3"></div>
+                <p class="text-muted">Cargando detalles del día...</p>
+            </div>
+        `;
+
+            const dateStr = date.toISOString().split('T')[0];
+
+            const response = await Promise.race([
+                fetch('/api/calendario/detalles-dia', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fecha: dateStr })
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Timeout')), 3000)
+                )
+            ]);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success && result.detecciones && result.detecciones.length > 0) {
+                let html = '';
+                result.detecciones.forEach(det => {
+                    html += `
+                    <div class="card mb-2 border-start border-${getSeverityColor(det.severity)} border-3">
+                        <div class="card-body py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${det.anomaly_type}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        ${det.source_ip}:${det.source_port} → ${det.destination_ip}:${det.destination_port}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-${getSeverityColor(det.severity)}">${det.severity}</span>
+                                    <br>
+                                    <small class="text-muted">${new Date(det.timestamp).toLocaleTimeString('es-ES')}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                });
+                detailsList.innerHTML = html;
+            } else {
+                detailsList.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h6>No hay detecciones registradas</h6>
+                    <p>No se encontraron detecciones para este día</p>
+                </div>
+            `;
+            }
+
+        } catch (error) {
+            console.error('❌ Error cargando detalles:', error);
+            detailsList.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Error cargando detalles:</strong> ${error.message}
+            </div>
+        `;
+        }
+    }
+
+    // ✅ GENERAR REPORTE DE DÍA
+    async function generarReporteDia() {
+        if (!selectedDay) {
+            console.warn('⚠️ No hay día seleccionado');
+            return;
+        }
+
+        const formattedDate = selectedDay.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+
+        console.log(`📤 Generando reporte Excel para: ${formattedDate}`);
+
+        // ✅ REFERENCIAS A ELEMENTOS
+        const btnGenerar = document.querySelector('button[onclick="generarReporteDia()"]');
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('dayDetailsModal'));
+
+        let textoOriginal = '';
+
+        try {
+            // ✅ GUARDAR TEXTO ORIGINAL Y MOSTRAR CARGANDO
+            if (btnGenerar) {
+                textoOriginal = btnGenerar.innerHTML;
+                btnGenerar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generando Excel...';
+                btnGenerar.disabled = true;
+            }
+
+            // ✅ LLAMADA A LA API PARA GENERAR EXCEL
+            const dateStr = selectedDay.toISOString().split('T')[0];
+
+            const response = await fetch('/api/reportes/generar-dia-excel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fecha: dateStr,
+                    formato: 'excel'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                // ✅ CAMBIAR BOTÓN A "DESCARGANDO"
+                if (btnGenerar) {
+                    btnGenerar.innerHTML = '<i class="fas fa-download me-1"></i>Descargando...';
+                }
+
+                // ✅ INICIAR DESCARGA AUTOMÁTICA
+                const downloadLink = document.createElement('a');
+                downloadLink.href = result.download_url;
+                downloadLink.download = result.filename;
+                downloadLink.style.display = 'none';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                console.log(`📥 Descarga iniciada: ${result.filename}`);
+
+                // ✅ MOSTRAR NOTIFICACIÓN DE ÉXITO
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+                alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Excel generado:</strong> ${result.filename}
+                <br><small>${result.registros_incluidos} registros • ${result.tamaño_archivo}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+                document.body.appendChild(alertDiv);
+
+                // ✅ AUTO-ELIMINAR NOTIFICACIÓN DESPUÉS DE 5 SEGUNDOS
+                setTimeout(() => {
+                    if (alertDiv.parentElement) {
+                        alertDiv.remove();
+                    }
+                }, 5000);
+
+                // ✅ CERRAR MODAL DESPUÉS DE 2 SEGUNDOS
+                setTimeout(() => {
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                }, 2000);
+
+            } else {
+                throw new Error(result.error || 'Error desconocido del servidor');
+            }
+
+        } catch (error) {
+            console.error('❌ Error generando reporte:', error);
+
+            // ✅ MOSTRAR ERROR
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+            alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                if (alertDiv.parentElement) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+
+        } finally {
+            // ✅ RESTAURAR BOTÓN SIEMPRE (DESPUÉS DE 3 SEGUNDOS)
+            setTimeout(() => {
+                if (btnGenerar) {
+                    btnGenerar.innerHTML = textoOriginal || '<i class="fas fa-file-excel me-1"></i>Descargar Excel';
+                    btnGenerar.disabled = false;
+                }
+                console.log('🔄 Botón restaurado completamente');
+            }, 3000);
+        }
+    }
+
+    // ✅ FUNCIÓN DE EMERGENCIA TOTAL
+    function forzarMostrarCalendario() {
+        console.log('🚨 FUNCIÓN DE EMERGENCIA ACTIVADA');
+
+        // Limpiar datos y generar calendario vacío
+        calendarData = {};
+
+        // Forzar ocultamiento del loading
+        ocultarLoading();
+
+        // Generar calendario vacío
+        generarCalendario();
+        actualizarResumen();
+
+        console.log('🚨 Calendario forzado a mostrar');
+    }
+
+    // ✅ FUNCIÓN DE TEST
+    function testCalendario() {
+        console.log('🧪 === TEST DEL CALENDARIO ===');
+        console.log('📅 Fecha actual:', currentDate);
+        console.log('📊 Datos cargados:', Object.keys(calendarData).length, 'días');
+        console.log('🔍 Datos ejemplo:', Object.values(calendarData)[0] || 'Sin datos');
+
+        // Verificar elementos DOM
+        const elementos = ['calendar-loading', 'calendar-content', 'month-year'];
+        elementos.forEach(id => {
+            const elemento = document.getElementById(id);
+            console.log(`  ${id}: ${elemento ? '✅' : '❌'}`);
+        });
+
+        console.log('🧪 === FIN TEST ===');
+    }
+
+    // ✅ FUNCIONES AUXILIARES
+    function formatDateKey(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function getSeverityColor(severity) {
+        const colors = {
+            'critical': 'danger',
+            'high': 'warning',
+            'medium': 'info',
+            'low': 'success'
+        };
+        return colors[severity] || 'secondary';
+    }
+
+    // ✅ HACER FUNCIONES GLOBALES
+    window.cambiarMes = cambiarMes;
+    window.irAHoy = irAHoy;
+    window.actualizarCalendario = actualizarCalendario;
+    window.mostrarDetallesDia = mostrarDetallesDia;
+    window.generarReporteDia = generarReporteDia;
+    window.forzarMostrarCalendario = forzarMostrarCalendario;
+    window.testCalendario = testCalendario;
+
+    console.log('📅 ✅ CALENDARIO DEFINITIVO CARGADO Y LISTO');
+</script>
+{% endblock %}

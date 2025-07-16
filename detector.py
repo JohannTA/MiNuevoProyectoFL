@@ -51,7 +51,7 @@ warnings.filterwarnings("ignore")
 CONFIG = {
     # Umbrales de detección ajustados para reducir falsos positivos
     'NORMAL_THRESHOLD': 0.4,      # Más alto que versiones anteriores
-    'SUSPICIOUS_THRESHOLD': 0.7,  # Más alto que versiones anteriores
+    'SUSPICIOUS_THRESHOLD': 0.5,  # Más alto que versiones anteriores
     
     'WEB_PORTS': {80, 443, 8080, 8443, 8000, 8888, 3000, 5000, 9000},
     
@@ -757,6 +757,7 @@ class HybridThreatScore:
             return 'suspicious'
         else:
             return 'attack'
+            
 
 
 class FlowRecord:
@@ -2040,7 +2041,10 @@ class NetworkMonitor:
         else:
             color = CONFIG['COLORS']['RED']
             prefix = f"[ATAQUE-{attack_type.upper() if attack_type else 'DESCONOCIDO'}]"
-        
+            #llamar enviarcorreoalerta()
+            from enviar_correo import enviarcorreoalerta
+            enviarcorreoalerta()
+            print("Correo enviado")
         message = (f"{color}{timestamp} {prefix} "
                   f"{flow.src_ip}:{flow.src_port} -> {flow.dst_ip}:{flow.dst_port} "
                   f"({flow.protocol}) - Prob: {probability:.4f}{CONFIG['COLORS']['RESET']}")
