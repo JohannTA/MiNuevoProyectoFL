@@ -86315,3 +86315,57 @@ INFO - 127.0.0.1 - - [06/Sep/2025 02:03:59] "POST /api/calendario/datos HTTP/1.1
 INFO - 📅 Solicitud de datos calendario: 6/2025
 INFO - ✅ Datos calendario enviados: 8 días con actividad
 INFO - 127.0.0.1 - - [06/Sep/2025 02:04:02] "POST /api/calendario/datos HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 127.0.0.1 - - [06/Sep/2025 02:04:54] "GET /reportes/calendario HTTP/1.1" 200 -
+INFO - 📅 Solicitud de datos calendario: 9/2025
+INFO - ✅ Datos calendario enviados: 0 días con actividad
+INFO - 127.0.0.1 - - [06/Sep/2025 02:04:54] "POST /api/calendario/datos HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:04:55] "GET /reportes/fechas HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:04:55] "GET /api/reportes/listar-archivos HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '05/09/2025 20:04 a 06/09/2025 02:04', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '05/09/2025 20:04 a 06/09/2025 02:04'
+INFO - 📅 Rango normalizado: '05/09/2025 20:04 - 06/09/2025 02:04'
+INFO - 📅 Rango parseado: 2025-09-05 20:04:00 a 2025-09-06 02:04:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-09-05 20:04:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-09-06 02:04:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:04:56] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '30/06/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '30/06/2025 12:00'
+INFO - 📅 Rango parseado: 2025-06-30 11:30:00 a 2025-06-30 12:30:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-06-30 11:30:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-06-30 12:30:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:05:03] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '30/06/2025 12:00 a 17/07/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '30/06/2025 12:00 a 17/07/2025 12:00'
+INFO - 📅 Rango normalizado: '30/06/2025 12:00 - 17/07/2025 12:00'
+INFO - 📅 Rango parseado: 2025-06-30 12:00:00 a 2025-07-17 12:00:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-06-30 12:00:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-07-17 12:00:00
+INFO - 📊 REGISTROS ENCONTRADOS: 96
+INFO - 📊 ESTADÍSTICAS: {'total': 96, 'criticas': 0, 'altas': 0, 'medias': 37, 'bajas': 59, 'fecha_minima': datetime.datetime(2025, 6, 30, 15, 22, 49), 'fecha_maxima': datetime.datetime(2025, 6, 30, 15, 28, 11), 'ips_origen_unicas': 1, 'ips_destino_unicas': 1, 'clientes_detectando': 1}
+INFO - ✅ RESPUESTA FINAL: 96 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:05:03] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 📊 Generando reporte simple: {'rango_fechas': '30/06/2025 12:00 a 17/07/2025 12:00'}, formato: excel
+INFO - ✅ Reporte generado: c:\Users\JOHANN\Documents\VSCODE\ProyectoTesis\MiNuevoProyectoFL\uploads\reportes\detecciones_30062025_17072025_20250906_020507.xlsx (96 registros)
+INFO - 127.0.0.1 - - [06/Sep/2025 02:05:09] "POST /api/reportes/generar-fechas HTTP/1.1" 200 -
+INFO - 📥 Descargando: detecciones_30062025_17072025_20250906_020507.xlsx
+INFO - 127.0.0.1 - - [06/Sep/2025 02:05:10] "GET /api/reportes/descargar/detecciones_30062025_17072025_20250906_020507.xlsx HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:05:11] "GET /api/reportes/listar-archivos HTTP/1.1" 200 -
+INFO - 📥 Descargando: detecciones_30062025_17072025_20250906_020507.xlsx
+INFO - 127.0.0.1 - - [06/Sep/2025 02:05:17] "GET /api/reportes/descargar/detecciones_30062025_17072025_20250906_020507.xlsx HTTP/1.1" 200 -
