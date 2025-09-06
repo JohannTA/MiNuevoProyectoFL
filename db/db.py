@@ -7,11 +7,11 @@ def obtener_conexion():
     try:
         # Configura aquí tus credenciales de base de datos
         conn = psycopg2.connect(
-            host="gondola.proxy.rlwy.net",
+            host="192.168.18.92",
             database="db_tesis",
             user="postgres",
-            password="SkpzaNfrqZsvqqIpCvJmktLsvdUotNPt",
-            port="24833"
+            password="1234",
+            port="5432"
         )
         return conn
     except psycopg2.Error as e:

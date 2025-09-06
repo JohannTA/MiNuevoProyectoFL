@@ -3585,6 +3585,7 @@ def api_reportes_generar_fechas():
             df['Fecha/Hora'] = pd.to_datetime(df['Fecha/Hora']).dt.strftime('%d/%m/%Y %H:%M:%S')
         
         if 'Confianza' in df.columns:
+            df['Confianza'] = pd.to_numeric(df['Confianza'], errors='coerce')
             df['Confianza'] = df['Confianza'].round(3)
         
         # ✅ CREAR DIRECTORIO DE REPORTES

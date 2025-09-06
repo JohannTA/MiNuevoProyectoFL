@@ -85871,3 +85871,447 @@ INFO - 📊 REGISTROS ENCONTRADOS: 96
 INFO - 📊 ESTADÍSTICAS: {'total': 96, 'criticas': 0, 'altas': 0, 'medias': 37, 'bajas': 59, 'fecha_minima': datetime.datetime(2025, 6, 30, 15, 22, 49), 'fecha_maxima': datetime.datetime(2025, 6, 30, 15, 28, 11), 'ips_origen_unicas': 1, 'ips_destino_unicas': 1, 'clientes_detectando': 1}
 INFO - ✅ RESPUESTA FINAL: 96 registros
 INFO - 192.168.234.241 - - [30/Jun/2025 15:32:56] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Inicializando sistema IDS...
+ERROR - Error al inicializar permisos del sistema: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:29] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:29] "GET /login HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:29] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:32] "POST /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:35] "POST /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:49] "POST /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:36:54] "POST /login HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+ERROR - Error al inicializar permisos del sistema: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 127.0.0.1 - - [04/Sep/2025 00:41:09] "GET /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:41:16] "POST /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:41:19] "POST /login HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [04/Sep/2025 00:43:03] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [04/Sep/2025 00:43:03] "GET /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: johann
+INFO - 127.0.0.1 - - [04/Sep/2025 00:43:34] "POST /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: johann
+INFO - 127.0.0.1 - - [04/Sep/2025 00:43:40] "POST /login HTTP/1.1" 200 -
+ERROR - Error en autenticación: 'utf-8' codec can't decode byte 0xed in position 79: invalid continuation byte
+WARNING - Intento de inicio de sesión fallido para el usuario: admin
+INFO - 127.0.0.1 - - [04/Sep/2025 00:43:43] "POST /login HTTP/1.1" 200 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 192.168.18.92 - - [04/Sep/2025 00:49:49] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:49:49] "GET /login HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:49:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:19] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "GET /dashboard HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "[33mGET /static/css/dashboard.css HTTP/1.1[0m" 404 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - Detectadas 5 interfaces de red utilizables
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:20] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:23] "POST /api/detector/start HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:24] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:24] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - Usuario encontrado: admin con dispositivo asignado
+INFO - 127.0.0.1 - - [04/Sep/2025 00:54:26] "GET /api/users/1/complete-info HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:30] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:41] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:41] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:41] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:50] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:54:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:01] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:01] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:21] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:21] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:30] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:30] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:30] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:30] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:41] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:41] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:41] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:41] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:50] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:50] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:50] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:55:50] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:01] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:01] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:01] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:01] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - [DETECTOR-ERROR] [FL-ERROR] Error conectando servidor federado: timed out during opening handshake
+INFO - [DETECTOR-WARNING]    [WARNING]   No se pudo conectar al servidor federado
+INFO - [DETECTOR-ERROR] 2025-09-04 00:54:44,477 - ERROR - Error en captura: TShark not found. Try adding its location to the configuration file. Searched these paths: ['C:\\Program Files\\Wireshark\\tshark.exe', 'C:\\Program Files (x86)\\Wireshark\\tshark.exe', 'C:\\Program Files\\Wireshark\\tshark.exe']
+INFO - [DETECTOR-ERROR]     raise TSharkNotFoundException(
+INFO - [DETECTOR-ERROR] pyshark.tshark.tshark.TSharkNotFoundException: TShark not found. Try adding its location to the configuration file. Searched these paths: ['C:\\Program Files\\Wireshark\\tshark.exe', 'C:\\Program Files (x86)\\Wireshark\\tshark.exe', 'C:\\Program Files\\Wireshark\\tshark.exe']
+INFO - [DETECTOR-ERROR] During handling of the above exception, another exception occurred:
+INFO - [DETECTOR-ERROR]     raise TSharkNotFoundException(
+INFO - [DETECTOR-ERROR] pyshark.tshark.tshark.TSharkNotFoundException: TShark not found. Try adding its location to the configuration file. Searched these paths: ['C:\\Program Files\\Wireshark\\tshark.exe', 'C:\\Program Files (x86)\\Wireshark\\tshark.exe', 'C:\\Program Files\\Wireshark\\tshark.exe']
+INFO - [DETECTOR-SUCCESS] [1mSistema Avanzado de Detección de Intrusiones iniciado en Ethernet[0m
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ERROR] [91mError en captura: TShark not found. Try adding its location to the configuration file. Searched these paths: ['C:\\Program Files\\Wireshark\\tshark.exe', 'C:\\Program Files (x86)\\Wireshark\\tshark.exe', 'C:\\Program Files\\Wireshark\\tshark.exe'][0m
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:11] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:11] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:11] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:11] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:21] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - ✅ Clientes activos: 1 (BD: 0, Local: True)
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:21] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:21] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 192.168.18.92 - - [04/Sep/2025 00:56:21] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ALERT] Umbrales - Normal: 0.4, Sospechoso: 0.5
+INFO - [DETECTOR-ERROR] Error ejecutando detector: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO - [DETECTOR-ERROR]  Error en inicialización: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
+INFO - Inicializando sistema IDS...
+INFO - Permisos básicos del sistema inicializados
+INFO - Sistema IDS inicializado correctamente
+INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.18.92:5000
+INFO - [33mPress CTRL+C to quit[0m
+INFO - 127.0.0.1 - - [06/Sep/2025 02:00:59] "[32mGET / HTTP/1.1[0m" 302 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:00:59] "GET /login HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:00] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO - Buscando usuario: admin
+INFO - Usuario encontrado: admin
+INFO - Hash almacenado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Hash generado: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+INFO - Coinciden: True
+INFO - Autenticación exitosa para usuario: admin
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:06] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO - Datos del dashboard obtenidos exitosamente desde BD
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:06] "GET /dashboard HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "[33mGET /static/css/dashboard.css HTTP/1.1[0m" 404 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "[33mGET /static/js/dashboard.js HTTP/1.1[0m" 404 -
+INFO - Detectadas 5 interfaces de red utilizables
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "GET /api/system/interfaces HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "GET /api/detector/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:07] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:08] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (4826, 1615, 1050, 6, datetime.datetime(2025, 6, 30, 20, 30, 25, 85999))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:08] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:13] "GET /reportes/fechas HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:13] "GET /api/reportes/listar-archivos HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '05/09/2025 20:01 a 06/09/2025 02:01', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '05/09/2025 20:01 a 06/09/2025 02:01'
+INFO - 📅 Rango normalizado: '05/09/2025 20:01 - 06/09/2025 02:01'
+INFO - 📅 Rango parseado: 2025-09-05 20:01:00 a 2025-09-06 02:01:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-09-05 20:01:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-09-06 02:01:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:13] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 📊 Generando reporte simple: {'rango_fechas': '05/09/2025 20:01 a 06/09/2025 02:01'}, formato: excel
+INFO - 127.0.0.1 - - [06/Sep/2025 02:01:27] "[31m[1mPOST /api/reportes/generar-fechas HTTP/1.1[0m" 400 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '05/09/2025 20:01 a 06/09/2025 02:01', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '05/09/2025 20:01 a 06/09/2025 02:01'
+INFO - 📅 Rango normalizado: '05/09/2025 20:01 - 06/09/2025 02:01'
+INFO - 📅 Rango parseado: 2025-09-05 20:01:00 a 2025-09-06 02:01:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-09-05 20:01:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-09-06 02:01:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:02] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '05/09/2025 20:01 a 06/09/2025 02:01', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '05/09/2025 20:01 a 06/09/2025 02:01'
+INFO - 📅 Rango normalizado: '05/09/2025 20:01 - 06/09/2025 02:01'
+INFO - 📅 Rango parseado: 2025-09-05 20:01:00 a 2025-09-06 02:01:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-09-05 20:01:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-09-06 02:01:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:03] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '06/07/2023 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '06/07/2023 12:00'
+INFO - 📅 Rango parseado: 2023-07-06 11:30:00 a 2023-07-06 12:30:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2023-07-06 11:30:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2023-07-06 12:30:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:10] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '06/07/2023 12:00 a 01/01/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '06/07/2023 12:00 a 01/01/2025 12:00'
+INFO - 📅 Rango normalizado: '06/07/2023 12:00 - 01/01/2025 12:00'
+INFO - 📅 Rango parseado: 2023-07-06 12:00:00 a 2025-01-01 12:00:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2023-07-06 12:00:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-01-01 12:00:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:19] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '15/02/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '15/02/2025 12:00'
+INFO - 📅 Rango parseado: 2025-02-15 11:30:00 a 2025-02-15 12:30:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-02-15 11:30:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-02-15 12:30:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:21] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '01/01/2025 12:00 a 15/02/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '01/01/2025 12:00 a 15/02/2025 12:00'
+INFO - 📅 Rango normalizado: '01/01/2025 12:00 - 15/02/2025 12:00'
+INFO - 📅 Rango parseado: 2025-01-01 12:00:00 a 2025-02-15 12:00:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-01-01 12:00:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-02-15 12:00:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:30] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '12/04/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '12/04/2025 12:00'
+INFO - 📅 Rango parseado: 2025-04-12 11:30:00 a 2025-04-12 12:30:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-04-12 11:30:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-04-12 12:30:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:34] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '12/04/2025 12:00 a 20/04/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '12/04/2025 12:00 a 20/04/2025 12:00'
+INFO - 📅 Rango normalizado: '12/04/2025 12:00 - 20/04/2025 12:00'
+INFO - 📅 Rango parseado: 2025-04-12 12:00:00 a 2025-04-20 12:00:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-04-12 12:00:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-04-20 12:00:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:35] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '26/05/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '26/05/2025 12:00'
+INFO - 📅 Rango parseado: 2025-05-26 11:30:00 a 2025-05-26 12:30:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-05-26 11:30:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-05-26 12:30:00
+INFO - 📊 REGISTROS ENCONTRADOS: 0
+INFO - 📊 ESTADÍSTICAS: {'total': 0, 'criticas': 0, 'altas': 0, 'medias': 0, 'bajas': 0, 'fecha_minima': None, 'fecha_maxima': None, 'ips_origen_unicas': 0, 'ips_destino_unicas': 0, 'clientes_detectando': 0}
+INFO - ✅ RESPUESTA FINAL: 0 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:42] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '26/05/2025 12:00 a 22/06/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '26/05/2025 12:00 a 22/06/2025 12:00'
+INFO - 📅 Rango normalizado: '26/05/2025 12:00 - 22/06/2025 12:00'
+INFO - 📅 Rango parseado: 2025-05-26 12:00:00 a 2025-06-22 12:00:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-05-26 12:00:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-06-22 12:00:00
+INFO - 📊 REGISTROS ENCONTRADOS: 3
+INFO - 📊 ESTADÍSTICAS: {'total': 3, 'criticas': 0, 'altas': 0, 'medias': 2, 'bajas': 1, 'fecha_minima': datetime.datetime(2025, 6, 15, 20, 43, 55, 133153), 'fecha_maxima': datetime.datetime(2025, 6, 15, 20, 48, 57, 490853), 'ips_origen_unicas': 2, 'ips_destino_unicas': 2, 'clientes_detectando': 1}
+INFO - ✅ RESPUESTA FINAL: 3 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:43] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 📊 Generando reporte simple: {'rango_fechas': '26/05/2025 12:00 a 22/06/2025 12:00'}, formato: excel
+ERROR - ❌ Error generando reporte: Expected numeric dtype, got object instead.
+ERROR - ❌ Traceback: Traceback (most recent call last):
+  File "c:\Users\JOHANN\Documents\VSCODE\ProyectoTesis\MiNuevoProyectoFL\main.py", line 3588, in api_reportes_generar_fechas
+    df['Confianza'] = df['Confianza'].round(3)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\pandas\core\series.py", line 2818, in round
+    raise TypeError("Expected numeric dtype, got object instead.")
+TypeError: Expected numeric dtype, got object instead.
+
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:45] "[35m[1mPOST /api/reportes/generar-fechas HTTP/1.1[0m" 500 -
+INFO - 🔍 Filtros recibidos: {'rango_fechas': '26/05/2025 12:00 a 22/06/2025 12:00', 'pagina': 1, 'limite': 15}
+INFO - 📅 Procesando rango: '26/05/2025 12:00 a 22/06/2025 12:00'
+INFO - 📅 Rango normalizado: '26/05/2025 12:00 - 22/06/2025 12:00'
+INFO - 📅 Rango parseado: 2025-05-26 12:00:00 a 2025-06-22 12:00:00
+INFO - 🔍 CONSULTA SQL CORREGIDA ejecutándose...
+INFO - 🔍 PARÁMETRO 1 (inicio): 2025-05-26 12:00:00
+INFO - 🔍 PARÁMETRO 2 (fin): 2025-06-22 12:00:00
+INFO - 📊 REGISTROS ENCONTRADOS: 3
+INFO - 📊 ESTADÍSTICAS: {'total': 3, 'criticas': 0, 'altas': 0, 'medias': 2, 'bajas': 1, 'fecha_minima': datetime.datetime(2025, 6, 15, 20, 43, 55, 133153), 'fecha_maxima': datetime.datetime(2025, 6, 15, 20, 48, 57, 490853), 'ips_origen_unicas': 2, 'ips_destino_unicas': 2, 'clientes_detectando': 1}
+INFO - ✅ RESPUESTA FINAL: 3 registros
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:50] "POST /api/reportes/datos-fechas HTTP/1.1" 200 -
+INFO - 📊 Generando reporte simple: {'rango_fechas': '26/05/2025 12:00 a 22/06/2025 12:00'}, formato: csv
+ERROR - ❌ Error generando reporte: Expected numeric dtype, got object instead.
+ERROR - ❌ Traceback: Traceback (most recent call last):
+  File "c:\Users\JOHANN\Documents\VSCODE\ProyectoTesis\MiNuevoProyectoFL\main.py", line 3588, in api_reportes_generar_fechas
+    df['Confianza'] = df['Confianza'].round(3)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\pandas\core\series.py", line 2818, in round
+    raise TypeError("Expected numeric dtype, got object instead.")
+TypeError: Expected numeric dtype, got object instead.
+
+INFO - 127.0.0.1 - - [06/Sep/2025 02:02:53] "[35m[1mPOST /api/reportes/generar-fechas HTTP/1.1[0m" 500 -
+INFO - 📊 Generando reporte simple: {'rango_fechas': '26/05/2025 12:00 a 22/06/2025 12:00'}, formato: excel
+ERROR - ❌ Error generando reporte: Expected numeric dtype, got object instead.
+ERROR - ❌ Traceback: Traceback (most recent call last):
+  File "c:\Users\JOHANN\Documents\VSCODE\ProyectoTesis\MiNuevoProyectoFL\main.py", line 3588, in api_reportes_generar_fechas
+    df['Confianza'] = df['Confianza'].round(3)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOHANN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\pandas\core\series.py", line 2818, in round
+    raise TypeError("Expected numeric dtype, got object instead.")
+TypeError: Expected numeric dtype, got object instead.
+
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:06] "[35m[1mPOST /api/reportes/generar-fechas HTTP/1.1[0m" 500 -
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:10] "GET /reportes/calendario HTTP/1.1" 200 -
+INFO - 📅 Solicitud de datos calendario: 9/2025
+INFO - ✅ Datos calendario enviados: 0 días con actividad
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:10] "POST /api/calendario/datos HTTP/1.1" 200 -
+INFO - 🔍 Solicitud detalles día: 2025-09-06
+INFO - ✅ Detalles día enviados: 0 detecciones
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:49] "POST /api/calendario/detalles-dia HTTP/1.1" 200 -
+INFO - 📅 Solicitud de datos calendario: 9/2025
+INFO - ✅ Datos calendario enviados: 0 días con actividad
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:52] "POST /api/calendario/datos HTTP/1.1" 200 -
+INFO - 📅 Solicitud de datos calendario: 8/2025
+INFO - ✅ Datos calendario enviados: 0 días con actividad
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:56] "POST /api/calendario/datos HTTP/1.1" 200 -
+INFO - 📅 Solicitud de datos calendario: 7/2025
+INFO - ✅ Datos calendario enviados: 0 días con actividad
+INFO - 127.0.0.1 - - [06/Sep/2025 02:03:59] "POST /api/calendario/datos HTTP/1.1" 200 -
+INFO - 📅 Solicitud de datos calendario: 6/2025
+INFO - ✅ Datos calendario enviados: 8 días con actividad
+INFO - 127.0.0.1 - - [06/Sep/2025 02:04:02] "POST /api/calendario/datos HTTP/1.1" 200 -
