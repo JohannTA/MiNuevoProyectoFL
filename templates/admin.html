@@ -41,12 +41,6 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="seguridad-tab" data-bs-toggle="tab" data-bs-target="#seguridad"
-                            type="button" role="tab" aria-controls="seguridad" aria-selected="false">
-                            <i class="fas fa-shield-alt me-1"></i>Seguridad
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios"
                             type="button" role="tab" aria-controls="usuarios" aria-selected="false">
                             <i class="fas fa-users me-1"></i>Usuarios
@@ -196,76 +190,6 @@
                             </div>
                         </form>
                     </div>
-
-                    <!-- ===== TAB SEGURIDAD ===== -->
-                    <div class="tab-pane fade" id="seguridad" role="tabpanel" aria-labelledby="seguridad-tab">
-                        <h6 class="mb-4">Configuración de Seguridad</h6>
-                        
-                        <form id="formConfigSeguridad" method="POST" action="/admin/configuracion/seguridad">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-danger">
-                                        <div class="card-header bg-danger text-white">
-                                            <h6 class="mb-0">Autenticación y Sesiones</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <label for="tiempo_sesion" class="form-label">Tiempo de Sesión (horas)</label>
-                                                <input type="number" class="form-control" id="tiempo_sesion" 
-                                                       name="tiempo_sesion" value="8" min="1" max="24">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="max_intentos_login" class="form-label">Máximo Intentos de Login</label>
-                                                <input type="number" class="form-control" id="max_intentos_login" 
-                                                       name="max_intentos_login" value="5" min="3" max="10">
-                                            </div>
-                                            <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="forzar_ssl" 
-                                                       name="forzar_ssl">
-                                                <label class="form-check-label" for="forzar_ssl">
-                                                    Forzar conexiones SSL/HTTPS
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="card border-secondary">
-                                        <div class="card-header bg-secondary text-white">
-                                            <h6 class="mb-0">API y Tokens</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="habilitar_api" 
-                                                       name="habilitar_api" checked>
-                                                <label class="form-check-label" for="habilitar_api">
-                                                    Habilitar API REST
-                                                </label>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="token_expiracion" class="form-label">Expiración Token API (horas)</label>
-                                                <input type="number" class="form-control" id="token_expiracion" 
-                                                       name="token_expiracion" value="2" min="1" max="72">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="rate_limit" class="form-label">Límite de Requests por Minuto</label>
-                                                <input type="number" class="form-control" id="rate_limit" 
-                                                       name="rate_limit" value="100" min="10" max="1000">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-danger btn-lg">
-                                    <i class="fas fa-shield-alt me-1"></i>Guardar Configuración de Seguridad
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
                     <!-- ===== TAB USUARIOS ===== -->
                     <div class="tab-pane fade" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -356,16 +280,30 @@
                                             <td>
                                                 <small>{{ usuario.last_login.strftime('%d/%m/%Y %H:%M') if usuario.last_login else 'Nunca' }}</small>
                                             </td>
+                                                                                        <!-- BUSCAR LA SECCIÓN DE BOTONES EN LA TABLA Y REEMPLAZAR POR: -->
                                             <td class="text-center">
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary" title="Editar" 
-                                                            onclick="editarUsuario({{ usuario.id }}, '{{ usuario.username }}', '{{ usuario.email }}')">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <!-- Botón Editar -->
+                                                    <button class="btn btn-outline-primary" title="Editar Usuario" 
+                                                            onclick="editarUsuario({{ usuario.id }}, '{{ usuario.username }}', '{{ usuario.email }}', '{{ usuario.first_name }}', '{{ usuario.last_name }}', '{{ usuario.role }}', {{ usuario.is_active|lower }})">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-                                                    {% if usuario.id != session.user_id %}
-                                                    <button class="btn btn-outline-danger" title="Eliminar" 
+                                                    
+                                                    <!-- Botón Cambiar Contraseña -->
+                                                    <button class="btn btn-outline-warning" title="Cambiar Contraseña"
+                                                            onclick="cambiarPasswordUsuario({{ usuario.id }}, '{{ usuario.username }}')">
+                                                        <i class="fas fa-key"></i>
+                                                    </button>
+                                                    
+                                                    <!-- Botón Eliminar (no mostrar para admin principal o usuario actual) -->
+                                                    {% if usuario.id != 1 and usuario.id != session.user_id %}
+                                                    <button class="btn btn-outline-danger" title="Eliminar Usuario"
                                                             onclick="eliminarUsuario({{ usuario.id }}, '{{ usuario.username }}')">
                                                         <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    {% else %}
+                                                    <button class="btn btn-outline-secondary" title="No se puede eliminar" disabled>
+                                                        <i class="fas fa-shield-alt"></i>
                                                     </button>
                                                     {% endif %}
                                                 </div>
@@ -526,11 +464,6 @@ document.addEventListener('DOMContentLoaded', function() {
         guardarConfiguracion('federado', this);
     });
     
-    document.getElementById('formConfigSeguridad')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        guardarConfiguracion('seguridad', this);
-    });
-    
     document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
         e.preventDefault();
         crearNuevoUsuario(this);
@@ -632,20 +565,477 @@ async function crearNuevoUsuario(form) {
         }, 1000);
     }
 }
-
-// Funciones para gestión de usuarios
-function editarUsuario(id, username, email) {
-    console.log(`Editando usuario: ${username}`);
-    mostrarNotificacion('Función de edición en desarrollo', 'info');
-}
-
-function eliminarUsuario(id, username) {
-    if (confirm(`¿Está seguro de que desea eliminar el usuario "${username}"?`)) {
-        console.log(`Eliminando usuario: ${username}`);
-        mostrarNotificacion('Función de eliminación en desarrollo', 'info');
+async function editarUsuario(id, username, email, firstName, lastName, role, isActive) {
+    try {
+        // Crear modal dinámicamente
+        const modalHtml = `
+        <div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-user-edit me-2"></i>Editar Usuario: ${username}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="formEditarUsuario">
+                        <div class="modal-body">
+                            <input type="hidden" id="edit_user_id" value="${id}">
+                            
+                            <!-- Información básica -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user me-1"></i>Nombre de Usuario *
+                                    </label>
+                                    <input type="text" class="form-control" id="edit_username" 
+                                           value="${username}" required 
+                                           placeholder="Mínimo 3 caracteres">
+                                    <div class="form-text">Debe ser único en el sistema</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-envelope me-1"></i>Email *
+                                    </label>
+                                    <input type="email" class="form-control" id="edit_email" 
+                                           value="${email}" required 
+                                           placeholder="usuario@dominio.com">
+                                    <div class="form-text">Debe ser una dirección válida</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Nombres -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user-circle me-1"></i>Nombres
+                                    </label>
+                                    <input type="text" class="form-control" id="edit_first_name" 
+                                           value="${firstName || ''}" 
+                                           placeholder="Nombres del usuario">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user-circle me-1"></i>Apellidos
+                                    </label>
+                                    <input type="text" class="form-control" id="edit_last_name" 
+                                           value="${lastName || ''}" 
+                                           placeholder="Apellidos del usuario">
+                                </div>
+                            </div>
+                            
+                            <!-- Rol y Estado -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user-shield me-1"></i>Rol del Usuario
+                                    </label>
+                                    <select class="form-select" id="edit_role">
+                                        <option value="admin" ${role === 'admin' ? 'selected' : ''}>
+                                            👑 Administrador - Acceso completo
+                                        </option>
+                                        <option value="user" ${role === 'user' ? 'selected' : ''}>
+                                            👤 Usuario - Acceso estándar
+                                        </option>
+                                        <option value="viewer" ${role === 'viewer' ? 'selected' : ''}>
+                                            👁️ Solo Lectura - Sin modificaciones
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="edit_is_active" ${isActive ? 'checked' : ''}>
+                                        <label class="form-check-label" for="edit_is_active">
+                                            <i class="fas fa-toggle-on me-1 text-success"></i>
+                                            <strong>Usuario Activo</strong>
+                                            <div class="form-text">Permite inicio de sesión</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Info adicional -->
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Información:</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li>Los campos marcados con * son obligatorios</li>
+                                    <li>El cambio de rol tendrá efecto en el próximo inicio de sesión</li>
+                                    <li>Desactivar un usuario no elimina sus datos</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Actualizar Usuario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+        
+        // Eliminar modal anterior si existe
+        const existingModal = document.getElementById('modalEditarUsuario');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Agregar nuevo modal al DOM
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
+        modal.show();
+        
+        // Manejar envío del formulario
+        document.getElementById('formEditarUsuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await actualizarUsuario();
+        });
+        
+    } catch (error) {
+        console.error('Error editando usuario:', error);
+        mostrarNotificacion('Error preparando edición de usuario', 'error');
     }
 }
 
+async function actualizarUsuario() {
+    const submitButton = document.querySelector('#formEditarUsuario button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    
+    try {
+        // Mostrar loading
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Actualizando...';
+        submitButton.disabled = true;
+        
+        // Obtener datos del formulario
+        const userData = {
+            username: document.getElementById('edit_username').value.trim(),
+            email: document.getElementById('edit_email').value.trim(),
+            first_name: document.getElementById('edit_first_name').value.trim(),
+            last_name: document.getElementById('edit_last_name').value.trim(),
+            role: document.getElementById('edit_role').value,
+            is_active: document.getElementById('edit_is_active').checked
+        };
+        
+        // Validaciones del frontend
+        if (!userData.username || userData.username.length < 3) {
+            mostrarNotificacion('El nombre de usuario debe tener al menos 3 caracteres', 'warning');
+            return;
+        }
+        
+        if (!userData.email || !userData.email.includes('@')) {
+            mostrarNotificacion('Ingrese un email válido', 'warning');
+            return;
+        }
+        
+        const userId = document.getElementById('edit_user_id').value;
+        
+        // Realizar petición de actualización
+        const response = await fetch(`/admin/usuarios/${userId}/editar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            mostrarNotificacion('✅ Usuario actualizado correctamente', 'success');
+            
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+            modal.hide();
+            
+            // Recargar página después de 1 segundo para ver cambios
+            setTimeout(() => location.reload(), 1000);
+            
+        } else {
+            throw new Error(result.error || 'Error desconocido');
+        }
+        
+    } catch (error) {
+        console.error('Error actualizando usuario:', error);
+        mostrarNotificacion(`❌ Error al actualizar: ${error.message}`, 'error');
+    } finally {
+        // Restaurar botón
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+    }
+}
+
+async function eliminarUsuario(id, username) {
+    // Confirmar eliminación con información detallada
+    const confirmMessage = `
+⚠️ CONFIRMAR ELIMINACIÓN
+
+¿Está seguro de que desea eliminar el usuario "${username}"?
+
+❗ IMPORTANTE:
+• Esta acción DESACTIVARÁ el usuario
+• No se eliminan los datos históricos
+• El usuario no podrá iniciar sesión
+• Los datos pueden restaurarse posteriormente
+
+¿Continuar con la eliminación?`;
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Segunda confirmación para admin principal
+    if (id === 1) {
+        alert('❌ ERROR: No se puede eliminar el administrador principal del sistema');
+        return;
+    }
+    
+    try {
+        mostrarNotificacion('🗑️ Eliminando usuario...', 'info');
+        
+        const response = await fetch(`/admin/usuarios/${id}/eliminar`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            mostrarNotificacion(`✅ Usuario "${username}" eliminado correctamente`, 'success');
+            
+            // Recargar página después de 1.5 segundos
+            setTimeout(() => location.reload(), 1500);
+            
+        } else {
+            throw new Error(result.error || 'Error desconocido');
+        }
+        
+    } catch (error) {
+        console.error('Error eliminando usuario:', error);
+        mostrarNotificacion(`❌ Error al eliminar: ${error.message}`, 'error');
+    }
+}
+
+// ✅ FUNCIÓN PARA CAMBIAR CONTRASEÑA - COMPLETA
+async function cambiarPasswordUsuario(id, username) {
+    try {
+        // Crear modal para cambio de contraseña
+        const modalHtml = `
+        <div class="modal fade" id="modalCambiarPassword" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title">
+                            <i class="fas fa-key me-2"></i>Cambiar Contraseña: ${username}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="formCambiarPassword">
+                        <div class="modal-body">
+                            <input type="hidden" id="pwd_user_id" value="${id}">
+                            
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Atención:</strong> Como administrador, puedes cambiar la contraseña 
+                                de cualquier usuario sin conocer la contraseña actual.
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-lock me-1"></i>Nueva Contraseña *
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="nueva_password" 
+                                           placeholder="Mínimo 6 caracteres" required>
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="togglePasswordVisibility('nueva_password', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">Debe tener al menos 6 caracteres</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-lock me-1"></i>Confirmar Contraseña *
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmar_password" 
+                                           placeholder="Repetir la contraseña" required>
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="togglePasswordVisibility('confirmar_password', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">Debe coincidir con la nueva contraseña</div>
+                            </div>
+                            
+                            <!-- Indicador de fortaleza -->
+                            <div class="mb-3">
+                                <label class="form-label">Fortaleza de la contraseña:</label>
+                                <div class="progress">
+                                    <div class="progress-bar" id="password-strength" 
+                                         role="progressbar" style="width: 0%">
+                                    </div>
+                                </div>
+                                <small class="text-muted" id="strength-text">Ingrese una contraseña</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-warning text-dark">
+                                <i class="fas fa-key me-1"></i>Cambiar Contraseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+        
+        // Eliminar modal anterior si existe
+        const existingModal = document.getElementById('modalCambiarPassword');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Agregar nuevo modal
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalCambiarPassword'));
+        modal.show();
+        
+        // Agregar validación en tiempo real
+        document.getElementById('nueva_password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+        
+        // Manejar envío del formulario
+        document.getElementById('formCambiarPassword').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await procesarCambioPassword();
+        });
+        
+    } catch (error) {
+        console.error('Error preparando cambio de contraseña:', error);
+        mostrarNotificacion('Error preparando cambio de contraseña', 'error');
+    }
+}
+
+// ✅ FUNCIÓN AUXILIAR PARA MOSTRAR/OCULTAR CONTRASEÑA
+function togglePasswordVisibility(fieldId, button) {
+    const field = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+// ✅ FUNCIÓN AUXILIAR PARA VERIFICAR FORTALEZA DE CONTRASEÑA
+function checkPasswordStrength(password) {
+    const progressBar = document.getElementById('password-strength');
+    const strengthText = document.getElementById('strength-text');
+    
+    let strength = 0;
+    let feedback = '';
+    
+    if (password.length >= 6) strength += 20;
+    if (password.length >= 8) strength += 20;
+    if (/[A-Z]/.test(password)) strength += 20;
+    if (/[a-z]/.test(password)) strength += 20;
+    if (/[0-9]/.test(password)) strength += 10;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+    
+    progressBar.style.width = strength + '%';
+    
+    if (strength < 40) {
+        progressBar.className = 'progress-bar bg-danger';
+        feedback = 'Muy débil';
+    } else if (strength < 60) {
+        progressBar.className = 'progress-bar bg-warning';
+        feedback = 'Débil';
+    } else if (strength < 80) {
+        progressBar.className = 'progress-bar bg-info';
+        feedback = 'Buena';
+    } else {
+        progressBar.className = 'progress-bar bg-success';
+        feedback = 'Muy fuerte';
+    }
+    
+    strengthText.textContent = feedback;
+}
+
+// ✅ FUNCIÓN PARA PROCESAR CAMBIO DE CONTRASEÑA
+async function procesarCambioPassword() {
+    const submitButton = document.querySelector('#formCambiarPassword button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    
+    try {
+        const nuevaPassword = document.getElementById('nueva_password').value;
+        const confirmarPassword = document.getElementById('confirmar_password').value;
+        const userId = document.getElementById('pwd_user_id').value;
+        
+        // Validaciones
+        if (!nuevaPassword || nuevaPassword.length < 6) {
+            mostrarNotificacion('La contraseña debe tener al menos 6 caracteres', 'warning');
+            return;
+        }
+        
+        if (nuevaPassword !== confirmarPassword) {
+            mostrarNotificacion('Las contraseñas no coinciden', 'warning');
+            return;
+        }
+        
+        // Mostrar loading
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Cambiando...';
+        submitButton.disabled = true;
+        
+        // Crear FormData
+        const formData = new FormData();
+        formData.append('nueva_password', nuevaPassword);
+        formData.append('confirmar_password', confirmarPassword);
+        
+        const response = await fetch(`/admin/usuarios/${userId}/cambiar-password`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            mostrarNotificacion('✅ Contraseña actualizada correctamente', 'success');
+            
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarPassword'));
+            modal.hide();
+        } else {
+            throw new Error(result.error || 'Error desconocido');
+        }
+        
+    } catch (error) {
+        console.error('Error cambiando contraseña:', error);
+        mostrarNotificacion(`❌ Error cambiando contraseña: ${error.message}`, 'error');
+    } finally {
+        // Restaurar botón
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+    }
+}
 // Función para mostrar notificaciones
 function mostrarNotificacion(mensaje, tipo = 'info') {
     // Crear contenedor si no existe

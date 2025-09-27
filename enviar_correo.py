@@ -17,7 +17,7 @@ def enviarcorreoalerta():
         smtp_server = 'smtp.gmail.com'
         smtp_port = 587
         sender_email = 'johannaguinaga20@gmail.com'
-        sender_password = 'frpx cjqc ljvi wldw'
+        sender_password = 'sbxs yalf rlos nrjr'
         recipient_email = 'johannaguinaga2004@gmail.com'
         
         # ✅ TIMESTAMP ACTUAL

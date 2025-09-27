@@ -1997,10 +1997,11 @@ def guardar_configuracion(tipo):
     except Exception as e:
         logger.error(f"❌ Error guardando configuración {tipo}: {e}")
         return jsonify({'success': False, 'error': str(e)})
+    
 @app.route('/admin/usuarios/crear', methods=['POST'])
 @login_required
 def crear_usuario_admin():
-    """Crear nuevo usuario desde panel admin - FUNCIONAL"""
+    """Crear nuevo usuario desde panel admin - CORREGIDO"""
     try:
         if session.get('role') != 'admin':
             return jsonify({'success': False, 'error': 'Acceso denegado'})
@@ -2027,7 +2028,6 @@ def crear_usuario_admin():
         if role not in ['admin', 'user', 'viewer']:
             return jsonify({'success': False, 'error': 'Rol inválido'})
         
-        # ✅ VERIFICAR SI EL USUARIO YA EXISTE
         conn = obtener_conexion()
         if not conn:
             return jsonify({'success': False, 'error': 'Sin conexión BD'})
@@ -2039,14 +2039,35 @@ def crear_usuario_admin():
                 if cursor.fetchone():
                     return jsonify({'success': False, 'error': 'El usuario o email ya existe'})
                 
-                # ✅ CREAR USUARIO
+                # ✅ OBTENER ROLE_ID DESDE TABLA ROLES
+                cursor.execute("SELECT id FROM roles WHERE name = %s", (role,))
+                role_result = cursor.fetchone()
+                
+                if not role_result:
+                    # Si no existe el rol, crearlo
+                    cursor.execute("""
+                        INSERT INTO roles (name, display_name, description) 
+                        VALUES (%s, %s, %s) 
+                        ON CONFLICT (name) DO NOTHING
+                        RETURNING id
+                    """, (role, role.title(), f"Rol {role}"))
+                    
+                    role_result = cursor.fetchone()
+                    if not role_result:
+                        # Si sigue sin existir, obtener el ID existente
+                        cursor.execute("SELECT id FROM roles WHERE name = %s", (role,))
+                        role_result = cursor.fetchone()
+                
+                role_id = role_result[0]
+                
+                # ✅ CREAR USUARIO CON ROLE_ID
                 password_hash = hashlib.sha256(password.encode()).hexdigest()
                 
                 cursor.execute("""
-                    INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active, created_at)
+                    INSERT INTO users (username, email, password_hash, first_name, last_name, role_id, is_active, created_at)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
                     RETURNING id
-                """, (username, email, password_hash, first_name, last_name, role, is_active))
+                """, (username, email, password_hash, first_name, last_name, role_id, is_active))
                 
                 user_id = cursor.fetchone()[0]
                 conn.commit()
@@ -2059,7 +2080,7 @@ def crear_usuario_admin():
                     request.remote_addr
                 )
                 
-                logger.info(f"✅ Usuario creado: {username} (ID: {user_id})")
+                logger.info(f"✅ Usuario creado: {username} (ID: {user_id}, Role ID: {role_id})")
                 
                 return jsonify({
                     'success': True,
@@ -2079,7 +2100,6 @@ def crear_usuario_admin():
     except Exception as e:
         logger.error(f"❌ Error en crear usuario admin: {e}")
         return jsonify({'success': False, 'error': str(e)})
-
 def guardar_configuracion_general(data):
     """Guarda configuración general del sistema"""
     try:
@@ -2150,7 +2170,7 @@ def guardar_configuracion_general(data):
 @app.route('/admin/usuarios/<int:user_id>/editar', methods=['POST'])
 @login_required
 def editar_usuario_admin(user_id):
-    """Editar usuario existente"""
+    """Editar usuario existente - CORREGIDA"""
     try:
         if session.get('role') != 'admin':
             return jsonify({'success': False, 'error': 'Acceso denegado'})
@@ -2196,18 +2216,27 @@ def editar_usuario_admin(user_id):
                 if cursor.fetchone():
                     return jsonify({'success': False, 'error': 'El usuario o email ya existe'})
                 
-                # ✅ ACTUALIZAR USUARIO
+                # ✅ OBTENER ROLE_ID CORRECTAMENTE
+                cursor.execute("SELECT id FROM roles WHERE name = %s", (role,))
+                role_result = cursor.fetchone()
+                
+                if not role_result:
+                    return jsonify({'success': False, 'error': f'Rol {role} no encontrado'})
+                
+                role_id = role_result[0]
+                
+                # ✅ ACTUALIZAR USUARIO CON ROLE_ID - NO ROLE
                 cursor.execute("""
                     UPDATE users SET 
                         username = %s,
                         email = %s,
                         first_name = %s,
                         last_name = %s,
-                        role = %s,
+                        role_id = %s,
                         is_active = %s,
                         updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
-                """, (username, email, first_name, last_name, role, is_active, user_id))
+                """, (username, email, first_name, last_name, role_id, is_active, user_id))
                 
                 conn.commit()
                 
@@ -2240,7 +2269,7 @@ def editar_usuario_admin(user_id):
 @app.route('/admin/usuarios/<int:user_id>/eliminar', methods=['DELETE'])
 @login_required
 def eliminar_usuario_admin(user_id):
-    """Eliminar usuario (soft delete)"""
+    """Eliminar usuario (soft delete) - CORREGIDA"""
     try:
         if session.get('role') != 'admin':
             return jsonify({'success': False, 'error': 'Acceso denegado'})
@@ -2258,19 +2287,24 @@ def eliminar_usuario_admin(user_id):
         
         try:
             with conn.cursor() as cursor:
-                # Verificar que el usuario existe
-                cursor.execute("SELECT username, role FROM users WHERE id = %s", (user_id,))
+                # ✅ CORREGIR CONSULTA - USAR ROLE_ID CON JOIN
+                cursor.execute("""
+                    SELECT u.username, COALESCE(r.name, 'user') as role_name
+                    FROM users u
+                    LEFT JOIN roles r ON u.role_id = r.id
+                    WHERE u.id = %s
+                """, (user_id,))
+                
                 user_info = cursor.fetchone()
                 if not user_info:
                     return jsonify({'success': False, 'error': 'Usuario no encontrado'})
                 
-                username, role = user_info
+                username, role_name = user_info
                 
                 # ✅ SOFT DELETE - DESACTIVAR EN LUGAR DE ELIMINAR
                 cursor.execute("""
                     UPDATE users SET 
                         is_active = FALSE,
-                        deleted_at = CURRENT_TIMESTAMP,
                         updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
                 """, (user_id,))
@@ -2281,7 +2315,7 @@ def eliminar_usuario_admin(user_id):
                 registrar_actividad_usuario(
                     session['user_id'],
                     'delete_user',
-                    f'Usuario eliminado: {username} ({role})',
+                    f'Usuario eliminado: {username} ({role_name})',
                     request.remote_addr
                 )
                 
@@ -2302,7 +2336,6 @@ def eliminar_usuario_admin(user_id):
     except Exception as e:
         logger.error(f"❌ Error en eliminar usuario: {e}")
         return jsonify({'success': False, 'error': str(e)})
-
 
 @app.route('/admin/logs/sistema')
 @login_required
@@ -2561,12 +2594,20 @@ def actualizar_usuario_admin(user_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/admin/usuarios/<int:user_id>/cambiar-password', methods=['POST'])
-@admin_required
+@login_required  # Cambiar de @admin_required a @login_required si es necesario
 def cambiar_password_admin(user_id):
-    """Cambia la contraseña de un usuario desde admin"""
+    """Cambia la contraseña de un usuario desde admin - CORREGIDA"""
     try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'}), 403
+        
+        # Obtener contraseñas del FormData
         nueva_password = request.form.get('nueva_password')
         confirmar_password = request.form.get('confirmar_password')
+        
+        # Validaciones
+        if not nueva_password or not confirmar_password:
+            return jsonify({'success': False, 'error': 'Ambas contraseñas son requeridas'}), 400
         
         if nueva_password != confirmar_password:
             return jsonify({'success': False, 'error': 'Las contraseñas no coinciden'}), 400
@@ -2574,23 +2615,56 @@ def cambiar_password_admin(user_id):
         if len(nueva_password) < 6:
             return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'}), 400
         
-        # Cambiar contraseña directamente (admin bypass)
-        exito = cambiar_contrasena_usuario(user_id, None, nueva_password)
-        if exito:
-            registrar_actividad_usuario(
-                session['user_id'],
-                'admin_change_password',
-                f'Contraseña cambiada para usuario {user_id}',
-                request.remote_addr
-            )
-            return jsonify({'success': True, 'message': 'Contraseña actualizada correctamente'})
-        else:
-            return jsonify({'success': False, 'error': 'Error cambiando contraseña'}), 500
-            
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
+        
+        try:
+            with conn.cursor() as cursor:
+                # Verificar que el usuario existe
+                cursor.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+                user_info = cursor.fetchone()
+                if not user_info:
+                    return jsonify({'success': False, 'error': 'Usuario no encontrado'}), 404
+                
+                username = user_info[0]
+                
+                # Actualizar contraseña con hash SHA-256
+                password_hash = hashlib.sha256(nueva_password.encode()).hexdigest()
+                cursor.execute("""
+                    UPDATE users SET 
+                        password_hash = %s,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = %s
+                """, (password_hash, user_id))
+                
+                conn.commit()
+                
+                # Registrar actividad
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'admin_change_password',
+                    f'Contraseña cambiada para usuario: {username}',
+                    request.remote_addr
+                )
+                
+                logger.info(f"✅ Contraseña cambiada por admin para usuario: {username}")
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Contraseña actualizada para {username}'
+                })
+                
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"❌ Error cambiando contraseña: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+        finally:
+            conn.close()
+        
     except Exception as e:
-        logger.error(f"Error cambiando contraseña: {e}")
+        logger.error(f"❌ Error en cambio de contraseña admin: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
 #---------------------------------------------------------
 # Manejadores de errores
 #---------------------------------------------------------
