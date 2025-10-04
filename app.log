@@ -92390,3 +92390,17 @@ INFO - 127.0.0.1 - - [04/Oct/2025 03:54:08] "GET /api/dashboard/counters HTTP/1.
 INFO -   Detecciones recientes obtenidas: 5
 INFO - 127.0.0.1 - - [04/Oct/2025 03:54:08] "GET /api/detector/status HTTP/1.1" 200 -
 INFO - 127.0.0.1 - - [04/Oct/2025 03:54:08] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (9279, 3737, 3050, 128, datetime.datetime(2025, 10, 4, 1, 58, 58, 89056))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/detector/status HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/federado/status HTTP/1.1" 200 -
+INFO - 📊 Resultado query contadores: (9279, 3737, 3050, 128, datetime.datetime(2025, 10, 4, 1, 58, 58, 89056))
+INFO - ✅ Clientes activos: 0 (BD: 0, Local: False)
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/dashboard/counters HTTP/1.1" 200 -
+INFO -   Detecciones recientes obtenidas: 5
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/dashboard/recent-detections?limit=5 HTTP/1.1" 200 -
+INFO - 127.0.0.1 - - [04/Oct/2025 03:55:08] "GET /api/detector/status HTTP/1.1" 200 -
