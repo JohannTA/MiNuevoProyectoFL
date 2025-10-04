@@ -1,0 +1,3618 @@
+{
+  "metadata": {
+    "extraction_date": "2025-10-04T02:31:05.520383",
+    "postgresql_version": "PostgreSQL 17.6 on x86_64-windows, compiled by msvc-19.44.35213, 64-bit",
+    "database_info": {
+      "database_name": "db_tesis",
+      "size": "24 MB",
+      "encoding": "UTF8",
+      "collation": "Spanish_Peru.1252"
+    },
+    "object_counts": {
+      "total_tables": 22,
+      "total_views": 3,
+      "total_functions": 54,
+      "total_triggers": 83,
+      "total_indexes": 60
+    }
+  },
+  "tables": {
+    "activity_logs": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('activity_logs_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "action",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "resource_type",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "resource_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "details",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "ip_address",
+          "data_type": "inet",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "user_agent",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "session_id",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "timestamp",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 10
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "activity_logs_pkey",
+          "indexdef": "CREATE UNIQUE INDEX activity_logs_pkey ON public.activity_logs USING btree (id)"
+        },
+        {
+          "indexname": "idx_activity_logs_action",
+          "indexdef": "CREATE INDEX idx_activity_logs_action ON public.activity_logs USING btree (action)"
+        },
+        {
+          "indexname": "idx_activity_logs_timestamp",
+          "indexdef": "CREATE INDEX idx_activity_logs_timestamp ON public.activity_logs USING btree (\"timestamp\")"
+        },
+        {
+          "indexname": "idx_activity_logs_user_id",
+          "indexdef": "CREATE INDEX idx_activity_logs_user_id ON public.activity_logs USING btree (user_id)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 527,
+        "total_size": "192 kB"
+      }
+    },
+    "client_activity_stats": {
+      "type": "VIEW",
+      "columns": [
+        {
+          "column_name": "client_name",
+          "data_type": "character varying",
+          "character_maximum_length": 200,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "status",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "total_detections",
+          "data_type": "bigint",
+          "character_maximum_length": null,
+          "numeric_precision": 64,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "last_detection",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "last_seen",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        }
+      ],
+      "primary_key": [],
+      "foreign_keys": [],
+      "indexes": [],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "0 bytes"
+      }
+    },
+    "computing_devices": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('computing_devices_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "type",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "brand",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "model",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "serial_number",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "assigned_to",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "status",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'active'::character varying",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 9
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "computing_devices_assigned_to_fkey",
+          "column_name": "assigned_to",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "computing_devices_pkey",
+          "indexdef": "CREATE UNIQUE INDEX computing_devices_pkey ON public.computing_devices USING btree (id)"
+        },
+        {
+          "indexname": "computing_devices_serial_number_key",
+          "indexdef": "CREATE UNIQUE INDEX computing_devices_serial_number_key ON public.computing_devices USING btree (serial_number)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "40 kB"
+      }
+    },
+    "detection_severity_stats": {
+      "type": "VIEW",
+      "columns": [
+        {
+          "column_name": "severity",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "detection_count",
+          "data_type": "bigint",
+          "character_maximum_length": null,
+          "numeric_precision": 64,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "avg_confidence",
+          "data_type": "numeric",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        }
+      ],
+      "primary_key": [],
+      "foreign_keys": [],
+      "indexes": [],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 3,
+        "total_size": "0 bytes"
+      }
+    },
+    "detection_stats": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('detection_stats_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "total_packets_scanned",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "total_detections",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "total_suspicious",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "total_critical",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "total_high",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "total_medium",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "total_low",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "normal_traffic",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "last_updated",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "stats_key",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'global_stats'::character varying",
+          "ordinal_position": 12
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "detection_stats_pkey",
+          "indexdef": "CREATE UNIQUE INDEX detection_stats_pkey ON public.detection_stats USING btree (id)"
+        },
+        {
+          "indexname": "detection_stats_stats_key_key",
+          "indexdef": "CREATE UNIQUE INDEX detection_stats_stats_key_key ON public.detection_stats USING btree (stats_key)"
+        },
+        {
+          "indexname": "idx_detection_stats_updated",
+          "indexdef": "CREATE INDEX idx_detection_stats_updated ON public.detection_stats USING btree (last_updated)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "88 kB"
+      }
+    },
+    "detections": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('detections_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "detection_id",
+          "data_type": "uuid",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "uuid_generate_v4()",
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "client_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "model_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "anomaly_type",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "severity",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'medium'::character varying",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "confidence_score",
+          "data_type": "numeric",
+          "character_maximum_length": null,
+          "numeric_precision": 5,
+          "numeric_scale": 4,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "source_ip",
+          "data_type": "inet",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "destination_ip",
+          "data_type": "inet",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "source_port",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "destination_port",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "protocol",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 12
+        },
+        {
+          "column_name": "timestamp",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 13
+        },
+        {
+          "column_name": "raw_data",
+          "data_type": "jsonb",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 14
+        },
+        {
+          "column_name": "features",
+          "data_type": "jsonb",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 15
+        },
+        {
+          "column_name": "is_confirmed",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 16
+        },
+        {
+          "column_name": "false_positive",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 17
+        },
+        {
+          "column_name": "notes",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 18
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 19
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 20
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "detections_client_id_fkey",
+          "column_name": "client_id",
+          "foreign_table_name": "federated_clients",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "detections_model_id_fkey",
+          "column_name": "model_id",
+          "foreign_table_name": "ml_models",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "detections_pkey",
+          "indexdef": "CREATE UNIQUE INDEX detections_pkey ON public.detections USING btree (id)"
+        },
+        {
+          "indexname": "idx_detections_anomaly_type",
+          "indexdef": "CREATE INDEX idx_detections_anomaly_type ON public.detections USING btree (anomaly_type)"
+        },
+        {
+          "indexname": "idx_detections_client_id",
+          "indexdef": "CREATE INDEX idx_detections_client_id ON public.detections USING btree (client_id)"
+        },
+        {
+          "indexname": "idx_detections_model_id",
+          "indexdef": "CREATE INDEX idx_detections_model_id ON public.detections USING btree (model_id)"
+        },
+        {
+          "indexname": "idx_detections_severity",
+          "indexdef": "CREATE INDEX idx_detections_severity ON public.detections USING btree (severity)"
+        },
+        {
+          "indexname": "idx_detections_source_ip",
+          "indexdef": "CREATE INDEX idx_detections_source_ip ON public.detections USING btree (source_ip)"
+        },
+        {
+          "indexname": "idx_detections_timestamp",
+          "indexdef": "CREATE INDEX idx_detections_timestamp ON public.detections USING btree (\"timestamp\")"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "trigger_update_detection_stats",
+          "event_manipulation": "INSERT",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION update_detection_stats()"
+        },
+        {
+          "trigger_name": "trigger_update_detection_stats",
+          "event_manipulation": "DELETE",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION update_detection_stats()"
+        },
+        {
+          "trigger_name": "trigger_update_detection_stats",
+          "event_manipulation": "UPDATE",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION update_detection_stats()"
+        },
+        {
+          "trigger_name": "update_client_last_seen_trigger",
+          "event_manipulation": "INSERT",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION update_client_last_seen()"
+        },
+        {
+          "trigger_name": "update_detections_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 9279,
+        "total_size": "15 MB"
+      }
+    },
+    "device_connections": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('device_connections_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "medical_device_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "computing_device_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "connected_by",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "connection_date",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "disconnected_date",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "status",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'connected'::character varying",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "notes",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 8
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "device_connections_computing_device_id_fkey",
+          "column_name": "computing_device_id",
+          "foreign_table_name": "computing_devices",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "device_connections_connected_by_fkey",
+          "column_name": "connected_by",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "device_connections_medical_device_id_fkey",
+          "column_name": "medical_device_id",
+          "foreign_table_name": "medical_devices",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "device_connections_medical_device_id_computing_device_id_key",
+          "indexdef": "CREATE UNIQUE INDEX device_connections_medical_device_id_computing_device_id_key ON public.device_connections USING btree (medical_device_id, computing_device_id)"
+        },
+        {
+          "indexname": "device_connections_pkey",
+          "indexdef": "CREATE UNIQUE INDEX device_connections_pkey ON public.device_connections USING btree (id)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "48 kB"
+      }
+    },
+    "federated_clients": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('federated_clients_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "client_id",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "name",
+          "data_type": "character varying",
+          "character_maximum_length": 200,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "ip_address",
+          "data_type": "inet",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "port",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "8080",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "status",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'inactive'::character varying",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "last_seen",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "model_version",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "data_samples_count",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "training_rounds_participated",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "api_key",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 12
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 13
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 14
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "federated_clients_client_id_key",
+          "indexdef": "CREATE UNIQUE INDEX federated_clients_client_id_key ON public.federated_clients USING btree (client_id)"
+        },
+        {
+          "indexname": "federated_clients_pkey",
+          "indexdef": "CREATE UNIQUE INDEX federated_clients_pkey ON public.federated_clients USING btree (id)"
+        },
+        {
+          "indexname": "idx_federated_clients_client_id",
+          "indexdef": "CREATE INDEX idx_federated_clients_client_id ON public.federated_clients USING btree (client_id)"
+        },
+        {
+          "indexname": "idx_federated_clients_last_seen",
+          "indexdef": "CREATE INDEX idx_federated_clients_last_seen ON public.federated_clients USING btree (last_seen)"
+        },
+        {
+          "indexname": "idx_federated_clients_status",
+          "indexdef": "CREATE INDEX idx_federated_clients_status ON public.federated_clients USING btree (status)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "update_federated_clients_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "128 kB"
+      }
+    },
+    "medical_devices": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('medical_devices_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "device_type",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "brand",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "model",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "serial_number",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "location",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "status",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'active'::character varying",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 9
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "medical_devices_pkey",
+          "indexdef": "CREATE UNIQUE INDEX medical_devices_pkey ON public.medical_devices USING btree (id)"
+        },
+        {
+          "indexname": "medical_devices_serial_number_key",
+          "indexdef": "CREATE UNIQUE INDEX medical_devices_serial_number_key ON public.medical_devices USING btree (serial_number)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "48 kB"
+      }
+    },
+    "ml_models": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('ml_models_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "name",
+          "data_type": "character varying",
+          "character_maximum_length": 200,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "version",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "model_type",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "file_path",
+          "data_type": "character varying",
+          "character_maximum_length": 500,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "model_params",
+          "data_type": "jsonb",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "accuracy",
+          "data_type": "numeric",
+          "character_maximum_length": null,
+          "numeric_precision": 5,
+          "numeric_scale": 4,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "training_data_size",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "is_active",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "created_by",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 12
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 13
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "ml_models_created_by_fkey",
+          "column_name": "created_by",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "ml_models_name_version_key",
+          "indexdef": "CREATE UNIQUE INDEX ml_models_name_version_key ON public.ml_models USING btree (name, version)"
+        },
+        {
+          "indexname": "ml_models_pkey",
+          "indexdef": "CREATE UNIQUE INDEX ml_models_pkey ON public.ml_models USING btree (id)"
+        },
+        {
+          "indexname": "idx_ml_models_created_by",
+          "indexdef": "CREATE INDEX idx_ml_models_created_by ON public.ml_models USING btree (created_by)"
+        },
+        {
+          "indexname": "idx_ml_models_is_active",
+          "indexdef": "CREATE INDEX idx_ml_models_is_active ON public.ml_models USING btree (is_active)"
+        },
+        {
+          "indexname": "idx_ml_models_name",
+          "indexdef": "CREATE INDEX idx_ml_models_name ON public.ml_models USING btree (name)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "update_ml_models_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "96 kB"
+      }
+    },
+    "notifications": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('notifications_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "title",
+          "data_type": "character varying",
+          "character_maximum_length": 200,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "message",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "type",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'info'::character varying",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "is_read",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "detection_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "expires_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 9
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "notifications_detection_id_fkey",
+          "column_name": "detection_id",
+          "foreign_table_name": "detections",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "notifications_user_id_fkey",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "notifications_pkey",
+          "indexdef": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)"
+        },
+        {
+          "indexname": "idx_notifications_created_at",
+          "indexdef": "CREATE INDEX idx_notifications_created_at ON public.notifications USING btree (created_at)"
+        },
+        {
+          "indexname": "idx_notifications_is_read",
+          "indexdef": "CREATE INDEX idx_notifications_is_read ON public.notifications USING btree (is_read)"
+        },
+        {
+          "indexname": "idx_notifications_user_id",
+          "indexdef": "CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 0,
+        "total_size": "40 kB"
+      }
+    },
+    "permissions": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('permissions_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "name",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "display_name",
+          "data_type": "character varying",
+          "character_maximum_length": 150,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "module",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'general'::character varying",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "is_system_permission",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 8
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "permissions_name_key",
+          "indexdef": "CREATE UNIQUE INDEX permissions_name_key ON public.permissions USING btree (name)"
+        },
+        {
+          "indexname": "permissions_pkey",
+          "indexdef": "CREATE UNIQUE INDEX permissions_pkey ON public.permissions USING btree (id)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "update_permissions_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 39,
+        "total_size": "48 kB"
+      }
+    },
+    "role_permissions": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('role_permissions_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "role_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "permission_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 4
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "role_permissions_permission_id_fkey",
+          "column_name": "permission_id",
+          "foreign_table_name": "permissions",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "role_permissions_role_id_fkey",
+          "column_name": "role_id",
+          "foreign_table_name": "roles",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "role_permissions_pkey",
+          "indexdef": "CREATE UNIQUE INDEX role_permissions_pkey ON public.role_permissions USING btree (id)"
+        },
+        {
+          "indexname": "role_permissions_role_id_permission_id_key",
+          "indexdef": "CREATE UNIQUE INDEX role_permissions_role_id_permission_id_key ON public.role_permissions USING btree (role_id, permission_id)"
+        },
+        {
+          "indexname": "idx_role_permissions_permission_id",
+          "indexdef": "CREATE INDEX idx_role_permissions_permission_id ON public.role_permissions USING btree (permission_id)"
+        },
+        {
+          "indexname": "idx_role_permissions_role_id",
+          "indexdef": "CREATE INDEX idx_role_permissions_role_id ON public.role_permissions USING btree (role_id)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 63,
+        "total_size": "72 kB"
+      }
+    },
+    "roles": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('roles_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "name",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "display_name",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "is_system_role",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 7
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "roles_name_key",
+          "indexdef": "CREATE UNIQUE INDEX roles_name_key ON public.roles USING btree (name)"
+        },
+        {
+          "indexname": "roles_pkey",
+          "indexdef": "CREATE UNIQUE INDEX roles_pkey ON public.roles USING btree (id)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "update_roles_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 7,
+        "total_size": "48 kB"
+      }
+    },
+    "round_participation": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('round_participation_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "round_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "client_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "model_update",
+          "data_type": "bytea",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "local_accuracy",
+          "data_type": "numeric",
+          "character_maximum_length": null,
+          "numeric_precision": 5,
+          "numeric_scale": 4,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "samples_used",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "training_time",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "submitted_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 8
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "round_participation_client_id_fkey",
+          "column_name": "client_id",
+          "foreign_table_name": "federated_clients",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        },
+        {
+          "constraint_name": "round_participation_round_id_fkey",
+          "column_name": "round_id",
+          "foreign_table_name": "training_rounds",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "round_participation_pkey",
+          "indexdef": "CREATE UNIQUE INDEX round_participation_pkey ON public.round_participation USING btree (id)"
+        },
+        {
+          "indexname": "round_participation_round_id_client_id_key",
+          "indexdef": "CREATE UNIQUE INDEX round_participation_round_id_client_id_key ON public.round_participation USING btree (round_id, client_id)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 0,
+        "total_size": "24 kB"
+      }
+    },
+    "system_config": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('system_config_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "config_key",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "config_value",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "data_type",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'string'::character varying",
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "is_system_config",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 8
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "system_config_config_key_key",
+          "indexdef": "CREATE UNIQUE INDEX system_config_config_key_key ON public.system_config USING btree (config_key)"
+        },
+        {
+          "indexname": "system_config_pkey",
+          "indexdef": "CREATE UNIQUE INDEX system_config_pkey ON public.system_config USING btree (id)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "update_system_config_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 26,
+        "total_size": "48 kB"
+      }
+    },
+    "system_configuration": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('system_configuration_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "federated_server_host",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'localhost'::character varying",
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "federated_server_port",
+          "data_type": "character varying",
+          "character_maximum_length": 10,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'8080'::character varying",
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "aggregation_rounds",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "10",
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "min_clients_per_round",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "3",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "model_update_interval",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "24",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "alert_notification_emails",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "session_timeout",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "8",
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "max_login_attempts",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "5",
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "force_ssl",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "false",
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "enable_api",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "true",
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "api_token_expiration",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "2",
+          "ordinal_position": 12
+        },
+        {
+          "column_name": "enable_email_alerts",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "true",
+          "ordinal_position": 13
+        },
+        {
+          "column_name": "alert_severity_threshold",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'medium'::character varying",
+          "ordinal_position": 14
+        },
+        {
+          "column_name": "max_alerts_per_hour",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "10",
+          "ordinal_position": 15
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 16
+        },
+        {
+          "column_name": "updated_by",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 17
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "system_configuration_updated_by_fkey",
+          "column_name": "updated_by",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "system_configuration_pkey",
+          "indexdef": "CREATE UNIQUE INDEX system_configuration_pkey ON public.system_configuration USING btree (id)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "32 kB"
+      }
+    },
+    "training_rounds": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('training_rounds_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "round_number",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "model_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "status",
+          "data_type": "character varying",
+          "character_maximum_length": 20,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'pending'::character varying",
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "participants_count",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "min_participants",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "3",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "max_participants",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "10",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "global_accuracy",
+          "data_type": "numeric",
+          "character_maximum_length": null,
+          "numeric_precision": 5,
+          "numeric_scale": 4,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "aggregation_method",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "'fedavg'::character varying",
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "started_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "completed_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 12
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 13
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "training_rounds_model_id_fkey",
+          "column_name": "model_id",
+          "foreign_table_name": "ml_models",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "training_rounds_pkey",
+          "indexdef": "CREATE UNIQUE INDEX training_rounds_pkey ON public.training_rounds USING btree (id)"
+        },
+        {
+          "indexname": "idx_training_rounds_model_id",
+          "indexdef": "CREATE INDEX idx_training_rounds_model_id ON public.training_rounds USING btree (model_id)"
+        },
+        {
+          "indexname": "idx_training_rounds_round_number",
+          "indexdef": "CREATE INDEX idx_training_rounds_round_number ON public.training_rounds USING btree (round_number)"
+        },
+        {
+          "indexname": "idx_training_rounds_status",
+          "indexdef": "CREATE INDEX idx_training_rounds_status ON public.training_rounds USING btree (status)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "update_training_rounds_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 0,
+        "total_size": "32 kB"
+      }
+    },
+    "user_role_stats": {
+      "type": "VIEW",
+      "columns": [
+        {
+          "column_name": "role_name",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "user_count",
+          "data_type": "bigint",
+          "character_maximum_length": null,
+          "numeric_precision": 64,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "active_users",
+          "data_type": "bigint",
+          "character_maximum_length": null,
+          "numeric_precision": 64,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 3
+        }
+      ],
+      "primary_key": [],
+      "foreign_keys": [],
+      "indexes": [],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 7,
+        "total_size": "0 bytes"
+      }
+    },
+    "user_sessions": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('user_sessions_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "user_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "session_token",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "ip_address",
+          "data_type": "inet",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "user_agent",
+          "data_type": "text",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "is_active",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "true",
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "last_activity",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "expires_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 9
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "user_sessions_user_id_fkey",
+          "column_name": "user_id",
+          "foreign_table_name": "users",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "CASCADE"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "user_sessions_pkey",
+          "indexdef": "CREATE UNIQUE INDEX user_sessions_pkey ON public.user_sessions USING btree (id)"
+        },
+        {
+          "indexname": "user_sessions_session_token_key",
+          "indexdef": "CREATE UNIQUE INDEX user_sessions_session_token_key ON public.user_sessions USING btree (session_token)"
+        }
+      ],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 0,
+        "total_size": "24 kB"
+      }
+    },
+    "users": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": "nextval('users_id_seq'::regclass)",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "username",
+          "data_type": "character varying",
+          "character_maximum_length": 50,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "email",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "password_hash",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 4
+        },
+        {
+          "column_name": "first_name",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 5
+        },
+        {
+          "column_name": "last_name",
+          "data_type": "character varying",
+          "character_maximum_length": 100,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 6
+        },
+        {
+          "column_name": "role_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "NO",
+          "column_default": null,
+          "ordinal_position": 7
+        },
+        {
+          "column_name": "is_active",
+          "data_type": "boolean",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "true",
+          "ordinal_position": 8
+        },
+        {
+          "column_name": "last_login",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 9
+        },
+        {
+          "column_name": "failed_login_attempts",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": "0",
+          "ordinal_position": 10
+        },
+        {
+          "column_name": "locked_until",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 11
+        },
+        {
+          "column_name": "password_reset_token",
+          "data_type": "character varying",
+          "character_maximum_length": 255,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 12
+        },
+        {
+          "column_name": "password_reset_expires",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 13
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 14
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp without time zone",
+          "character_maximum_length": null,
+          "numeric_precision": null,
+          "numeric_scale": null,
+          "is_nullable": "YES",
+          "column_default": "CURRENT_TIMESTAMP",
+          "ordinal_position": 15
+        },
+        {
+          "column_name": "allowed_computing_device_id",
+          "data_type": "integer",
+          "character_maximum_length": null,
+          "numeric_precision": 32,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 16
+        }
+      ],
+      "primary_key": [
+        {
+          "attname": "id"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "constraint_name": "users_allowed_computing_device_id_fkey",
+          "column_name": "allowed_computing_device_id",
+          "foreign_table_name": "computing_devices",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        },
+        {
+          "constraint_name": "users_role_id_fkey",
+          "column_name": "role_id",
+          "foreign_table_name": "roles",
+          "foreign_column_name": "id",
+          "update_rule": "NO ACTION",
+          "delete_rule": "NO ACTION"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "users_email_key",
+          "indexdef": "CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)"
+        },
+        {
+          "indexname": "users_pkey",
+          "indexdef": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+        },
+        {
+          "indexname": "users_username_key",
+          "indexdef": "CREATE UNIQUE INDEX users_username_key ON public.users USING btree (username)"
+        },
+        {
+          "indexname": "idx_users_email",
+          "indexdef": "CREATE INDEX idx_users_email ON public.users USING btree (email)"
+        },
+        {
+          "indexname": "idx_users_is_active",
+          "indexdef": "CREATE INDEX idx_users_is_active ON public.users USING btree (is_active)"
+        },
+        {
+          "indexname": "idx_users_role_id",
+          "indexdef": "CREATE INDEX idx_users_role_id ON public.users USING btree (role_id)"
+        },
+        {
+          "indexname": "idx_users_username",
+          "indexdef": "CREATE INDEX idx_users_username ON public.users USING btree (username)"
+        }
+      ],
+      "triggers": [
+        {
+          "trigger_name": "log_user_changes_trigger",
+          "event_manipulation": "INSERT",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION log_user_changes()"
+        },
+        {
+          "trigger_name": "log_user_changes_trigger",
+          "event_manipulation": "DELETE",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION log_user_changes()"
+        },
+        {
+          "trigger_name": "log_user_changes_trigger",
+          "event_manipulation": "UPDATE",
+          "action_timing": "AFTER",
+          "action_statement": "EXECUTE FUNCTION log_user_changes()"
+        },
+        {
+          "trigger_name": "update_users_updated_at",
+          "event_manipulation": "UPDATE",
+          "action_timing": "BEFORE",
+          "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 5,
+        "total_size": "128 kB"
+      }
+    },
+    "v_normal_traffic": {
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "column_name": "count",
+          "data_type": "bigint",
+          "character_maximum_length": null,
+          "numeric_precision": 64,
+          "numeric_scale": 0,
+          "is_nullable": "YES",
+          "column_default": null,
+          "ordinal_position": 1
+        }
+      ],
+      "primary_key": [],
+      "foreign_keys": [],
+      "indexes": [],
+      "triggers": [],
+      "check_constraints": [],
+      "statistics": {
+        "row_count": 1,
+        "total_size": "8192 bytes"
+      }
+    }
+  },
+  "views": {
+    "client_activity_stats": {
+      "definition": " SELECT fc.name AS client_name,\n    fc.status,\n    count(d.id) AS total_detections,\n    max(d.\"timestamp\") AS last_detection,\n    fc.last_seen\n   FROM (federated_clients fc\n     LEFT JOIN detections d ON ((fc.id = d.client_id)))\n  GROUP BY fc.id, fc.name, fc.status, fc.last_seen\n  ORDER BY (count(d.id)) DESC;"
+    },
+    "detection_severity_stats": {
+      "definition": " SELECT severity,\n    count(*) AS detection_count,\n    avg(confidence_score) AS avg_confidence\n   FROM detections\n  WHERE (\"timestamp\" >= (CURRENT_DATE - '30 days'::interval))\n  GROUP BY severity\n  ORDER BY\n        CASE severity\n            WHEN 'critical'::text THEN 1\n            WHEN 'high'::text THEN 2\n            WHEN 'medium'::text THEN 3\n            WHEN 'low'::text THEN 4\n            ELSE NULL::integer\n        END;"
+    },
+    "user_role_stats": {
+      "definition": " SELECT r.display_name AS role_name,\n    count(u.id) AS user_count,\n    count(\n        CASE\n            WHEN u.is_active THEN 1\n            ELSE NULL::integer\n        END) AS active_users\n   FROM (roles r\n     LEFT JOIN users u ON ((r.id = u.role_id)))\n  GROUP BY r.id, r.display_name\n  ORDER BY (count(u.id)) DESC;"
+    }
+  },
+  "functions": {
+    "armor": {
+      "function_name": "armor",
+      "arguments": "bytea, text[], text[]",
+      "return_type": "text",
+      "language": "c",
+      "source_code": "pg_armor",
+      "description": null
+    },
+    "cleanup_old_logs": {
+      "function_name": "cleanup_old_logs",
+      "arguments": "days_to_keep integer DEFAULT 90",
+      "return_type": "integer",
+      "language": "plpgsql",
+      "source_code": "\nDECLARE\n    deleted_count INTEGER;\nBEGIN\n    DELETE FROM activity_logs \n    WHERE timestamp < CURRENT_DATE - INTERVAL '1 day' * days_to_keep;\n    \n    GET DIAGNOSTICS deleted_count = ROW_COUNT;\n    RETURN deleted_count;\nEND;\n",
+      "description": null
+    },
+    "crypt": {
+      "function_name": "crypt",
+      "arguments": "text, text",
+      "return_type": "text",
+      "language": "c",
+      "source_code": "pg_crypt",
+      "description": null
+    },
+    "dearmor": {
+      "function_name": "dearmor",
+      "arguments": "text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_dearmor",
+      "description": null
+    },
+    "decrypt": {
+      "function_name": "decrypt",
+      "arguments": "bytea, bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_decrypt",
+      "description": null
+    },
+    "decrypt_iv": {
+      "function_name": "decrypt_iv",
+      "arguments": "bytea, bytea, bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_decrypt_iv",
+      "description": null
+    },
+    "digest": {
+      "function_name": "digest",
+      "arguments": "text, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_digest",
+      "description": null
+    },
+    "encrypt": {
+      "function_name": "encrypt",
+      "arguments": "bytea, bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_encrypt",
+      "description": null
+    },
+    "encrypt_iv": {
+      "function_name": "encrypt_iv",
+      "arguments": "bytea, bytea, bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_encrypt_iv",
+      "description": null
+    },
+    "gen_random_bytes": {
+      "function_name": "gen_random_bytes",
+      "arguments": "integer",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_random_bytes",
+      "description": null
+    },
+    "gen_random_uuid": {
+      "function_name": "gen_random_uuid",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "pg_random_uuid",
+      "description": null
+    },
+    "gen_salt": {
+      "function_name": "gen_salt",
+      "arguments": "text, integer",
+      "return_type": "text",
+      "language": "c",
+      "source_code": "pg_gen_salt_rounds",
+      "description": null
+    },
+    "get_dashboard_stats": {
+      "function_name": "get_dashboard_stats",
+      "arguments": "",
+      "return_type": "json",
+      "language": "plpgsql",
+      "source_code": "\nDECLARE\n    result JSON;\nBEGIN\n    SELECT json_build_object(\n        'total_clients', (SELECT COUNT(*) FROM federated_clients),\n        'active_clients', (SELECT COUNT(*) FROM federated_clients WHERE status = 'active'),\n        'total_detections', (SELECT COUNT(*) FROM detections),\n        'detections_today', (SELECT COUNT(*) FROM detections WHERE DATE(timestamp) = CURRENT_DATE),\n        'critical_detections', (SELECT COUNT(*) FROM detections WHERE severity = 'critical' AND timestamp >= CURRENT_DATE - INTERVAL '24 hours'),\n        'active_models', (SELECT COUNT(*) FROM ml_models WHERE is_active = TRUE)\n    ) INTO result;\n    \n    RETURN result;\nEND;\n",
+      "description": null
+    },
+    "get_user_permissions": {
+      "function_name": "get_user_permissions",
+      "arguments": "user_id_param integer",
+      "return_type": "TABLE(permission_name character varying, permission_display_name character varying, module character varying)",
+      "language": "plpgsql",
+      "source_code": "\nBEGIN\n    RETURN QUERY\n    SELECT p.name, p.display_name, p.module\n    FROM permissions p\n    JOIN role_permissions rp ON p.id = rp.permission_id\n    JOIN users u ON u.role_id = rp.role_id\n    WHERE u.id = user_id_param;\nEND;\n",
+      "description": null
+    },
+    "hmac": {
+      "function_name": "hmac",
+      "arguments": "text, text, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pg_hmac",
+      "description": null
+    },
+    "log_user_changes": {
+      "function_name": "log_user_changes",
+      "arguments": "",
+      "return_type": "trigger",
+      "language": "plpgsql",
+      "source_code": "\nBEGIN\n    IF TG_OP = 'INSERT' THEN\n        INSERT INTO activity_logs (user_id, action, resource_type, resource_id, details)\n        VALUES (NEW.id, 'user_created', 'user', NEW.id, \n                'Usuario creado: ' || NEW.username);\n        RETURN NEW;\n    ELSIF TG_OP = 'UPDATE' THEN\n        INSERT INTO activity_logs (user_id, action, resource_type, resource_id, details)\n        VALUES (NEW.id, 'user_updated', 'user', NEW.id, \n                'Usuario actualizado: ' || NEW.username);\n        RETURN NEW;\n    ELSIF TG_OP = 'DELETE' THEN\n        INSERT INTO activity_logs (user_id, action, resource_type, resource_id, details)\n        VALUES (OLD.id, 'user_deleted', 'user', OLD.id, \n                'Usuario eliminado: ' || OLD.username);\n        RETURN OLD;\n    END IF;\n    RETURN NULL;\nEND;\n",
+      "description": null
+    },
+    "pgp_armor_headers": {
+      "function_name": "pgp_armor_headers",
+      "arguments": "text, OUT key text, OUT value text",
+      "return_type": "SETOF record",
+      "language": "c",
+      "source_code": "pgp_armor_headers",
+      "description": null
+    },
+    "pgp_key_id": {
+      "function_name": "pgp_key_id",
+      "arguments": "bytea",
+      "return_type": "text",
+      "language": "c",
+      "source_code": "pgp_key_id_w",
+      "description": null
+    },
+    "pgp_pub_decrypt": {
+      "function_name": "pgp_pub_decrypt",
+      "arguments": "bytea, bytea, text, text",
+      "return_type": "text",
+      "language": "c",
+      "source_code": "pgp_pub_decrypt_text",
+      "description": null
+    },
+    "pgp_pub_decrypt_bytea": {
+      "function_name": "pgp_pub_decrypt_bytea",
+      "arguments": "bytea, bytea, text, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pgp_pub_decrypt_bytea",
+      "description": null
+    },
+    "pgp_pub_encrypt": {
+      "function_name": "pgp_pub_encrypt",
+      "arguments": "text, bytea",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pgp_pub_encrypt_text",
+      "description": null
+    },
+    "pgp_pub_encrypt_bytea": {
+      "function_name": "pgp_pub_encrypt_bytea",
+      "arguments": "bytea, bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pgp_pub_encrypt_bytea",
+      "description": null
+    },
+    "pgp_sym_decrypt": {
+      "function_name": "pgp_sym_decrypt",
+      "arguments": "bytea, text, text",
+      "return_type": "text",
+      "language": "c",
+      "source_code": "pgp_sym_decrypt_text",
+      "description": null
+    },
+    "pgp_sym_decrypt_bytea": {
+      "function_name": "pgp_sym_decrypt_bytea",
+      "arguments": "bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pgp_sym_decrypt_bytea",
+      "description": null
+    },
+    "pgp_sym_encrypt": {
+      "function_name": "pgp_sym_encrypt",
+      "arguments": "text, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pgp_sym_encrypt_text",
+      "description": null
+    },
+    "pgp_sym_encrypt_bytea": {
+      "function_name": "pgp_sym_encrypt_bytea",
+      "arguments": "bytea, text",
+      "return_type": "bytea",
+      "language": "c",
+      "source_code": "pgp_sym_encrypt_bytea",
+      "description": null
+    },
+    "recalculate_detection_stats": {
+      "function_name": "recalculate_detection_stats",
+      "arguments": "",
+      "return_type": "void",
+      "language": "plpgsql",
+      "source_code": "\nDECLARE\n    v_total_packets INTEGER;\n    v_total_detections INTEGER;\n    v_total_suspicious INTEGER;\n    v_total_critical INTEGER;\n    v_total_high INTEGER;\n    v_total_medium INTEGER;\n    v_total_low INTEGER;\n    v_normal_traffic INTEGER;\nBEGIN\n    -- Obtener total de paquetes del campo raw_data\n    SELECT COALESCE(MAX(CAST(raw_data->>'total_packets_scanned' AS INTEGER)), 0) \n    INTO v_total_packets\n    FROM detections \n    WHERE raw_data->>'total_packets_scanned' IS NOT NULL;\n    \n    -- Total de detecciones (excluyendo tráfico normal)\n    SELECT COUNT(*) \n    INTO v_total_detections\n    FROM detections \n    WHERE anomaly_type != 'Normal Traffic' \n    AND anomaly_type != 'TOTAL_COUNT';\n    \n    -- Total sospechosas\n    SELECT COUNT(*) \n    INTO v_total_suspicious\n    FROM detections \n    WHERE anomaly_type = 'Suspicious Activity';\n    \n    -- Total críticas\n    SELECT COUNT(*) \n    INTO v_total_critical\n    FROM detections \n    WHERE severity = 'critical';\n    \n    -- Total altas\n    SELECT COUNT(*) \n    INTO v_total_high\n    FROM detections \n    WHERE severity = 'high';\n    \n    -- Total medias\n    SELECT COUNT(*) \n    INTO v_total_medium\n    FROM detections \n    WHERE severity = 'medium';\n    \n    -- Total bajas\n    SELECT COUNT(*) \n    INTO v_total_low\n    FROM detections \n    WHERE severity = 'low';\n    \n    -- Tráfico normal\n    SELECT COUNT(*) \n    INTO v_normal_traffic\n    FROM detections \n    WHERE anomaly_type = 'Normal Traffic';\n    \n    -- Actualizar o insertar estadísticas\n    UPDATE detection_stats SET\n        total_packets_scanned = v_total_packets,\n        total_detections = v_total_detections,\n        total_suspicious = v_total_suspicious,\n        total_critical = v_total_critical,\n        total_high = v_total_high,\n        total_medium = v_total_medium,\n        total_low = v_total_low,\n        normal_traffic = v_normal_traffic,\n        last_updated = CURRENT_TIMESTAMP\n    WHERE id = 1;\n    \n    -- Si no existe el registro, crearlo\n    IF NOT FOUND THEN\n        INSERT INTO detection_stats (\n            total_packets_scanned, total_detections, total_suspicious, total_critical,\n            total_high, total_medium, total_low, normal_traffic\n        ) VALUES (\n            v_total_packets, v_total_detections, v_total_suspicious, v_total_critical,\n            v_total_high, v_total_medium, v_total_low, v_normal_traffic\n        );\n    END IF;\n    \n    RAISE NOTICE 'Estadísticas recalculadas: % paquetes, % detecciones', \n                 v_total_packets, v_total_detections;\nEND;\n",
+      "description": null
+    },
+    "update_client_last_seen": {
+      "function_name": "update_client_last_seen",
+      "arguments": "",
+      "return_type": "trigger",
+      "language": "plpgsql",
+      "source_code": "\nBEGIN\n    IF TG_OP = 'INSERT' THEN\n        UPDATE federated_clients \n        SET last_seen = CURRENT_TIMESTAMP \n        WHERE id = NEW.client_id;\n    END IF;\n    RETURN NULL;\nEND;\n",
+      "description": null
+    },
+    "update_detection_stats": {
+      "function_name": "update_detection_stats",
+      "arguments": "",
+      "return_type": "trigger",
+      "language": "plpgsql",
+      "source_code": "\nBEGIN\n    INSERT INTO detection_stats (\n        stats_key,\n        total_packets_scanned,\n        total_detections,\n        total_suspicious,\n        total_critical,\n        total_high,\n        total_medium,\n        total_low,\n        normal_traffic,\n        last_updated,\n        created_at\n    )\n    SELECT \n        'global_stats',\n        COUNT(*) as total_packets_scanned,\n        COUNT(CASE WHEN severity != 'low' OR anomaly_type != 'Normal Traffic' THEN 1 END) as total_detections,\n        COUNT(CASE WHEN anomaly_type = 'Suspicious Activity' THEN 1 END) as total_suspicious,\n        COUNT(CASE WHEN severity = 'critical' THEN 1 END) as total_critical,\n        COUNT(CASE WHEN severity = 'high' THEN 1 END) as total_high,\n        COUNT(CASE WHEN severity = 'medium' THEN 1 END) as total_medium,\n        COUNT(CASE WHEN severity = 'low' THEN 1 END) as total_low,\n        COUNT(CASE WHEN anomaly_type = 'Normal Traffic' THEN 1 END) as normal_traffic,\n        NOW(),\n        COALESCE((SELECT created_at FROM detection_stats WHERE stats_key = 'global_stats'), NOW())\n    FROM detections\n    ON CONFLICT (stats_key) \n    DO UPDATE SET\n        total_packets_scanned = EXCLUDED.total_packets_scanned,\n        total_detections = EXCLUDED.total_detections,\n        total_suspicious = EXCLUDED.total_suspicious,\n        total_critical = EXCLUDED.total_critical,\n        total_high = EXCLUDED.total_high,\n        total_medium = EXCLUDED.total_medium,\n        total_low = EXCLUDED.total_low,\n        normal_traffic = EXCLUDED.normal_traffic,\n        last_updated = NOW();\n    \n    RETURN NULL;\nEND;\n",
+      "description": null
+    },
+    "update_updated_at_column": {
+      "function_name": "update_updated_at_column",
+      "arguments": "",
+      "return_type": "trigger",
+      "language": "plpgsql",
+      "source_code": "\nBEGIN\n    NEW.updated_at = CURRENT_TIMESTAMP;\n    RETURN NEW;\nEND;\n",
+      "description": null
+    },
+    "uuid_generate_v1": {
+      "function_name": "uuid_generate_v1",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_generate_v1",
+      "description": null
+    },
+    "uuid_generate_v1mc": {
+      "function_name": "uuid_generate_v1mc",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_generate_v1mc",
+      "description": null
+    },
+    "uuid_generate_v3": {
+      "function_name": "uuid_generate_v3",
+      "arguments": "namespace uuid, name text",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_generate_v3",
+      "description": null
+    },
+    "uuid_generate_v4": {
+      "function_name": "uuid_generate_v4",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_generate_v4",
+      "description": null
+    },
+    "uuid_generate_v5": {
+      "function_name": "uuid_generate_v5",
+      "arguments": "namespace uuid, name text",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_generate_v5",
+      "description": null
+    },
+    "uuid_nil": {
+      "function_name": "uuid_nil",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_nil",
+      "description": null
+    },
+    "uuid_ns_dns": {
+      "function_name": "uuid_ns_dns",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_ns_dns",
+      "description": null
+    },
+    "uuid_ns_oid": {
+      "function_name": "uuid_ns_oid",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_ns_oid",
+      "description": null
+    },
+    "uuid_ns_url": {
+      "function_name": "uuid_ns_url",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_ns_url",
+      "description": null
+    },
+    "uuid_ns_x500": {
+      "function_name": "uuid_ns_x500",
+      "arguments": "",
+      "return_type": "uuid",
+      "language": "c",
+      "source_code": "uuid_ns_x500",
+      "description": null
+    }
+  },
+  "triggers": {},
+  "sequences": {
+    "activity_logs_id_seq": {
+      "sequence_name": "activity_logs_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "computing_devices_id_seq": {
+      "sequence_name": "computing_devices_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "detection_stats_id_seq": {
+      "sequence_name": "detection_stats_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "detections_id_seq": {
+      "sequence_name": "detections_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "device_connections_id_seq": {
+      "sequence_name": "device_connections_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "federated_clients_id_seq": {
+      "sequence_name": "federated_clients_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "medical_devices_id_seq": {
+      "sequence_name": "medical_devices_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "ml_models_id_seq": {
+      "sequence_name": "ml_models_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "notifications_id_seq": {
+      "sequence_name": "notifications_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "permissions_id_seq": {
+      "sequence_name": "permissions_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "role_permissions_id_seq": {
+      "sequence_name": "role_permissions_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "roles_id_seq": {
+      "sequence_name": "roles_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "round_participation_id_seq": {
+      "sequence_name": "round_participation_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "system_config_id_seq": {
+      "sequence_name": "system_config_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "system_configuration_id_seq": {
+      "sequence_name": "system_configuration_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "training_rounds_id_seq": {
+      "sequence_name": "training_rounds_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "user_sessions_id_seq": {
+      "sequence_name": "user_sessions_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    },
+    "users_id_seq": {
+      "sequence_name": "users_id_seq",
+      "data_type": "integer",
+      "start_value": "1",
+      "minimum_value": "1",
+      "maximum_value": "2147483647",
+      "increment": "1"
+    }
+  },
+  "indexes": {},
+  "constraints": {},
+  "relationships": [
+    {
+      "from_table": "computing_devices",
+      "from_column": "assigned_to",
+      "to_table": "users",
+      "to_column": "id",
+      "constraint_name": "computing_devices_assigned_to_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "detections",
+      "from_column": "client_id",
+      "to_table": "federated_clients",
+      "to_column": "id",
+      "constraint_name": "detections_client_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "detections",
+      "from_column": "model_id",
+      "to_table": "ml_models",
+      "to_column": "id",
+      "constraint_name": "detections_model_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "device_connections",
+      "from_column": "computing_device_id",
+      "to_table": "computing_devices",
+      "to_column": "id",
+      "constraint_name": "device_connections_computing_device_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "device_connections",
+      "from_column": "connected_by",
+      "to_table": "users",
+      "to_column": "id",
+      "constraint_name": "device_connections_connected_by_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "device_connections",
+      "from_column": "medical_device_id",
+      "to_table": "medical_devices",
+      "to_column": "id",
+      "constraint_name": "device_connections_medical_device_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "ml_models",
+      "from_column": "created_by",
+      "to_table": "users",
+      "to_column": "id",
+      "constraint_name": "ml_models_created_by_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "notifications",
+      "from_column": "detection_id",
+      "to_table": "detections",
+      "to_column": "id",
+      "constraint_name": "notifications_detection_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "notifications",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "constraint_name": "notifications_user_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "role_permissions",
+      "from_column": "permission_id",
+      "to_table": "permissions",
+      "to_column": "id",
+      "constraint_name": "role_permissions_permission_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "from_table": "role_permissions",
+      "from_column": "role_id",
+      "to_table": "roles",
+      "to_column": "id",
+      "constraint_name": "role_permissions_role_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "from_table": "round_participation",
+      "from_column": "client_id",
+      "to_table": "federated_clients",
+      "to_column": "id",
+      "constraint_name": "round_participation_client_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "from_table": "round_participation",
+      "from_column": "round_id",
+      "to_table": "training_rounds",
+      "to_column": "id",
+      "constraint_name": "round_participation_round_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "from_table": "system_configuration",
+      "from_column": "updated_by",
+      "to_table": "users",
+      "to_column": "id",
+      "constraint_name": "system_configuration_updated_by_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "training_rounds",
+      "from_column": "model_id",
+      "to_table": "ml_models",
+      "to_column": "id",
+      "constraint_name": "training_rounds_model_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "user_sessions",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "constraint_name": "user_sessions_user_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "from_table": "users",
+      "from_column": "allowed_computing_device_id",
+      "to_table": "computing_devices",
+      "to_column": "id",
+      "constraint_name": "users_allowed_computing_device_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    },
+    {
+      "from_table": "users",
+      "from_column": "role_id",
+      "to_table": "roles",
+      "to_column": "id",
+      "constraint_name": "users_role_id_fkey",
+      "update_rule": "NO ACTION",
+      "delete_rule": "NO ACTION"
+    }
+  ]
+}

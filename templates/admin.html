@@ -47,8 +47,8 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs"
-                            type="button" role="tab" aria-controls="logs" aria-selected="false">
+                        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button"
+                            role="tab" aria-controls="logs" aria-selected="false">
                             <i class="fas fa-list me-1"></i>Logs
                         </button>
                     </li>
@@ -58,7 +58,7 @@
                     <!-- ===== TAB GENERAL ===== -->
                     <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
                         <h6 class="mb-4">Configuración General del Sistema</h6>
-                        
+
                         <form id="formConfigGeneral" method="POST" action="/admin/configuracion/general">
                             <div class="row">
                                 <div class="col-md-6">
@@ -69,23 +69,23 @@
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <label for="sistema_nombre" class="form-label">Nombre del Sistema</label>
-                                                <input type="text" class="form-control" id="sistema_nombre" 
-                                                       name="sistema_nombre" value="IDS Federado v1.0" required>
+                                                <input type="text" class="form-control" id="sistema_nombre"
+                                                    name="sistema_nombre" value="IDS Federado v1.0" required>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="max_detecciones_dia" class="form-label">Máximo Detecciones por Día</label>
-                                                <input type="number" class="form-control" id="max_detecciones_dia" 
-                                                       name="max_detecciones_dia" value="10000" min="100" max="100000">
+                                                <input type="number" class="form-control" id="max_detecciones_dia"
+                                                    name="max_detecciones_dia" value="10000" min="100" max="100000">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="umbral_confianza" class="form-label">Umbral de Confianza (%)</label>
-                                                <input type="number" class="form-control" id="umbral_confianza" 
-                                                       name="umbral_confianza" value="75" min="0" max="100">
+                                                <input type="number" class="form-control" id="umbral_confianza"
+                                                    name="umbral_confianza" value="75" min="0" max="100">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="card border-info">
                                         <div class="card-header bg-info text-white">
@@ -93,16 +93,16 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3 form-check">
-                                                <input type="checkbox" class="form-check-input" id="alertas_email" 
-                                                       name="alertas_email" checked>
+                                                <input type="checkbox" class="form-check-input" id="alertas_email"
+                                                    name="alertas_email" checked>
                                                 <label class="form-check-label" for="alertas_email">
                                                     Habilitar Alertas por Email
                                                 </label>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="email_admin" class="form-label">Email del Administrador</label>
-                                                <input type="email" class="form-control" id="email_admin" 
-                                                       name="email_admin" value="admin@empresa.com">
+                                                <input type="email" class="form-control" id="email_admin"
+                                                    name="email_admin" value="admin@empresa.com">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="intervalo_reportes" class="form-label">Intervalo de Reportes (horas)</label>
@@ -117,7 +117,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="fas fa-save me-1"></i>Guardar Configuración General
@@ -129,7 +129,7 @@
                     <!-- ===== TAB SERVIDOR FEDERADO ===== -->
                     <div class="tab-pane fade" id="federado" role="tabpanel" aria-labelledby="federado-tab">
                         <h6 class="mb-4">Configuración del Servidor Federado</h6>
-                        
+
                         <form id="formConfigFederado" method="POST" action="/admin/configuracion/federado">
                             <div class="row">
                                 <div class="col-md-6">
@@ -140,23 +140,23 @@
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <label for="servidor_host" class="form-label">Host del Servidor</label>
-                                                <input type="text" class="form-control" id="servidor_host" 
-                                                       name="servidor_host" value="0.0.0.0" required>
+                                                <input type="text" class="form-control" id="servidor_host"
+                                                    name="servidor_host" value="0.0.0.0" required>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="servidor_puerto" class="form-label">Puerto del Servidor</label>
-                                                <input type="number" class="form-control" id="servidor_puerto" 
-                                                       name="servidor_puerto" value="8765" min="1024" max="65535" required>
+                                                <input type="number" class="form-control" id="servidor_puerto"
+                                                    name="servidor_puerto" value="8765" min="1024" max="65535" required>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="max_clientes" class="form-label">Máximo de Clientes</label>
-                                                <input type="number" class="form-control" id="max_clientes" 
-                                                       name="max_clientes" value="10" min="1" max="50">
+                                                <input type="number" class="form-control" id="max_clientes"
+                                                    name="max_clientes" value="10" min="1" max="50">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="card border-warning">
                                         <div class="card-header bg-warning text-dark">
@@ -165,24 +165,24 @@
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <label for="rondas_agregacion" class="form-label">Rondas de Agregación</label>
-                                                <input type="number" class="form-control" id="rondas_agregacion" 
-                                                       name="rondas_agregacion" value="10" min="1" max="100">
+                                                <input type="number" class="form-control" id="rondas_agregacion"
+                                                    name="rondas_agregacion" value="10" min="1" max="100">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="min_clientes_ronda" class="form-label">Mínimo Clientes por Ronda</label>
-                                                <input type="number" class="form-control" id="min_clientes_ronda" 
-                                                       name="min_clientes_ronda" value="3" min="1" max="20">
+                                                <input type="number" class="form-control" id="min_clientes_ronda"
+                                                    name="min_clientes_ronda" value="3" min="1" max="20">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="timeout_cliente" class="form-label">Timeout Cliente (segundos)</label>
-                                                <input type="number" class="form-control" id="timeout_cliente" 
-                                                       name="timeout_cliente" value="30" min="10" max="300">
+                                                <input type="number" class="form-control" id="timeout_cliente"
+                                                    name="timeout_cliente" value="30" min="10" max="300">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-success btn-lg">
                                     <i class="fas fa-network-wired me-1"></i>Guardar Configuración Federada
@@ -190,15 +190,17 @@
                             </div>
                         </form>
                     </div>
+
                     <!-- ===== TAB USUARIOS ===== -->
                     <div class="tab-pane fade" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h6 class="mb-0">Gestión de Usuarios del Sistema</h6>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#modalNuevoUsuario">
                                 <i class="fas fa-plus me-1"></i>Nuevo Usuario
                             </button>
                         </div>
-                        
+
                         <!-- Resumen de usuarios -->
                         <div class="row mb-4">
                             <div class="col-md-3">
@@ -255,61 +257,66 @@
                                 </thead>
                                 <tbody>
                                     {% if usuarios %}
-                                        {% for usuario in usuarios %}
-                                        <tr>
-                                            <td>{{ usuario.id }}</td>
-                                            <td>
-                                                <strong>{{ usuario.username }}</strong>
-                                                {% if usuario.first_name or usuario.last_name %}
-                                                <br><small class="text-muted">{{ usuario.first_name }} {{ usuario.last_name }}</small>
-                                                {% endif %}
-                                            </td>
-                                            <td>{{ usuario.email }}</td>
-                                            <td>
-                                                <span class="badge bg-{% if usuario.role == 'admin' %}danger{% else %}info{% endif %}">
-                                                    {{ usuario.role|title }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                {% if usuario.is_active %}
-                                                <span class="badge bg-success">Activo</span>
+                                    {% for usuario in usuarios %}
+                                    <tr>
+                                        <td>{{ usuario.id }}</td>
+                                        <td>
+                                            <strong>{{ usuario.username }}</strong>
+                                            {% if usuario.first_name or usuario.last_name %}
+                                            <br><small class="text-muted">{{ usuario.first_name }} {{ usuario.last_name }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ usuario.email }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if usuario.role == 'admin' %}danger{% else %}info{% endif %}">
+                                                {{ usuario.role|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if usuario.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>{{ usuario.last_login.strftime('%d/%m/%Y %H:%M') if usuario.last_login else 'Nunca' }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <!-- Botón Editar -->
+                                                <button class="btn btn-outline-primary" title="Editar Usuario"
+                                                    onclick="editarUsuario({{ usuario.id }}, '{{ usuario.username }}', '{{ usuario.email }}', '{{ usuario.first_name }}', '{{ usuario.last_name }}', '{{ usuario.role }}', {{ usuario.is_active|lower }})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+
+                                                <!-- Botón Asignar Dispositivo -->
+                                                <button class="btn btn-outline-info" title="Asignar Dispositivo"
+                                                    onclick="asignarDispositivoUsuario({{ usuario.id }}, '{{ usuario.username }}')">
+                                                    <i class="fas fa-laptop"></i>
+                                                </button>
+
+                                                <!-- Botón Cambiar Contraseña -->
+                                                <button class="btn btn-outline-warning" title="Cambiar Contraseña"
+                                                    onclick="cambiarPasswordUsuario({{ usuario.id }}, '{{ usuario.username }}')">
+                                                    <i class="fas fa-key"></i>
+                                                </button>
+
+                                                <!-- Botón Eliminar -->
+                                                {% if usuario.id != 1 and usuario.id != session.user_id %}
+                                                <button class="btn btn-outline-danger" title="Eliminar Usuario"
+                                                    onclick="eliminarUsuario({{ usuario.id }}, '{{ usuario.username }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                                 {% else %}
-                                                <span class="badge bg-secondary">Inactivo</span>
+                                                <button class="btn btn-outline-secondary" title="No se puede eliminar" disabled>
+                                                    <i class="fas fa-shield-alt"></i>
+                                                </button>
                                                 {% endif %}
-                                            </td>
-                                            <td>
-                                                <small>{{ usuario.last_login.strftime('%d/%m/%Y %H:%M') if usuario.last_login else 'Nunca' }}</small>
-                                            </td>
-                                                                                        <!-- BUSCAR LA SECCIÓN DE BOTONES EN LA TABLA Y REEMPLAZAR POR: -->
-                                            <td class="text-center">
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <!-- Botón Editar -->
-                                                    <button class="btn btn-outline-primary" title="Editar Usuario" 
-                                                            onclick="editarUsuario({{ usuario.id }}, '{{ usuario.username }}', '{{ usuario.email }}', '{{ usuario.first_name }}', '{{ usuario.last_name }}', '{{ usuario.role }}', {{ usuario.is_active|lower }})">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    
-                                                    <!-- Botón Cambiar Contraseña -->
-                                                    <button class="btn btn-outline-warning" title="Cambiar Contraseña"
-                                                            onclick="cambiarPasswordUsuario({{ usuario.id }}, '{{ usuario.username }}')">
-                                                        <i class="fas fa-key"></i>
-                                                    </button>
-                                                    
-                                                    <!-- Botón Eliminar (no mostrar para admin principal o usuario actual) -->
-                                                    {% if usuario.id != 1 and usuario.id != session.user_id %}
-                                                    <button class="btn btn-outline-danger" title="Eliminar Usuario"
-                                                            onclick="eliminarUsuario({{ usuario.id }}, '{{ usuario.username }}')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                    {% else %}
-                                                    <button class="btn btn-outline-secondary" title="No se puede eliminar" disabled>
-                                                        <i class="fas fa-shield-alt"></i>
-                                                    </button>
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
                                     {% else %}
                                     <tr>
                                         <td colspan="7" class="text-center py-4">
@@ -328,8 +335,8 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h6 class="mb-0">Logs del Sistema</h6>
                             <div class="d-flex">
-                                <input type="text" class="form-control form-control-sm me-2" 
-                                       placeholder="Buscar en logs..." id="buscarLogs" style="width: 250px;">
+                                <input type="text" class="form-control form-control-sm me-2"
+                                    placeholder="Buscar en logs..." id="buscarLogs" style="width: 250px;">
                                 <button class="btn btn-outline-secondary btn-sm">
                                     <i class="fas fa-download me-1"></i>Exportar
                                 </button>
@@ -367,6 +374,10 @@
         </div>
     </div>
 </div>
+
+<!-- ========================================
+     MODALES
+     ======================================== -->
 
 <!-- Modal para Nuevo Usuario -->
 <div class="modal fade" id="modalNuevoUsuario" tabindex="-1">
@@ -413,6 +424,22 @@
                         <label for="nuevoPassword" class="form-label">Contraseña</label>
                         <input type="password" class="form-control" id="nuevoPassword" name="password" required>
                     </div>
+                    
+                    <!-- ✅ CAMPO DE DISPOSITIVO (OPCIONAL) -->
+                    <div class="mb-3">
+                        <label for="nuevoDispositivo" class="form-label">
+                            <i class="fas fa-laptop me-1"></i>Dispositivo de Cómputo (Opcional)
+                        </label>
+                        <select class="form-select" id="nuevoDispositivo" name="computing_device_id">
+                            <option value="">Sin dispositivo asignado</option>
+                            <!-- Se llenarán dinámicamente -->
+                        </select>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Dispositivo autorizado para este usuario
+                        </div>
+                    </div>
+                    
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="nuevoActivo" name="is_active" checked>
                         <label class="form-check-label" for="nuevoActivo">Usuario Activo</label>
@@ -428,147 +455,338 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalCrearDispositivo" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-laptop-medical me-2"></i>Registrar Nuevo Dispositivo de Cómputo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formCrearDispositivo">
+                <div class="modal-body">
+                    <!-- Tipo de Dispositivo -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-desktop me-1"></i>Tipo de Dispositivo *
+                        </label>
+                        <select class="form-select form-select-lg" id="nuevo_device_type" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="laptop">💻 Laptop - Portátil</option>
+                            <option value="desktop">🖥️ Desktop - Escritorio</option>
+                            <option value="tablet">📱 Tablet - Tableta</option>
+                        </select>
+                    </div>
+
+                    <!-- Marca y Modelo -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-tag me-1"></i>Marca *
+                                </label>
+                                <input type="text" class="form-control" id="nuevo_brand" 
+                                       placeholder="Ej: HP, Dell, Lenovo" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-bookmark me-1"></i>Modelo *
+                                </label>
+                                <input type="text" class="form-control" id="nuevo_model" 
+                                       placeholder="Ej: EliteBook 840" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Número de Serie -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-barcode me-1"></i>Número de Serie (Opcional)
+                        </label>
+                        <input type="text" class="form-control" id="nuevo_serial" 
+                               placeholder="Se generará automáticamente si se deja vacío">
+                        <div class="form-text">Identificador único del fabricante</div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-toggle-on me-1"></i>Estado Inicial
+                        </label>
+                        <select class="form-select" id="nuevo_status">
+                            <option value="active" selected>✅ Activo - Disponible para asignar</option>
+                            <option value="in_repair">🔧 En Reparación - No disponible</option>
+                            <option value="decommissioned">📦 Dado de Baja - Fuera de servicio</option>
+                        </select>
+                    </div>
+
+                    <!-- Alerta Informativa -->
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Información:</strong>
+                        <ul class="mb-0 mt-1">
+                            <li>Los campos marcados con * son obligatorios</li>
+                            <li>El dispositivo estará disponible inmediatamente para asignar a usuarios</li>
+                            <li>Tipo, marca y modelo identifican al dispositivo en el sistema</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Registrar Dispositivo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
+
+
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 Módulo de administración cargado');
-    
-    // Mantener tab activo después de reload
-    const activeTab = localStorage.getItem('adminConfigTab');
-    if (activeTab) {
-        const tabButton = document.querySelector(`#${activeTab}-tab`);
-        if (tabButton) {
-            const tab = new bootstrap.Tab(tabButton);
-            tab.show();
-        }
-    }
-    
-    // Guardar tab activo al cambiar
-    document.querySelectorAll('#configTabs button[data-bs-toggle="tab"]').forEach(tabEl => {
-        tabEl.addEventListener('shown.bs.tab', function(e) {
-            const tabId = e.target.getAttribute('aria-controls');
-            localStorage.setItem('adminConfigTab', tabId);
-        });
-    });
-    
-    // Manejar formularios
-    document.getElementById('formConfigGeneral')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        guardarConfiguracion('general', this);
-    });
-    
-    document.getElementById('formConfigFederado')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        guardarConfiguracion('federado', this);
-    });
-    
-    document.getElementById('formNuevoUsuario')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        crearNuevoUsuario(this);
-    });
-});
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('🔧 Módulo de administración cargado');
 
-// Función para guardar configuración
-async function guardarConfiguracion(tipo, form) {
-    const formData = new FormData(form);
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    
-    // Mostrar loading
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Guardando...';
-    submitButton.disabled = true;
-    
-    try {
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarNotificacion(`Configuración ${tipo} guardada correctamente`, 'success');
-        } else {
-            throw new Error(result.error || 'Error desconocido');
+        // Mantener tab activo después de reload
+        const activeTab = localStorage.getItem('adminConfigTab');
+        if (activeTab) {
+            const tabButton = document.querySelector(`#${activeTab}-tab`);
+            if (tabButton) {
+                const tab = new bootstrap.Tab(tabButton);
+                tab.show();
+            }
         }
-        
-    } catch (error) {
-        console.error('Error guardando configuración:', error);
-        mostrarNotificacion(`Error al guardar configuración: ${error.message}`, 'error');
-    } finally {
-        // Restaurar botón
-        setTimeout(() => {
+
+        // Guardar tab activo al cambiar
+        document.querySelectorAll('#configTabs button[data-bs-toggle="tab"]').forEach(tabEl => {
+            tabEl.addEventListener('shown.bs.tab', function (e) {
+                const tabId = e.target.getAttribute('aria-controls');
+                localStorage.setItem('adminConfigTab', tabId);
+            });
+        });
+
+        // Manejar formularios
+        document.getElementById('formConfigGeneral')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            guardarConfiguracion('general', this);
+        });
+
+        document.getElementById('formConfigFederado')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            guardarConfiguracion('federado', this);
+        });
+
+        document.getElementById('formNuevoUsuario')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            crearNuevoUsuario(this);
+        });
+    });
+    async function crearNuevoUsuario(form) {
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        try {
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creando...';
+            submitButton.disabled = true;
+
+            const formData = new FormData(form);
+
+            // ✅ INCLUIR DISPOSITIVO SI FUE SELECCIONADO
+            const deviceId = document.getElementById('nuevoDispositivo')?.value;
+            if (deviceId) {
+                formData.append('computing_device_id', deviceId);
+            }
+
+            // ✅ VALIDACIONES
+            const username = formData.get('username');
+            const email = formData.get('email');
+            const password = formData.get('password');
+
+            if (!username || !email || !password) {
+                mostrarNotificacion('⚠️ Complete todos los campos requeridos', 'warning');
+                return;
+            }
+
+            if (username.length < 3) {
+                mostrarNotificacion('⚠️ El usuario debe tener al menos 3 caracteres', 'warning');
+                return;
+            }
+
+            if (password.length < 6) {
+                mostrarNotificacion('⚠️ La contraseña debe tener al menos 6 caracteres', 'warning');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                mostrarNotificacion('⚠️ Email inválido', 'warning');
+                return;
+            }
+
+            const response = await fetch('/admin/usuarios/crear', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                mostrarNotificacion('✅ Usuario creado exitosamente', 'success');
+
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoUsuario'));
+                modal.hide();
+
+                // Limpiar formulario
+                form.reset();
+
+                // Recargar página
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+
+        } catch (error) {
+            console.error('Error creando usuario:', error);
+            mostrarNotificacion(`❌ Error: ${error.message}`, 'error');
+        } finally {
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
-        }, 1000);
-    }
-}
-
-// Función para crear nuevo usuario
-async function crearNuevoUsuario(form) {
-    const formData = new FormData(form);
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    
-    // Validaciones básicas
-    const username = formData.get('username');
-    const email = formData.get('email');
-    const password = formData.get('password');
-    
-    if (!username || !email || !password) {
-        mostrarNotificacion('Todos los campos obligatorios deben completarse', 'error');
-        return;
-    }
-    
-    if (password.length < 6) {
-        mostrarNotificacion('La contraseña debe tener al menos 6 caracteres', 'error');
-        return;
-    }
-    
-    // Mostrar loading
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creando...';
-    submitButton.disabled = true;
-    
-    try {
-        const response = await fetch('/admin/usuarios/crear', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarNotificacion('Usuario creado correctamente', 'success');
-            
-            // Cerrar modal y limpiar formulario
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoUsuario'));
-            modal.hide();
-            form.reset();
-            
-            // Recargar después de 1 segundo
-            setTimeout(() => location.reload(), 1000);
-            
-        } else {
-            throw new Error(result.error || 'Error desconocido');
         }
-        
-    } catch (error) {
-        console.error('Error creando usuario:', error);
-        mostrarNotificacion(`Error al crear usuario: ${error.message}`, 'error');
-    } finally {
-        // Restaurar botón
-        setTimeout(() => {
-            submitButton.innerHTML = originalText;
-            submitButton.disabled = false;
-        }, 1000);
     }
-}
-async function editarUsuario(id, username, email, firstName, lastName, role, isActive) {
-    try {
-        // Crear modal dinámicamente
-        const modalHtml = `
+
+    // ✅ CARGAR DISPOSITIVOS AL ABRIR MODAL DE CREAR USUARIO
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalNuevoUsuario = document.getElementById('modalNuevoUsuario');
+
+        if (modalNuevoUsuario) {
+            modalNuevoUsuario.addEventListener('show.bs.modal', async function () {
+                await cargarDispositivosParaSelector('nuevoDispositivo');
+            });
+        }
+    });
+
+    // ✅ FUNCIÓN PARA CARGAR DISPOSITIVOS EN CUALQUIER SELECTOR
+    async function cargarDispositivosParaSelector(selectId) {
+        try {
+            const response = await fetch('/api/dispositivos/lista');
+            const result = await response.json();
+
+            if (result.success) {
+                const select = document.getElementById(selectId);
+
+                if (!select) {
+                    console.error(`Selector ${selectId} no encontrado`);
+                    return;
+                }
+
+                // Limpiar opciones excepto la primera
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+
+                // Agrupar dispositivos
+                const disponibles = result.devices.filter(d => !d.user_id);
+                const asignados = result.devices.filter(d => d.user_id);
+
+                // Agregar dispositivos disponibles
+                if (disponibles.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = '💻 Dispositivos Disponibles';
+
+                    disponibles.forEach(device => {
+                        const option = document.createElement('option');
+                        option.value = device.id;
+                        option.textContent = `${device.brand} ${device.model} (${device.type})`;
+                        optgroup.appendChild(option);
+                    });
+
+                    select.appendChild(optgroup);
+                }
+
+                // Agregar dispositivos asignados (solo para información)
+                if (asignados.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = '🔒 Ya Asignados';
+
+                    asignados.forEach(device => {
+                        const option = document.createElement('option');
+                        option.value = device.id;
+                        option.textContent = `${device.brand} ${device.model} - ${device.username}`;
+                        option.disabled = true;
+                        optgroup.appendChild(option);
+                    });
+
+                    select.appendChild(optgroup);
+                }
+
+                // Mensaje si no hay dispositivos
+                if (result.devices.length === 0) {
+                    const option = document.createElement('option');
+                    option.textContent = '⚠️ No hay dispositivos registrados';
+                    option.disabled = true;
+                    select.appendChild(option);
+                }
+            } else {
+                throw new Error(result.error || 'Error cargando dispositivos');
+            }
+        } catch (error) {
+            console.error('Error cargando dispositivos:', error);
+            mostrarNotificacion('Error cargando lista de dispositivos', 'error');
+        }
+    }
+
+    // Función para guardar configuración
+    async function guardarConfiguracion(tipo, form) {
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        // Mostrar loading
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Guardando...';
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                mostrarNotificacion(`Configuración ${tipo} guardada correctamente`, 'success');
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+
+        } catch (error) {
+            console.error('Error guardando configuración:', error);
+            mostrarNotificacion(`Error al guardar configuración: ${error.message}`, 'error');
+        } finally {
+            // Restaurar botón
+            setTimeout(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }, 1000);
+        }
+    }
+
+    // Función para crear nuevo usuario
+
+    async function editarUsuario(id, username, email, firstName, lastName, role, isActive) {
+        try {
+            // Crear modal dinámicamente
+            const modalHtml = `
         <div class="modal fade" id="modalEditarUsuario" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -678,102 +896,102 @@ async function editarUsuario(id, username, email, firstName, lastName, role, isA
                 </div>
             </div>
         </div>`;
-        
-        // Eliminar modal anterior si existe
-        const existingModal = document.getElementById('modalEditarUsuario');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        
-        // Agregar nuevo modal al DOM
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
-        modal.show();
-        
-        // Manejar envío del formulario
-        document.getElementById('formEditarUsuario').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await actualizarUsuario();
-        });
-        
-    } catch (error) {
-        console.error('Error editando usuario:', error);
-        mostrarNotificacion('Error preparando edición de usuario', 'error');
-    }
-}
 
-async function actualizarUsuario() {
-    const submitButton = document.querySelector('#formEditarUsuario button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    
-    try {
-        // Mostrar loading
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Actualizando...';
-        submitButton.disabled = true;
-        
-        // Obtener datos del formulario
-        const userData = {
-            username: document.getElementById('edit_username').value.trim(),
-            email: document.getElementById('edit_email').value.trim(),
-            first_name: document.getElementById('edit_first_name').value.trim(),
-            last_name: document.getElementById('edit_last_name').value.trim(),
-            role: document.getElementById('edit_role').value,
-            is_active: document.getElementById('edit_is_active').checked
-        };
-        
-        // Validaciones del frontend
-        if (!userData.username || userData.username.length < 3) {
-            mostrarNotificacion('El nombre de usuario debe tener al menos 3 caracteres', 'warning');
-            return;
-        }
-        
-        if (!userData.email || !userData.email.includes('@')) {
-            mostrarNotificacion('Ingrese un email válido', 'warning');
-            return;
-        }
-        
-        const userId = document.getElementById('edit_user_id').value;
-        
-        // Realizar petición de actualización
-        const response = await fetch(`/admin/usuarios/${userId}/editar`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarNotificacion('✅ Usuario actualizado correctamente', 'success');
-            
-            // Cerrar modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
-            modal.hide();
-            
-            // Recargar página después de 1 segundo para ver cambios
-            setTimeout(() => location.reload(), 1000);
-            
-        } else {
-            throw new Error(result.error || 'Error desconocido');
-        }
-        
-    } catch (error) {
-        console.error('Error actualizando usuario:', error);
-        mostrarNotificacion(`❌ Error al actualizar: ${error.message}`, 'error');
-    } finally {
-        // Restaurar botón
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-    }
-}
+            // Eliminar modal anterior si existe
+            const existingModal = document.getElementById('modalEditarUsuario');
+            if (existingModal) {
+                existingModal.remove();
+            }
 
-async function eliminarUsuario(id, username) {
-    // Confirmar eliminación con información detallada
-    const confirmMessage = `
+            // Agregar nuevo modal al DOM
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
+            modal.show();
+
+            // Manejar envío del formulario
+            document.getElementById('formEditarUsuario').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await actualizarUsuario();
+            });
+
+        } catch (error) {
+            console.error('Error editando usuario:', error);
+            mostrarNotificacion('Error preparando edición de usuario', 'error');
+        }
+    }
+
+    async function actualizarUsuario() {
+        const submitButton = document.querySelector('#formEditarUsuario button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        try {
+            // Mostrar loading
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Actualizando...';
+            submitButton.disabled = true;
+
+            // Obtener datos del formulario
+            const userData = {
+                username: document.getElementById('edit_username').value.trim(),
+                email: document.getElementById('edit_email').value.trim(),
+                first_name: document.getElementById('edit_first_name').value.trim(),
+                last_name: document.getElementById('edit_last_name').value.trim(),
+                role: document.getElementById('edit_role').value,
+                is_active: document.getElementById('edit_is_active').checked
+            };
+
+            // Validaciones del frontend
+            if (!userData.username || userData.username.length < 3) {
+                mostrarNotificacion('El nombre de usuario debe tener al menos 3 caracteres', 'warning');
+                return;
+            }
+
+            if (!userData.email || !userData.email.includes('@')) {
+                mostrarNotificacion('Ingrese un email válido', 'warning');
+                return;
+            }
+
+            const userId = document.getElementById('edit_user_id').value;
+
+            // Realizar petición de actualización
+            const response = await fetch(`/admin/usuarios/${userId}/editar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                mostrarNotificacion('✅ Usuario actualizado correctamente', 'success');
+
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario'));
+                modal.hide();
+
+                // Recargar página después de 1 segundo para ver cambios
+                setTimeout(() => location.reload(), 1000);
+
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+
+        } catch (error) {
+            console.error('Error actualizando usuario:', error);
+            mostrarNotificacion(`❌ Error al actualizar: ${error.message}`, 'error');
+        } finally {
+            // Restaurar botón
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+
+    async function eliminarUsuario(id, username) {
+        // Confirmar eliminación con información detallada
+        const confirmMessage = `
 ⚠️ CONFIRMAR ELIMINACIÓN
 
 ¿Está seguro de que desea eliminar el usuario "${username}"?
@@ -786,49 +1004,49 @@ async function eliminarUsuario(id, username) {
 
 ¿Continuar con la eliminación?`;
 
-    if (!confirm(confirmMessage)) {
-        return;
-    }
-    
-    // Segunda confirmación para admin principal
-    if (id === 1) {
-        alert('❌ ERROR: No se puede eliminar el administrador principal del sistema');
-        return;
-    }
-    
-    try {
-        mostrarNotificacion('🗑️ Eliminando usuario...', 'info');
-        
-        const response = await fetch(`/admin/usuarios/${id}/eliminar`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarNotificacion(`✅ Usuario "${username}" eliminado correctamente`, 'success');
-            
-            // Recargar página después de 1.5 segundos
-            setTimeout(() => location.reload(), 1500);
-            
-        } else {
-            throw new Error(result.error || 'Error desconocido');
+        if (!confirm(confirmMessage)) {
+            return;
         }
-        
-    } catch (error) {
-        console.error('Error eliminando usuario:', error);
-        mostrarNotificacion(`❌ Error al eliminar: ${error.message}`, 'error');
-    }
-}
 
-// ✅ FUNCIÓN PARA CAMBIAR CONTRASEÑA - COMPLETA
-async function cambiarPasswordUsuario(id, username) {
-    try {
-        // Crear modal para cambio de contraseña
-        const modalHtml = `
+        // Segunda confirmación para admin principal
+        if (id === 1) {
+            alert('❌ ERROR: No se puede eliminar el administrador principal del sistema');
+            return;
+        }
+
+        try {
+            mostrarNotificacion('🗑️ Eliminando usuario...', 'info');
+
+            const response = await fetch(`/admin/usuarios/${id}/eliminar`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                mostrarNotificacion(`✅ Usuario "${username}" eliminado correctamente`, 'success');
+
+                // Recargar página después de 1.5 segundos
+                setTimeout(() => location.reload(), 1500);
+
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+
+        } catch (error) {
+            console.error('Error eliminando usuario:', error);
+            mostrarNotificacion(`❌ Error al eliminar: ${error.message}`, 'error');
+        }
+    }
+
+    // ✅ FUNCIÓN PARA CAMBIAR CONTRASEÑA - COMPLETA
+    async function cambiarPasswordUsuario(id, username) {
+        try {
+            // Crear modal para cambio de contraseña
+            const modalHtml = `
         <div class="modal fade" id="modalCambiarPassword" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -901,170 +1119,170 @@ async function cambiarPasswordUsuario(id, username) {
                 </div>
             </div>
         </div>`;
-        
-        // Eliminar modal anterior si existe
-        const existingModal = document.getElementById('modalCambiarPassword');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        
-        // Agregar nuevo modal
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('modalCambiarPassword'));
-        modal.show();
-        
-        // Agregar validación en tiempo real
-        document.getElementById('nueva_password').addEventListener('input', function() {
-            checkPasswordStrength(this.value);
-        });
-        
-        // Manejar envío del formulario
-        document.getElementById('formCambiarPassword').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await procesarCambioPassword();
-        });
-        
-    } catch (error) {
-        console.error('Error preparando cambio de contraseña:', error);
-        mostrarNotificacion('Error preparando cambio de contraseña', 'error');
-    }
-}
 
-// ✅ FUNCIÓN AUXILIAR PARA MOSTRAR/OCULTAR CONTRASEÑA
-function togglePasswordVisibility(fieldId, button) {
-    const field = document.getElementById(fieldId);
-    const icon = button.querySelector('i');
-    
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.className = 'fas fa-eye-slash';
-    } else {
-        field.type = 'password';
-        icon.className = 'fas fa-eye';
-    }
-}
+            // Eliminar modal anterior si existe
+            const existingModal = document.getElementById('modalCambiarPassword');
+            if (existingModal) {
+                existingModal.remove();
+            }
 
-// ✅ FUNCIÓN AUXILIAR PARA VERIFICAR FORTALEZA DE CONTRASEÑA
-function checkPasswordStrength(password) {
-    const progressBar = document.getElementById('password-strength');
-    const strengthText = document.getElementById('strength-text');
-    
-    let strength = 0;
-    let feedback = '';
-    
-    if (password.length >= 6) strength += 20;
-    if (password.length >= 8) strength += 20;
-    if (/[A-Z]/.test(password)) strength += 20;
-    if (/[a-z]/.test(password)) strength += 20;
-    if (/[0-9]/.test(password)) strength += 10;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 10;
-    
-    progressBar.style.width = strength + '%';
-    
-    if (strength < 40) {
-        progressBar.className = 'progress-bar bg-danger';
-        feedback = 'Muy débil';
-    } else if (strength < 60) {
-        progressBar.className = 'progress-bar bg-warning';
-        feedback = 'Débil';
-    } else if (strength < 80) {
-        progressBar.className = 'progress-bar bg-info';
-        feedback = 'Buena';
-    } else {
-        progressBar.className = 'progress-bar bg-success';
-        feedback = 'Muy fuerte';
-    }
-    
-    strengthText.textContent = feedback;
-}
+            // Agregar nuevo modal
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-// ✅ FUNCIÓN PARA PROCESAR CAMBIO DE CONTRASEÑA
-async function procesarCambioPassword() {
-    const submitButton = document.querySelector('#formCambiarPassword button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    
-    try {
-        const nuevaPassword = document.getElementById('nueva_password').value;
-        const confirmarPassword = document.getElementById('confirmar_password').value;
-        const userId = document.getElementById('pwd_user_id').value;
-        
-        // Validaciones
-        if (!nuevaPassword || nuevaPassword.length < 6) {
-            mostrarNotificacion('La contraseña debe tener al menos 6 caracteres', 'warning');
-            return;
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalCambiarPassword'));
+            modal.show();
+
+            // Agregar validación en tiempo real
+            document.getElementById('nueva_password').addEventListener('input', function () {
+                checkPasswordStrength(this.value);
+            });
+
+            // Manejar envío del formulario
+            document.getElementById('formCambiarPassword').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await procesarCambioPassword();
+            });
+
+        } catch (error) {
+            console.error('Error preparando cambio de contraseña:', error);
+            mostrarNotificacion('Error preparando cambio de contraseña', 'error');
         }
-        
-        if (nuevaPassword !== confirmarPassword) {
-            mostrarNotificacion('Las contraseñas no coinciden', 'warning');
-            return;
-        }
-        
-        // Mostrar loading
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Cambiando...';
-        submitButton.disabled = true;
-        
-        // Crear FormData
-        const formData = new FormData();
-        formData.append('nueva_password', nuevaPassword);
-        formData.append('confirmar_password', confirmarPassword);
-        
-        const response = await fetch(`/admin/usuarios/${userId}/cambiar-password`, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            mostrarNotificacion('✅ Contraseña actualizada correctamente', 'success');
-            
-            // Cerrar modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarPassword'));
-            modal.hide();
+    }
+
+    // ✅ FUNCIÓN AUXILIAR PARA MOSTRAR/OCULTAR CONTRASEÑA
+    function togglePasswordVisibility(fieldId, button) {
+        const field = document.getElementById(fieldId);
+        const icon = button.querySelector('i');
+
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.className = 'fas fa-eye-slash';
         } else {
-            throw new Error(result.error || 'Error desconocido');
+            field.type = 'password';
+            icon.className = 'fas fa-eye';
         }
-        
-    } catch (error) {
-        console.error('Error cambiando contraseña:', error);
-        mostrarNotificacion(`❌ Error cambiando contraseña: ${error.message}`, 'error');
-    } finally {
-        // Restaurar botón
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
     }
-}
-// Función para mostrar notificaciones
-function mostrarNotificacion(mensaje, tipo = 'info') {
-    // Crear contenedor si no existe
-    let container = document.getElementById('notificaciones-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'notificaciones-container';
-        container.className = 'position-fixed top-0 end-0 p-3';
-        container.style.zIndex = '1055';
-        document.body.appendChild(container);
+
+    // ✅ FUNCIÓN AUXILIAR PARA VERIFICAR FORTALEZA DE CONTRASEÑA
+    function checkPasswordStrength(password) {
+        const progressBar = document.getElementById('password-strength');
+        const strengthText = document.getElementById('strength-text');
+
+        let strength = 0;
+        let feedback = '';
+
+        if (password.length >= 6) strength += 20;
+        if (password.length >= 8) strength += 20;
+        if (/[A-Z]/.test(password)) strength += 20;
+        if (/[a-z]/.test(password)) strength += 20;
+        if (/[0-9]/.test(password)) strength += 10;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+
+        progressBar.style.width = strength + '%';
+
+        if (strength < 40) {
+            progressBar.className = 'progress-bar bg-danger';
+            feedback = 'Muy débil';
+        } else if (strength < 60) {
+            progressBar.className = 'progress-bar bg-warning';
+            feedback = 'Débil';
+        } else if (strength < 80) {
+            progressBar.className = 'progress-bar bg-info';
+            feedback = 'Buena';
+        } else {
+            progressBar.className = 'progress-bar bg-success';
+            feedback = 'Muy fuerte';
+        }
+
+        strengthText.textContent = feedback;
     }
-    
-    // Colores según tipo
-    const colors = {
-        'success': 'bg-success',
-        'error': 'bg-danger',
-        'warning': 'bg-warning',
-        'info': 'bg-info'
-    };
-    
-    const icons = {
-        'success': 'fas fa-check-circle',
-        'error': 'fas fa-exclamation-circle',
-        'warning': 'fas fa-exclamation-triangle',
-        'info': 'fas fa-info-circle'
-    };
-    
-    const toastId = 'toast-' + Date.now();
-    const toastHTML = `
+
+    // ✅ FUNCIÓN PARA PROCESAR CAMBIO DE CONTRASEÑA
+    async function procesarCambioPassword() {
+        const submitButton = document.querySelector('#formCambiarPassword button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        try {
+            const nuevaPassword = document.getElementById('nueva_password').value;
+            const confirmarPassword = document.getElementById('confirmar_password').value;
+            const userId = document.getElementById('pwd_user_id').value;
+
+            // Validaciones
+            if (!nuevaPassword || nuevaPassword.length < 6) {
+                mostrarNotificacion('La contraseña debe tener al menos 6 caracteres', 'warning');
+                return;
+            }
+
+            if (nuevaPassword !== confirmarPassword) {
+                mostrarNotificacion('Las contraseñas no coinciden', 'warning');
+                return;
+            }
+
+            // Mostrar loading
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Cambiando...';
+            submitButton.disabled = true;
+
+            // Crear FormData
+            const formData = new FormData();
+            formData.append('nueva_password', nuevaPassword);
+            formData.append('confirmar_password', confirmarPassword);
+
+            const response = await fetch(`/admin/usuarios/${userId}/cambiar-password`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                mostrarNotificacion('✅ Contraseña actualizada correctamente', 'success');
+
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalCambiarPassword'));
+                modal.hide();
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+
+        } catch (error) {
+            console.error('Error cambiando contraseña:', error);
+            mostrarNotificacion(`❌ Error cambiando contraseña: ${error.message}`, 'error');
+        } finally {
+            // Restaurar botón
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+    // Función para mostrar notificaciones
+    function mostrarNotificacion(mensaje, tipo = 'info') {
+        // Crear contenedor si no existe
+        let container = document.getElementById('notificaciones-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'notificaciones-container';
+            container.className = 'position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '1055';
+            document.body.appendChild(container);
+        }
+
+        // Colores según tipo
+        const colors = {
+            'success': 'bg-success',
+            'error': 'bg-danger',
+            'warning': 'bg-warning',
+            'info': 'bg-info'
+        };
+
+        const icons = {
+            'success': 'fas fa-check-circle',
+            'error': 'fas fa-exclamation-circle',
+            'warning': 'fas fa-exclamation-triangle',
+            'info': 'fas fa-info-circle'
+        };
+
+        const toastId = 'toast-' + Date.now();
+        const toastHTML = `
         <div id="${toastId}" class="toast ${colors[tipo] || 'bg-info'} text-white" role="alert">
             <div class="toast-header ${colors[tipo] || 'bg-info'} text-white border-0">
                 <i class="${icons[tipo] || 'fas fa-info-circle'} me-2"></i>
@@ -1076,19 +1294,510 @@ function mostrarNotificacion(mensaje, tipo = 'info') {
             </div>
         </div>
     `;
-    
-    container.insertAdjacentHTML('beforeend', toastHTML);
-    
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
-    toast.show();
-    
-    // Limpiar después de ocultar
-    toastElement.addEventListener('hidden.bs.toast', function() {
-        toastElement.remove();
-    });
-}
 
-console.log('✅ JavaScript de administración cargado correctamente');
+        container.insertAdjacentHTML('beforeend', toastHTML);
+
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+        toast.show();
+
+        // Limpiar después de ocultar
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            toastElement.remove();
+        });
+    }
+
+    console.log('✅ JavaScript de administración cargado correctamente');
+
+    async function asignarDispositivoUsuario(userId, username) {
+        try {
+            // Crear modal específico para asignación de dispositivo
+            const modalHtml = `
+            <div class="modal fade" id="modalAsignarDispositivo" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-laptop me-2"></i>Asignar Dispositivo de Cómputo
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="formAsignarDispositivo">
+                            <div class="modal-body">
+                                <input type="hidden" id="device_user_id" value="${userId}">
+                                
+                                <!-- Usuario objetivo -->
+                                <div class="alert alert-info">
+                                    <i class="fas fa-user me-2"></i>
+                                    <strong>Usuario:</strong> ${username}
+                                    <br>
+                                    <span id="current-device-status">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando información del dispositivo actual...
+                                    </span>
+                                </div>
+                                
+                                <!-- Selector de dispositivo -->
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-desktop me-1"></i>Seleccionar Dispositivo
+                                    </label>
+                                    <select class="form-select form-select-lg" id="select_device_id">
+                                        <option value="">🚫 Sin dispositivo asignado</option>
+                                        <option disabled>──────────────────────────</option>
+                                        <!-- Se llenarán dinámicamente -->
+                                    </select>
+                                    <div class="form-text">
+                                        Solo se muestran dispositivos disponibles o asignados a este usuario
+                                    </div>
+                                </div>
+                                
+                                <!-- Información del dispositivo seleccionado -->
+                                <div id="device-info-preview" class="card border-primary d-none">
+                                    <div class="card-header bg-primary text-white">
+                                        <i class="fas fa-info-circle me-1"></i>Información del Dispositivo
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>Tipo:</strong> <span id="preview-type">-</span></p>
+                                                <p><strong>Marca:</strong> <span id="preview-brand">-</span></p>
+                                                <p><strong>Modelo:</strong> <span id="preview-model">-</span></p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Procesador:</strong> <span id="preview-processor">-</span></p>
+                                                <p><strong>RAM:</strong> <span id="preview-ram">-</span> GB</p>
+                                                <p><strong>Almacenamiento:</strong> <span id="preview-storage">-</span> GB</p>
+                                            </div>
+                                        </div>
+                                        <p class="mb-0"><strong>Sistema Operativo:</strong> <span id="preview-os">-</span></p>
+                                        <p class="mb-0"><strong>N° Serie:</strong> <span id="preview-serial">-</span></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Acciones rápidas -->
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                                            onclick="refreshDevicesList(${userId})">
+                                        <i class="fas fa-sync-alt me-1"></i>Actualizar Lista
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success btn-sm" 
+                                            onclick="abrirCrearDispositivo()">
+                                        <i class="fas fa-plus me-1"></i>Crear Dispositivo Nuevo
+                                    </button>
+                                </div>
+                                
+                                <!-- Información adicional -->
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Importante:</strong>
+                                    <ul class="mb-0 mt-1">
+                                        <li>Un dispositivo solo puede estar asignado a un usuario a la vez</li>
+                                        <li>El usuario podrá usar el detector IDS solo con este dispositivo</li>
+                                        <li>Los cambios son efectivos inmediatamente</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-save me-1"></i>Asignar Dispositivo
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>`;
+
+            // Eliminar modal anterior si existe
+            const existingModal = document.getElementById('modalAsignarDispositivo');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Agregar modal al DOM
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalAsignarDispositivo'));
+            modal.show();
+
+            // ✅ CARGAR DISPOSITIVOS DISPONIBLES
+            await cargarDispositivosParaAsignar(userId);
+
+            // ✅ CARGAR DISPOSITIVO ACTUAL DEL USUARIO
+            await cargarDispositivoActualUsuario(userId);
+
+            // Listener para cambio en selector de dispositivo
+            document.getElementById('select_device_id').addEventListener('change', function () {
+                mostrarPreviewDispositivo(this.value);
+            });
+
+            // Manejar envío del formulario
+            document.getElementById('formAsignarDispositivo').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await procesarAsignacionDispositivo(userId, username);
+            });
+
+            // Cleanup al cerrar
+            document.getElementById('modalAsignarDispositivo').addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+
+        } catch (error) {
+            console.error('Error preparando asignación de dispositivo:', error);
+            mostrarNotificacion('Error preparando asignación de dispositivo', 'error');
+        }
+    }
+
+    // ✅ CARGAR DISPOSITIVOS DISPONIBLES PARA ASIGNAR
+    let dispositivosCache = [];
+
+    async function cargarDispositivosParaAsignar(userId) {
+        try {
+            const response = await fetch('/api/dispositivos/lista');
+            const result = await response.json();
+
+            if (result.success) {
+                dispositivosCache = result.devices;
+                const select = document.getElementById('select_device_id');
+
+                // Limpiar opciones existentes excepto las primeras 2
+                while (select.options.length > 2) {
+                    select.remove(2);
+                }
+
+                // Agrupar dispositivos
+                const disponibles = [];
+                const asignados = [];
+
+                result.devices.forEach(device => {
+                    if (!device.user_id) {
+                        disponibles.push(device);
+                    } else if (device.user_id === userId) {
+                        asignados.push(device);
+                    }
+                });
+
+                // Agregar dispositivos disponibles
+                if (disponibles.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = '💻 Dispositivos Disponibles';
+
+                    disponibles.forEach(device => {
+                        const option = document.createElement('option');
+                        option.value = device.id;
+                        option.textContent = `${device.brand} ${device.model} (${device.type}) - ${device.status}`;
+                        option.dataset.device = JSON.stringify(device);
+                        optgroup.appendChild(option);
+                    });
+
+                    select.appendChild(optgroup);
+                }
+
+                // Agregar dispositivo ya asignado a este usuario
+                if (asignados.length > 0) {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = '🔒 Asignado Actualmente';
+
+                    asignados.forEach(device => {
+                        const option = document.createElement('option');
+                        option.value = device.id;
+                        option.textContent = `${device.brand} ${device.model} (${device.type}) - ACTUAL`;
+                        option.dataset.device = JSON.stringify(device);
+                        option.selected = true;
+                        optgroup.appendChild(option);
+                    });
+
+                    select.appendChild(optgroup);
+                }
+
+                // Mensaje si no hay dispositivos
+                if (disponibles.length === 0 && asignados.length === 0) {
+                    const option = document.createElement('option');
+                    option.textContent = '⚠️ No hay dispositivos disponibles';
+                    option.disabled = true;
+                    select.appendChild(option);
+                }
+
+            } else {
+                throw new Error(result.error || 'Error cargando dispositivos');
+            }
+        } catch (error) {
+            console.error('Error cargando dispositivos:', error);
+            mostrarNotificacion('Error cargando lista de dispositivos', 'error');
+        }
+    }
+
+    // ✅ CARGAR DISPOSITIVO ACTUAL DEL USUARIO
+    async function cargarDispositivoActualUsuario(userId) {
+        try {
+            const response = await fetch(`/api/users/${userId}/complete-info`);
+            const result = await response.json();
+
+            const statusDiv = document.getElementById('current-device-status');
+
+            if (result.success && result.computing_device && result.computing_device.id) {
+                const device = result.computing_device;
+                statusDiv.innerHTML = `
+                    <strong>Dispositivo Actual:</strong> 
+                    ${device.brand} ${device.model} 
+                    <span class="badge bg-success ms-2">${device.type}</span>
+                `;
+
+                // Mostrar preview del dispositivo actual
+                mostrarPreviewDispositivo(device.id);
+            } else {
+                statusDiv.innerHTML = `
+                    <strong>Dispositivo Actual:</strong> 
+                    <em class="text-muted">Sin dispositivo asignado</em>
+                `;
+            }
+        } catch (error) {
+            console.error('Error cargando dispositivo actual:', error);
+            document.getElementById('current-device-status').innerHTML = `
+                <em class="text-danger">Error cargando información del dispositivo</em>
+            `;
+        }
+    }
+
+    // ✅ MOSTRAR PREVIEW DEL DISPOSITIVO SELECCIONADO
+    function mostrarPreviewDispositivo(deviceId) {
+        const previewDiv = document.getElementById('device-info-preview');
+
+        if (!deviceId) {
+            previewDiv.classList.add('d-none');
+            return;
+        }
+
+        // Buscar dispositivo en el cache
+        const device = dispositivosCache.find(d => d.id == deviceId);
+
+        if (device) {
+            document.getElementById('preview-type').textContent = device.type || '-';
+            document.getElementById('preview-brand').textContent = device.brand || '-';
+            document.getElementById('preview-model').textContent = device.model || '-';
+            document.getElementById('preview-processor').textContent = device.processor || '-';
+            document.getElementById('preview-ram').textContent = device.ram_gb || '-';
+            document.getElementById('preview-storage').textContent = device.storage_gb || '-';
+            document.getElementById('preview-os').textContent = device.os || '-';
+            document.getElementById('preview-serial').textContent = device.serial_number || 'Sin número de serie';
+
+            previewDiv.classList.remove('d-none');
+        } else {
+            previewDiv.classList.add('d-none');
+        }
+    }
+
+    // ✅ PROCESAR ASIGNACIÓN DE DISPOSITIVO
+    async function procesarAsignacionDispositivo(userId, username) {
+        const submitButton = document.querySelector('#formAsignarDispositivo button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        try {
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Asignando...';
+            submitButton.disabled = true;
+
+            const deviceId = document.getElementById('select_device_id').value;
+
+            const response = await fetch(`/admin/usuarios/${userId}/asignar-dispositivo`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    computing_device_id: deviceId || null
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const mensaje = deviceId
+                    ? `✅ Dispositivo asignado correctamente a ${username}`
+                    : `✅ Dispositivo desasignado de ${username}`;
+
+                mostrarNotificacion(mensaje, 'success');
+
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalAsignarDispositivo'));
+                modal.hide();
+
+                // Recargar página para ver cambios
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+
+        } catch (error) {
+            console.error('Error asignando dispositivo:', error);
+            mostrarNotificacion(`❌ Error: ${error.message}`, 'error');
+        } finally {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+
+    // ✅ FUNCIÓN AUXILIAR: REFRESCAR LISTA DE DISPOSITIVOS
+    async function refreshDevicesList(userId) {
+        mostrarNotificacion('🔄 Actualizando lista de dispositivos...', 'info');
+        await cargarDispositivosParaAsignar(userId);
+        mostrarNotificacion('✅ Lista actualizada', 'success');
+    }
+
+
+        // ...existing code...
+    
+    function abrirCrearDispositivo() {
+        try {
+            // ✅ CERRAR MODAL DE ASIGNACIÓN SI ESTÁ ABIERTO
+            const modalAsignar = document.getElementById('modalAsignarDispositivo');
+            if (modalAsignar && modalAsignar.classList.contains('show')) {
+                const modalInstance = bootstrap.Modal.getInstance(modalAsignar);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+    
+            // El modal YA EXISTE en el HTML, solo necesitamos mostrarlo
+            const modalElement = document.getElementById('modalCrearDispositivo');
+    
+            if (!modalElement) {
+                console.error('❌ Modal de crear dispositivo no encontrado en el DOM');
+                mostrarNotificacion('Error: Modal no encontrado', 'error');
+                return;
+            }
+    
+            // Limpiar el formulario antes de mostrar
+            const form = document.getElementById('formCrearDispositivo');
+            if (form) {
+                form.reset();
+            }
+    
+            // ✅ ESPERAR UN MOMENTO PARA QUE SE CIERRE EL MODAL ANTERIOR
+            setTimeout(() => {
+                // Mostrar modal usando Bootstrap
+                const modal = new bootstrap.Modal(modalElement, {
+                    backdrop: 'static',  // No cerrar al hacer clic fuera
+                    keyboard: true        // Permitir cerrar con ESC
+                });
+    
+                modal.show();
+    
+                // ⚠️ IMPORTANTE: Solo agregar el listener UNA VEZ
+                // Remover listener anterior si existe
+                const oldForm = document.getElementById('formCrearDispositivo');
+                const newForm = oldForm.cloneNode(true);
+                oldForm.parentNode.replaceChild(newForm, oldForm);
+    
+                // Agregar nuevo listener
+                document.getElementById('formCrearDispositivo').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await procesarCreacionDispositivo();
+                });
+    
+                console.log('✅ Modal de crear dispositivo abierto correctamente');
+            }, 300); // Esperar 300ms para animación
+    
+        } catch (error) {
+            console.error('❌ Error abriendo modal de crear dispositivo:', error);
+            mostrarNotificacion('Error abriendo formulario de dispositivo', 'error');
+        }
+    }
+    
+    
+    async function procesarCreacionDispositivo() {
+        const submitButton = document.querySelector('#formCrearDispositivo button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+    
+        try {
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Creando...';
+            submitButton.disabled = true;
+    
+            // ✅ SOLO CAMPOS QUE EXISTEN EN LA BD
+            const deviceData = {
+                type: document.getElementById('nuevo_device_type').value,
+                brand: document.getElementById('nuevo_brand').value.trim(),
+                model: document.getElementById('nuevo_model').value.trim(),
+                serial_number: document.getElementById('nuevo_serial').value.trim() || null,
+                status: document.getElementById('nuevo_status').value
+            };
+    
+            // ✅ VALIDACIONES
+            if (!deviceData.type) {
+                mostrarNotificacion('⚠️ Debe seleccionar un tipo de dispositivo', 'warning');
+                return;
+            }
+    
+            if (!deviceData.brand || deviceData.brand.length < 2) {
+                mostrarNotificacion('⚠️ La marca debe tener al menos 2 caracteres', 'warning');
+                return;
+            }
+    
+            if (!deviceData.model || deviceData.model.length < 2) {
+                mostrarNotificacion('⚠️ El modelo debe tener al menos 2 caracteres', 'warning');
+                return;
+            }
+    
+            // ✅ ENVIAR DATOS AL BACKEND
+            const response = await fetch('/api/dispositivos/crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(deviceData)
+            });
+    
+            const result = await response.json();
+    
+            if (result.success) {
+                mostrarNotificacion(
+                    `✅ Dispositivo ${deviceData.brand} ${deviceData.model} creado exitosamente`,
+                    'success'
+                );
+    
+                // Cerrar modal de crear dispositivo
+                const modalCrear = bootstrap.Modal.getInstance(document.getElementById('modalCrearDispositivo'));
+                modalCrear.hide();
+    
+                // Limpiar formulario
+                document.getElementById('formCrearDispositivo').reset();
+    
+                // ✅ VERIFICAR SI VENIMOS DEL MODAL DE ASIGNACIÓN
+                const userIdInput = document.getElementById('device_user_id');
+                
+                if (userIdInput && userIdInput.value) {
+                    const userId = parseInt(userIdInput.value);
+                    await cargarDispositivosParaAsignar(userId);
+                    
+                    setTimeout(() => {
+                        const modalAsignarElement = document.getElementById('modalAsignarDispositivo');
+                        if (modalAsignarElement) {
+                            const modalAsignar = new bootstrap.Modal(modalAsignarElement);
+                            modalAsignar.show();
+                        }
+                    }, 500);
+                    
+                    mostrarNotificacion('📋 Dispositivo agregado a la lista', 'info');
+                } else {
+                    setTimeout(() => location.reload(), 1500);
+                }
+    
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+    
+        } catch (error) {
+            console.error('Error creando dispositivo:', error);
+            mostrarNotificacion(`❌ Error: ${error.message}`, 'error');
+        } finally {
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    }
+    
+    // ...existing code...
+
 </script>
 {% endblock %}

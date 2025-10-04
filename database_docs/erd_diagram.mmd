@@ -1,0 +1,269 @@
+erDiagram
+    computing_devices ||--o{ users : "computing_devices_assigned_to_fkey"
+    detections ||--o{ federated_clients : "detections_client_id_fkey"
+    detections ||--o{ ml_models : "detections_model_id_fkey"
+    device_connections ||--o{ computing_devices : "device_connections_computing_device_id_fkey"
+    device_connections ||--o{ users : "device_connections_connected_by_fkey"
+    device_connections ||--o{ medical_devices : "device_connections_medical_device_id_fkey"
+    ml_models ||--o{ users : "ml_models_created_by_fkey"
+    notifications ||--o{ detections : "notifications_detection_id_fkey"
+    notifications ||--o{ users : "notifications_user_id_fkey"
+    role_permissions ||--o{ permissions : "role_permissions_permission_id_fkey"
+    role_permissions ||--o{ roles : "role_permissions_role_id_fkey"
+    round_participation ||--o{ federated_clients : "round_participation_client_id_fkey"
+    round_participation ||--o{ training_rounds : "round_participation_round_id_fkey"
+    system_configuration ||--o{ users : "system_configuration_updated_by_fkey"
+    training_rounds ||--o{ ml_models : "training_rounds_model_id_fkey"
+    user_sessions ||--o{ users : "user_sessions_user_id_fkey"
+    users ||--o{ computing_devices : "users_allowed_computing_device_id_fkey"
+    users ||--o{ roles : "users_role_id_fkey"
+    activity_logs {
+        integer id PK NOT NULL
+        integer user_id  NULL
+        character varying action  NOT NULL
+        character varying resource_type  NULL
+        integer resource_id  NULL
+        text details  NULL
+        inet ip_address  NULL
+        text user_agent  NULL
+        character varying session_id  NULL
+        timestamp without time zone timestamp  NULL
+    }
+    client_activity_stats {
+        character varying client_name  NULL
+        character varying status  NULL
+        bigint total_detections  NULL
+        timestamp without time zone last_detection  NULL
+        timestamp without time zone last_seen  NULL
+    }
+    computing_devices {
+        integer id PK NOT NULL
+        character varying type  NOT NULL
+        character varying brand  NULL
+        character varying model  NULL
+        character varying serial_number  NULL
+        integer assigned_to  NULL
+        character varying status  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    detection_severity_stats {
+        character varying severity  NULL
+        bigint detection_count  NULL
+        numeric avg_confidence  NULL
+    }
+    detection_stats {
+        integer id PK NOT NULL
+        integer total_packets_scanned  NULL
+        integer total_detections  NULL
+        integer total_suspicious  NULL
+        integer total_critical  NULL
+        integer total_high  NULL
+        integer total_medium  NULL
+        integer total_low  NULL
+        integer normal_traffic  NULL
+        timestamp without time zone last_updated  NULL
+        timestamp without time zone created_at  NULL
+        character varying stats_key  NULL
+    }
+    detections {
+        integer id PK NOT NULL
+        uuid detection_id  NULL
+        integer client_id  NULL
+        integer model_id  NULL
+        character varying anomaly_type  NULL
+        character varying severity  NULL
+        numeric confidence_score  NULL
+        inet source_ip  NULL
+        inet destination_ip  NULL
+        integer source_port  NULL
+        integer destination_port  NULL
+        character varying protocol  NULL
+        timestamp without time zone timestamp  NULL
+        jsonb raw_data  NULL
+        jsonb features  NULL
+        boolean is_confirmed  NULL
+        boolean false_positive  NULL
+        text notes  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    device_connections {
+        integer id PK NOT NULL
+        integer medical_device_id  NOT NULL
+        integer computing_device_id  NOT NULL
+        integer connected_by  NULL
+        timestamp without time zone connection_date  NULL
+        timestamp without time zone disconnected_date  NULL
+        character varying status  NULL
+        text notes  NULL
+    }
+    federated_clients {
+        integer id PK NOT NULL
+        character varying client_id  NOT NULL
+        character varying name  NOT NULL
+        text description  NULL
+        inet ip_address  NULL
+        integer port  NULL
+        character varying status  NULL
+        timestamp without time zone last_seen  NULL
+        character varying model_version  NULL
+        integer data_samples_count  NULL
+        integer training_rounds_participated  NULL
+        character varying api_key  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    medical_devices {
+        integer id PK NOT NULL
+        character varying device_type  NOT NULL
+        character varying brand  NULL
+        character varying model  NULL
+        character varying serial_number  NULL
+        character varying location  NULL
+        character varying status  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    ml_models {
+        integer id PK NOT NULL
+        character varying name  NOT NULL
+        character varying version  NOT NULL
+        character varying model_type  NOT NULL
+        text description  NULL
+        character varying file_path  NULL
+        jsonb model_params  NULL
+        numeric accuracy  NULL
+        integer training_data_size  NULL
+        boolean is_active  NULL
+        integer created_by  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    notifications {
+        integer id PK NOT NULL
+        integer user_id  NULL
+        character varying title  NOT NULL
+        text message  NOT NULL
+        character varying type  NULL
+        boolean is_read  NULL
+        integer detection_id  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone expires_at  NULL
+    }
+    permissions {
+        integer id PK NOT NULL
+        character varying name  NOT NULL
+        character varying display_name  NULL
+        text description  NULL
+        character varying module  NULL
+        boolean is_system_permission  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    role_permissions {
+        integer id PK NOT NULL
+        integer role_id  NOT NULL
+        integer permission_id  NOT NULL
+        timestamp without time zone created_at  NULL
+    }
+    roles {
+        integer id PK NOT NULL
+        character varying name  NOT NULL
+        character varying display_name  NOT NULL
+        text description  NULL
+        boolean is_system_role  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    round_participation {
+        integer id PK NOT NULL
+        integer round_id  NOT NULL
+        integer client_id  NOT NULL
+        bytea model_update  NULL
+        numeric local_accuracy  NULL
+        integer samples_used  NULL
+        integer training_time  NULL
+        timestamp without time zone submitted_at  NULL
+    }
+    system_config {
+        integer id PK NOT NULL
+        character varying config_key  NOT NULL
+        text config_value  NULL
+        character varying data_type  NULL
+        text description  NULL
+        boolean is_system_config  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    system_configuration {
+        integer id PK NOT NULL
+        character varying federated_server_host  NULL
+        character varying federated_server_port  NULL
+        integer aggregation_rounds  NULL
+        integer min_clients_per_round  NULL
+        integer model_update_interval  NULL
+        text alert_notification_emails  NULL
+        integer session_timeout  NULL
+        integer max_login_attempts  NULL
+        boolean force_ssl  NULL
+        boolean enable_api  NULL
+        integer api_token_expiration  NULL
+        boolean enable_email_alerts  NULL
+        character varying alert_severity_threshold  NULL
+        integer max_alerts_per_hour  NULL
+        timestamp with time zone updated_at  NULL
+        integer updated_by  NULL
+    }
+    training_rounds {
+        integer id PK NOT NULL
+        integer round_number  NOT NULL
+        integer model_id  NOT NULL
+        character varying status  NULL
+        integer participants_count  NULL
+        integer min_participants  NULL
+        integer max_participants  NULL
+        numeric global_accuracy  NULL
+        character varying aggregation_method  NULL
+        timestamp without time zone started_at  NULL
+        timestamp without time zone completed_at  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+    }
+    user_role_stats {
+        character varying role_name  NULL
+        bigint user_count  NULL
+        bigint active_users  NULL
+    }
+    user_sessions {
+        integer id PK NOT NULL
+        integer user_id  NOT NULL
+        character varying session_token  NOT NULL
+        inet ip_address  NULL
+        text user_agent  NULL
+        boolean is_active  NULL
+        timestamp without time zone last_activity  NULL
+        timestamp without time zone expires_at  NOT NULL
+        timestamp without time zone created_at  NULL
+    }
+    users {
+        integer id PK NOT NULL
+        character varying username  NOT NULL
+        character varying email  NOT NULL
+        character varying password_hash  NOT NULL
+        character varying first_name  NULL
+        character varying last_name  NULL
+        integer role_id  NOT NULL
+        boolean is_active  NULL
+        timestamp without time zone last_login  NULL
+        integer failed_login_attempts  NULL
+        timestamp without time zone locked_until  NULL
+        character varying password_reset_token  NULL
+        timestamp without time zone password_reset_expires  NULL
+        timestamp without time zone created_at  NULL
+        timestamp without time zone updated_at  NULL
+        integer allowed_computing_device_id  NULL
+    }
+    v_normal_traffic {
+        bigint count  NULL
+    }

@@ -145,23 +145,34 @@ def normalizar_severity(severity):
 
 @app.route('/api/users/<int:user_id>/complete-info', methods=['GET'])
 def get_user_complete_info(user_id):
-    """Endpoint para obtener información completa del usuario con dispositivo"""
+    """Endpoint para obtener información completa del usuario - VERSIÓN FLEXIBLE"""
     try:
         user_data = obtener_usuario_completo_con_dispositivo(user_id)
         
         if user_data and user_data['user']:
+            # ✅ PERMITIR USUARIOS SIN DISPOSITIVO
             if user_data['computing_device']:
-                logger.info(f"Usuario encontrado: {user_data['user']['username']} con dispositivo asignado")
-                return jsonify({"success": True, **user_data})
+                logger.info(f"✅ Usuario {user_data['user']['username']} con dispositivo asignado")
             else:
-                return jsonify({"success": False, "error": f"Usuario no tiene dispositivo de cómputo asignado"}), 400
+                logger.warning(f"⚠️ Usuario {user_data['user']['username']} SIN dispositivo - usando datos por defecto")
+                # Crear dispositivo por defecto
+                user_data['computing_device'] = {
+                    'id': None,
+                    'brand': 'Genérico',
+                    'model': 'Dispositivo sin registrar',
+                    'processor': 'Unknown',
+                    'ram_gb': 8,
+                    'storage_gb': 256,
+                    'os': 'Unknown'
+                }
+            
+            return jsonify({"success": True, **user_data})
         else:
             return jsonify({"success": False, "error": f"Usuario ID {user_id} no encontrado"}), 404
             
     except Exception as e:
-        logger.error(f"Error obteniendo info completa del usuario: {e}")
+        logger.error(f"❌ Error obteniendo info completa del usuario: {e}")
         return jsonify({"success": False, "error": "Error interno del servidor"}), 500
-
 
 
 @app.route('/api/mapping/info', methods=['GET'])
@@ -1703,27 +1714,97 @@ def reportes():
 @app.route('/admin')
 @login_required
 def admin():
-    """Panel de administración unificado"""
+    """Panel de administración unificado - CORREGIDO"""
     try:
         # Verificar si es admin
         if session.get('role') != 'admin':
             flash('Acceso denegado. Se requieren permisos de administrador.', 'danger')
             return redirect(url_for('dashboard'))
         
+        # Obtener información del usuario actual
+        user_info = {
+            'id': session.get('user_id'),
+            'username': session.get('username', 'Admin'),
+            'email': session.get('email', ''),
+            'role': session.get('role', 'admin')
+        }
+        
         # Obtener usuarios para la tabla
-        usuarios = listar_usuarios_basico()
+        usuarios = []
+        conn = None
+        
+        try:
+            conn = obtener_conexion()
+            if conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                    cursor.execute("""
+                        SELECT 
+                            u.id,
+                            u.username,
+                            u.email,
+                            u.first_name,
+                            u.last_name,
+                            u.is_active,
+                            u.last_login,
+                            u.created_at,
+                            r.name as role
+                        FROM users u
+                        LEFT JOIN roles r ON u.role_id = r.id
+                        ORDER BY u.id
+                    """)
+                    
+                    usuarios = [dict(row) for row in cursor.fetchall()]
+                    logger.info(f"✅ Usuarios cargados: {len(usuarios)}")
+            else:
+                logger.warning("⚠️ No se pudo conectar a BD, mostrando panel vacío")
+                
+        except Exception as db_error:
+            logger.error(f"❌ Error consultando usuarios: {db_error}")
+            import traceback
+            traceback.print_exc()
+            # Continuar sin usuarios
+            
+        finally:
+            if conn:
+                conn.close()
+        
+        # Registrar acceso
+        try:
+            registrar_actividad_usuario(
+                session['user_id'],
+                'access_admin',
+                'Acceso al panel de configuración',
+                request.remote_addr
+            )
+        except Exception as log_error:
+            logger.warning(f"⚠️ No se pudo registrar actividad: {log_error}")
         
         logger.info(f"🔧 Admin {session.get('username')} accedió al panel de configuración")
         
         return render_template('admin.html', 
-                             user={'username': session.get('username', 'Admin')},
-                             usuarios=usuarios)
+                             user=user_info,
+                             usuarios=usuarios,
+                             session=session)
         
     except Exception as e:
-        logger.error(f"❌ Error en panel admin: {e}")
-        flash('Error al cargar el panel de administración', 'danger')
-        return redirect(url_for('dashboard'))
-    
+        logger.error(f"❌ Error crítico en panel admin: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        flash('Error al cargar el panel de administración. Revise los logs del sistema.', 'danger')
+        
+        # Intentar renderizar con datos mínimos
+        try:
+            return render_template('admin.html', 
+                                 user={'username': session.get('username', 'Admin')},
+                                 usuarios=[],
+                                 session=session)
+        except Exception as render_error:
+            logger.error(f"❌ Error crítico renderizando template: {render_error}")
+            return redirect(url_for('dashboard'))
+
+# ...existing code...
+
 def guardar_configuracion_federado(data):
     """Guarda configuración del servidor federado"""
     try:
@@ -1897,40 +1978,7 @@ def cargar_configuracion(tipo):
         if not conn:
             return jsonify({'success': False, 'error': 'Sin conexión BD'})
         
-        with conn.cursor() as cursor:
-            if tipo == 'general':
-                # Cargar configuración general
-                keys = ['sistema_nombre', 'max_detecciones_dia', 'umbral_confianza', 
-                       'alertas_email', 'email_admin', 'intervalo_reportes']
-                
-            elif tipo == 'federado':
-                # Cargar configuración federada
-                keys = ['federado_host', 'federado_puerto', 'federado_max_clientes',
-                       'federado_rondas', 'federado_min_clientes', 'federado_timeout']
-                
-            elif tipo == 'seguridad':
-                # Cargar configuración de seguridad
-                keys = ['seguridad_tiempo_sesion', 'seguridad_max_intentos', 'seguridad_ssl',
-                       'seguridad_api', 'seguridad_token_exp', 'seguridad_rate_limit']
-            else:
-                return jsonify({'success': False, 'error': 'Tipo no válido'})
-            
-            # Obtener valores de configuración
-            config = {}
-            for key in keys:
-                try:
-                    cursor.execute("""
-                        SELECT config_value FROM system_config WHERE config_key = %s
-                    """, (key,))
-                    result = cursor.fetchone()
-                    config[key] = result[0] if result else None
-                except Exception as e:
-                    logger.error(f"Error cargando {key}: {e}")
-                    config[key] = None
-        
-        conn.close()
-        
-        # Devolver configuración con valores por defecto si no existen
+        # ✅ DEFINIR DEFAULTS AL INICIO
         defaults = {
             'general': {
                 'sistema_nombre': 'IDS Federado v1.0',
@@ -1958,10 +2006,43 @@ def cargar_configuracion(tipo):
             }
         }
         
-        # Aplicar valores por defecto para campos vacíos
-        for key in config:
-            if config[key] is None:
-                config[key] = defaults[tipo].get(key, '')
+        try:
+            with conn.cursor() as cursor:
+                # ✅ DETERMINAR KEYS SEGÚN TIPO
+                if tipo == 'general':
+                    keys = ['sistema_nombre', 'max_detecciones_dia', 'umbral_confianza', 
+                           'alertas_email', 'email_admin', 'intervalo_reportes']
+                    
+                elif tipo == 'federado':
+                    keys = ['federado_host', 'federado_puerto', 'federado_max_clientes',
+                           'federado_rondas', 'federado_min_clientes', 'federado_timeout']
+                    
+                elif tipo == 'seguridad':
+                    keys = ['seguridad_tiempo_sesion', 'seguridad_max_intentos', 'seguridad_ssl',
+                           'seguridad_api', 'seguridad_token_exp', 'seguridad_rate_limit']
+                else:
+                    return jsonify({'success': False, 'error': 'Tipo no válido'})
+                
+                # ✅ OBTENER VALORES DE BD
+                config = {}
+                for key in keys:
+                    try:
+                        cursor.execute("""
+                            SELECT config_value FROM system_config WHERE config_key = %s
+                        """, (key,))
+                        result = cursor.fetchone()
+                        config[key] = result[0] if result else defaults[tipo].get(key, '')
+                    except Exception as e:
+                        logger.error(f"Error cargando {key}: {e}")
+                        config[key] = defaults[tipo].get(key, '')
+            
+        except Exception as query_error:
+            logger.error(f"❌ Error en query configuración: {query_error}")
+            # Si hay error en BD, usar solo defaults
+            config = defaults.get(tipo, {})
+        
+        finally:
+            conn.close()
         
         return jsonify({
             'success': True,
@@ -1971,6 +2052,8 @@ def cargar_configuracion(tipo):
         
     except Exception as e:
         logger.error(f"❌ Error cargando configuración {tipo}: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)})
     
 @app.route('/admin/configuracion/<tipo>', methods=['POST'])
@@ -1998,15 +2081,16 @@ def guardar_configuracion(tipo):
         logger.error(f"❌ Error guardando configuración {tipo}: {e}")
         return jsonify({'success': False, 'error': str(e)})
     
+
 @app.route('/admin/usuarios/crear', methods=['POST'])
 @login_required
 def crear_usuario_admin():
-    """Crear nuevo usuario desde panel admin - CORREGIDO"""
+    """Crear nuevo usuario desde panel admin - CON DISPOSITIVO"""
     try:
         if session.get('role') != 'admin':
-            return jsonify({'success': False, 'error': 'Acceso denegado'})
+            return jsonify({'success': False, 'error': 'Acceso denegado'}), 403
         
-        # ✅ OBTENER Y VALIDAR DATOS
+        # Obtener y validar datos
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
@@ -2014,73 +2098,90 @@ def crear_usuario_admin():
         last_name = request.form.get('last_name', '').strip()
         role = request.form.get('role', 'user')
         is_active = request.form.get('is_active') == 'on'
+        computing_device_id = request.form.get('computing_device_id')  # ← NUEVO
         
-        # ✅ VALIDACIONES
-        if not username or len(username) < 3:
-            return jsonify({'success': False, 'error': 'El nombre de usuario debe tener al menos 3 caracteres'})
+        # Validaciones básicas
+        if not username or not email or not password:
+            return jsonify({'success': False, 'error': 'Datos incompletos'}), 400
         
-        if not email or '@' not in email:
-            return jsonify({'success': False, 'error': 'Email inválido'})
-        
-        if not password or len(password) < 6:
-            return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'})
-        
-        if role not in ['admin', 'user', 'viewer']:
-            return jsonify({'success': False, 'error': 'Rol inválido'})
+        if len(password) < 6:
+            return jsonify({'success': False, 'error': 'La contraseña debe tener al menos 6 caracteres'}), 400
         
         conn = obtener_conexion()
         if not conn:
-            return jsonify({'success': False, 'error': 'Sin conexión BD'})
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
         
         try:
             with conn.cursor() as cursor:
                 # Verificar duplicados
                 cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
                 if cursor.fetchone():
-                    return jsonify({'success': False, 'error': 'El usuario o email ya existe'})
+                    return jsonify({'success': False, 'error': 'Usuario o email ya existe'}), 400
                 
-                # ✅ OBTENER ROLE_ID DESDE TABLA ROLES
+                # Obtener role_id
                 cursor.execute("SELECT id FROM roles WHERE name = %s", (role,))
                 role_result = cursor.fetchone()
-                
                 if not role_result:
-                    # Si no existe el rol, crearlo
-                    cursor.execute("""
-                        INSERT INTO roles (name, display_name, description) 
-                        VALUES (%s, %s, %s) 
-                        ON CONFLICT (name) DO NOTHING
-                        RETURNING id
-                    """, (role, role.title(), f"Rol {role}"))
-                    
-                    role_result = cursor.fetchone()
-                    if not role_result:
-                        # Si sigue sin existir, obtener el ID existente
-                        cursor.execute("SELECT id FROM roles WHERE name = %s", (role,))
-                        role_result = cursor.fetchone()
+                    return jsonify({'success': False, 'error': 'Rol no válido'}), 400
                 
                 role_id = role_result[0]
                 
-                # ✅ CREAR USUARIO CON ROLE_ID
+                # ✅ VERIFICAR DISPOSITIVO SI SE ESPECIFICÓ
+                device_id_to_assign = None
+                if computing_device_id and computing_device_id.strip():
+                    cursor.execute("""
+                        SELECT id, assigned_to 
+                        FROM computing_devices 
+                        WHERE id = %s
+                    """, (computing_device_id,))
+                    
+                    device = cursor.fetchone()
+                    if not device:
+                        return jsonify({'success': False, 'error': 'Dispositivo no encontrado'}), 404
+                    
+                    if device[1]:
+                        return jsonify({'success': False, 'error': 'Dispositivo ya asignado a otro usuario'}), 400
+                    
+                    device_id_to_assign = computing_device_id
+                
+                # Hash de contraseña
                 password_hash = hashlib.sha256(password.encode()).hexdigest()
                 
+                # ✅ CREAR USUARIO CON DISPOSITIVO
                 cursor.execute("""
-                    INSERT INTO users (username, email, password_hash, first_name, last_name, role_id, is_active, created_at)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                    INSERT INTO users (
+                        username, email, password_hash, first_name, last_name, 
+                        role_id, is_active, allowed_computing_device_id, 
+                        created_at, updated_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                     RETURNING id
-                """, (username, email, password_hash, first_name, last_name, role_id, is_active))
+                """, (
+                    username, email, password_hash, first_name, last_name, 
+                    role_id, is_active, device_id_to_assign
+                ))
                 
                 user_id = cursor.fetchone()[0]
+                
+                # ✅ ASIGNAR DISPOSITIVO AL USUARIO
+                if device_id_to_assign:
+                    cursor.execute("""
+                        UPDATE computing_devices 
+                        SET assigned_to = %s, updated_at = CURRENT_TIMESTAMP 
+                        WHERE id = %s
+                    """, (user_id, device_id_to_assign))
+                
                 conn.commit()
                 
-                # ✅ REGISTRAR ACTIVIDAD
+                # Registrar actividad
+                device_msg = f" con dispositivo ID {device_id_to_assign}" if device_id_to_assign else ""
                 registrar_actividad_usuario(
                     session['user_id'],
                     'create_user',
-                    f'Usuario creado: {username} ({role})',
+                    f'Usuario creado: {username} ({role}){device_msg}',
                     request.remote_addr
                 )
                 
-                logger.info(f"✅ Usuario creado: {username} (ID: {user_id}, Role ID: {role_id})")
+                logger.info(f"✅ Usuario creado: {username} (ID: {user_id}, Role ID: {role_id}){device_msg}")
                 
                 return jsonify({
                     'success': True,
@@ -2093,13 +2194,18 @@ def crear_usuario_admin():
         except Exception as e:
             conn.rollback()
             logger.error(f"❌ Error creando usuario: {e}")
-            return jsonify({'success': False, 'error': str(e)})
+            import traceback
+            traceback.print_exc()
+            return jsonify({'success': False, 'error': str(e)}), 500
         finally:
             conn.close()
         
     except Exception as e:
         logger.error(f"❌ Error en crear usuario admin: {e}")
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+
 def guardar_configuracion_general(data):
     """Guarda configuración general del sistema"""
     try:
@@ -4245,7 +4351,381 @@ def send_critical_alert_email():
             'success': False,
             'error': str(e)
         })
+# ...existing code...
 
+# ========================================
+# ENDPOINTS PARA GESTIÓN DE DISPOSITIVOS - CORREGIDO
+# ========================================
+
+@app.route('/api/dispositivos/lista', methods=['GET'])
+@login_required
+def listar_dispositivos_disponibles():
+    """Lista todos los dispositivos de cómputo disponibles"""
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Query corregida según el esquema real
+                cursor.execute("""
+                    SELECT 
+                        cd.id,
+                        cd.type,
+                        cd.brand,
+                        cd.model,
+                        cd.serial_number,
+                        cd.assigned_to as user_id,
+                        cd.status,
+                        u.username,
+                        u.first_name,
+                        u.last_name,
+                        cd.created_at,
+                        cd.updated_at
+                    FROM computing_devices cd
+                    LEFT JOIN users u ON cd.assigned_to = u.id
+                    ORDER BY 
+                        CASE 
+                            WHEN cd.assigned_to IS NULL THEN 0 
+                            ELSE 1 
+                        END,
+                        cd.brand, 
+                        cd.model
+                """)
+                
+                devices = []
+                for row in cursor.fetchall():
+                    device = {
+                        'id': row['id'],
+                        'type': row['type'] or 'Desktop',
+                        'brand': row['brand'] or 'Genérico',
+                        'model': row['model'] or 'Sin modelo',
+                        'serial_number': row['serial_number'] or 'N/A',
+                        'user_id': row['user_id'],
+                        'username': row['username'],
+                        'full_name': f"{row['first_name'] or ''} {row['last_name'] or ''}".strip() if row['first_name'] or row['last_name'] else None,
+                        'status': row['status'] or 'active',
+                        'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+                        'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+                    }
+                    devices.append(device)
+                
+                logger.info(f"✅ Dispositivos listados: {len(devices)} encontrados")
+                
+                return jsonify({
+                    'success': True,
+                    'devices': devices,
+                    'total': len(devices),
+                    'available': len([d for d in devices if not d['user_id']]),
+                    'assigned': len([d for d in devices if d['user_id']])
+                })
+                
+        except Exception as e:
+            logger.error(f"❌ Error en query dispositivos: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'success': False, 'error': f'Error en consulta: {str(e)}'}), 500
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error listando dispositivos: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/admin/usuarios/<int:user_id>/asignar-dispositivo', methods=['POST'])
+@login_required
+def asignar_dispositivo_usuario(user_id):
+    """Asigna dispositivo de cómputo a un usuario"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'}), 403
+        
+        data = request.get_json()
+        computing_device_id = data.get('computing_device_id')
+        
+        logger.info(f"🔧 Asignando dispositivo {computing_device_id} a usuario {user_id}")
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
+        
+        try:
+            with conn.cursor() as cursor:
+                # 1. Verificar que el usuario existe
+                cursor.execute("""
+                    SELECT username, first_name, last_name 
+                    FROM users 
+                    WHERE id = %s
+                """, (user_id,))
+                
+                user_info = cursor.fetchone()
+                if not user_info:
+                    return jsonify({'success': False, 'error': 'Usuario no encontrado'}), 404
+                
+                username = user_info[0]
+                full_name = f"{user_info[1]} {user_info[2]}".strip()
+                
+                if computing_device_id:
+                    # 2. Verificar que el dispositivo existe y está disponible
+                    cursor.execute("""
+                        SELECT id, type, brand, model, assigned_to 
+                        FROM computing_devices 
+                        WHERE id = %s
+                    """, (computing_device_id,))
+                    
+                    device = cursor.fetchone()
+                    if not device:
+                        return jsonify({'success': False, 'error': 'Dispositivo no encontrado'}), 404
+                    
+                    # 3. Verificar si está asignado a otro usuario
+                    if device[4] and device[4] != user_id:
+                        return jsonify({
+                            'success': False, 
+                            'error': 'Dispositivo ya asignado a otro usuario'
+                        }), 400
+                    
+                    # 4. Liberar dispositivo anterior del usuario (si tiene)
+                    cursor.execute("""
+                        UPDATE computing_devices 
+                        SET assigned_to = NULL, 
+                            updated_at = CURRENT_TIMESTAMP 
+                        WHERE assigned_to = %s
+                    """, (user_id,))
+                    
+                    # 5. Asignar nuevo dispositivo
+                    cursor.execute("""
+                        UPDATE computing_devices 
+                        SET assigned_to = %s, 
+                            updated_at = CURRENT_TIMESTAMP 
+                        WHERE id = %s
+                    """, (user_id, computing_device_id))
+                    
+                    # 6. Actualizar campo allowed_computing_device_id en users
+                    cursor.execute("""
+                        UPDATE users 
+                        SET allowed_computing_device_id = %s, 
+                            updated_at = CURRENT_TIMESTAMP 
+                        WHERE id = %s
+                    """, (computing_device_id, user_id))
+                    
+                    device_name = f"{device[2]} {device[3]}"
+                    message = f'Dispositivo {device_name} asignado a {username} ({full_name})'
+                    
+                else:
+                    # 7. Desasignar dispositivo (si computing_device_id es null)
+                    cursor.execute("""
+                        UPDATE computing_devices 
+                        SET assigned_to = NULL, 
+                            updated_at = CURRENT_TIMESTAMP 
+                        WHERE assigned_to = %s
+                    """, (user_id,))
+                    
+                    cursor.execute("""
+                        UPDATE users 
+                        SET allowed_computing_device_id = NULL, 
+                            updated_at = CURRENT_TIMESTAMP 
+                        WHERE id = %s
+                    """, (user_id,))
+                    
+                    message = f'Dispositivo desasignado de {username} ({full_name})'
+                
+                conn.commit()
+                
+                # 8. Registrar actividad
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'assign_device',
+                    message,
+                    request.remote_addr
+                )
+                
+                logger.info(f"✅ {message}")
+                
+                return jsonify({
+                    'success': True,
+                    'message': message
+                })
+                
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"❌ Error asignando dispositivo: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'success': False, 'error': str(e)}), 500
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error en asignar dispositivo: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/dispositivos/crear', methods=['POST'])
+@login_required
+def crear_dispositivo():
+    """Crea un nuevo dispositivo de cómputo - SIMPLIFICADO"""
+    try:
+        if session.get('role') != 'admin':
+            return jsonify({'success': False, 'error': 'Acceso denegado'}), 403
+        
+        data = request.get_json()
+        
+        # Validar datos requeridos
+        required_fields = ['type', 'brand', 'model']
+        for field in required_fields:
+            if not data.get(field) or not str(data.get(field)).strip():
+                return jsonify({'success': False, 'error': f'Campo {field} requerido'}), 400
+        
+        # Validar tipo de dispositivo
+        valid_types = ['laptop', 'desktop', 'tablet']
+        if data.get('type') not in valid_types:
+            return jsonify({'success': False, 'error': f'Tipo debe ser: {", ".join(valid_types)}'}), 400
+        
+        # Validar estado
+        valid_statuses = ['active', 'in_repair', 'decommissioned']
+        status = data.get('status', 'active')
+        if status not in valid_statuses:
+            return jsonify({'success': False, 'error': f'Estado debe ser: {", ".join(valid_statuses)}'}), 400
+        
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
+        
+        try:
+            with conn.cursor() as cursor:
+                # Generar número de serie si no se proporcionó
+                serial_number = data.get('serial_number')
+                if not serial_number or not serial_number.strip():
+                    import uuid
+                    serial_number = f'SN-{uuid.uuid4().hex[:12].upper()}'
+                
+                # Verificar que el número de serie no exista
+                cursor.execute("""
+                    SELECT id FROM computing_devices 
+                    WHERE serial_number = %s
+                """, (serial_number,))
+                
+                if cursor.fetchone():
+                    return jsonify({
+                        'success': False, 
+                        'error': f'Ya existe un dispositivo con el número de serie: {serial_number}'
+                    }), 400
+                
+                # ✅ INSERTAR SOLO CAMPOS QUE EXISTEN EN LA TABLA
+                cursor.execute("""
+                    INSERT INTO computing_devices (
+                        type, 
+                        brand, 
+                        model, 
+                        serial_number, 
+                        status,
+                        created_at,
+                        updated_at
+                    ) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    RETURNING id, type, brand, model, serial_number, status
+                """, (
+                    data.get('type'),
+                    data.get('brand').strip(),
+                    data.get('model').strip(),
+                    serial_number,
+                    status
+                ))
+                
+                new_device = cursor.fetchone()
+                device_id = new_device[0]
+                
+                conn.commit()
+                
+                # Registrar actividad
+                registrar_actividad_usuario(
+                    session['user_id'],
+                    'create_device',
+                    f'Dispositivo creado: {data.get("brand")} {data.get("model")} (ID: {device_id}, SN: {serial_number})',
+                    request.remote_addr
+                )
+                
+                logger.info(f"✅ Dispositivo creado: ID {device_id} - {data.get('brand')} {data.get('model')}")
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Dispositivo {data.get("brand")} {data.get("model")} creado exitosamente',
+                    'device_id': device_id,
+                    'device': {
+                        'id': device_id,
+                        'type': new_device[1],
+                        'brand': new_device[2],
+                        'model': new_device[3],
+                        'serial_number': new_device[4],
+                        'status': new_device[5]
+                    }
+                })
+                
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"❌ Error en query de creación: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'success': False, 'error': str(e)}), 500
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error en crear dispositivo: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ...existing code...
+
+@app.route('/api/dispositivos/<int:device_id>', methods=['GET'])
+@login_required
+def obtener_dispositivo_detalle(device_id):
+    """Obtiene información detallada de un dispositivo"""
+    try:
+        conn = obtener_conexion()
+        if not conn:
+            return jsonify({'success': False, 'error': 'Sin conexión BD'}), 500
+        
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("""
+                    SELECT 
+                        cd.id,
+                        cd.type,
+                        cd.brand,
+                        cd.model,
+                        cd.serial_number,
+                        cd.status,
+                        cd.assigned_to as user_id,
+                        u.username,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        cd.created_at,
+                        cd.updated_at
+                    FROM computing_devices cd
+                    LEFT JOIN users u ON cd.assigned_to = u.id
+                    WHERE cd.id = %s
+                """, (device_id,))
+                
+                device = cursor.fetchone()
+                
+                if not device:
+                    return jsonify({'success': False, 'error': 'Dispositivo no encontrado'}), 404
+                
+                return jsonify({
+                    'success': True,
+                    'device': dict(device)
+                })
+                
+        finally:
+            conn.close()
+        
+    except Exception as e:
+        logger.error(f"❌ Error obteniendo dispositivo: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ...existing code...
 def enviar_email_basico(detection_data):
     """Función básica de email si no está disponible el sistema avanzado"""
     try:
@@ -4313,6 +4793,7 @@ Generado automáticamente el {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%
             'success': False,
             'error': f'Error email básico: {str(e)}'
         })
+    
 if __name__ == "__main__":
     inicializar_sistema()
     

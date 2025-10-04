@@ -62,8 +62,12 @@
                         <li>
                             <div class="mb-3">
                                 <label class="form-label small">Cliente ID</label>
-                                <input type="number" id="client-id" class="form-control form-control-sm" value="1"
-                                    min="1" max="999">
+                                <input type="number" id="client-id" class="form-control form-control-sm"
+                                    value="{{ session.get('user_id', 1) }}" readonly min="1" max="999">
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-user me-1"></i>Usuario: {{ session.get('username', 'Desconocido')
+                                    }}
+                                </small>
                             </div>
                         </li>
                         <li>
@@ -922,65 +926,65 @@
     // Actualizar contadores del dashboard
     // BUSCAR la función updateDashboardCounters Y AGREGAR el manejo de clientes:
 
-function updateDashboardCounters() {
-    console.log('🔄 Actualizando contadores del dashboard...');
-    
-    fetch('/api/dashboard/counters')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('📊 Datos de contadores recibidos:', data);
-            
-            if (data.success && data.counters) {
-                const counters = data.counters;
-                
-                // ✅ ACTUALIZAR CONTADORES PRINCIPALES
-                updateCounterElement('total-analizados', counters.total_analizados);
-                updateCounterElement('total-detecciones', counters.total_detecciones);
-                updateCounterElement('sospechosas', counters.sospechosas);
-                updateCounterElement('alertas-criticas', counters.alertas_criticas);
-                
-                // ✅ ACTUALIZAR CLIENTES ACTIVOS (SI EXISTE EL ELEMENTO)
-                if (document.getElementById('clientes-activos')) {
-                    updateCounterElement('clientes-activos', counters.clientes_activos);
+    function updateDashboardCounters() {
+        console.log('🔄 Actualizando contadores del dashboard...');
+
+        fetch('/api/dashboard/counters')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
-                
-                // ✅ MOSTRAR INFORMACIÓN ADICIONAL DEL DETECTOR
-                if (counters.detector_local) {
-                    const detectorInfo = counters.detector_local;
-                    console.log(`🔧 Detector local: ${detectorInfo.running ? 'Activo' : 'Inactivo'} | Interface: ${detectorInfo.interface} | Uptime: ${detectorInfo.uptime}s`);
-                    
-                    // Actualizar indicador de estado si existe
-                    const statusIndicator = document.getElementById('detector-status');
-                    if (statusIndicator) {
-                        statusIndicator.className = `badge ${detectorInfo.running ? 'bg-success' : 'bg-danger'}`;
-                        statusIndicator.textContent = detectorInfo.running ? 'Activo' : 'Inactivo';
+                return response.json();
+            })
+            .then(data => {
+                console.log('📊 Datos de contadores recibidos:', data);
+
+                if (data.success && data.counters) {
+                    const counters = data.counters;
+
+                    // ✅ ACTUALIZAR CONTADORES PRINCIPALES
+                    updateCounterElement('total-analizados', counters.total_analizados);
+                    updateCounterElement('total-detecciones', counters.total_detecciones);
+                    updateCounterElement('sospechosas', counters.sospechosas);
+                    updateCounterElement('alertas-criticas', counters.alertas_criticas);
+
+                    // ✅ ACTUALIZAR CLIENTES ACTIVOS (SI EXISTE EL ELEMENTO)
+                    if (document.getElementById('clientes-activos')) {
+                        updateCounterElement('clientes-activos', counters.clientes_activos);
                     }
-                }
-                
-                // Mostrar información de debug mejorada
-                console.log(`✅ Contadores actualizados:
+
+                    // ✅ MOSTRAR INFORMACIÓN ADICIONAL DEL DETECTOR
+                    if (counters.detector_local) {
+                        const detectorInfo = counters.detector_local;
+                        console.log(`🔧 Detector local: ${detectorInfo.running ? 'Activo' : 'Inactivo'} | Interface: ${detectorInfo.interface} | Uptime: ${detectorInfo.uptime}s`);
+
+                        // Actualizar indicador de estado si existe
+                        const statusIndicator = document.getElementById('detector-status');
+                        if (statusIndicator) {
+                            statusIndicator.className = `badge ${detectorInfo.running ? 'bg-success' : 'bg-danger'}`;
+                            statusIndicator.textContent = detectorInfo.running ? 'Activo' : 'Inactivo';
+                        }
+                    }
+
+                    // Mostrar información de debug mejorada
+                    console.log(`✅ Contadores actualizados:
                     - Total Analizados: ${counters.total_analizados}
                     - Total Detecciones: ${counters.total_detecciones}
                     - Sospechosas: ${counters.sospechosas}
                     - Críticas: ${counters.alertas_criticas}
                     - Clientes Activos: ${counters.clientes_activos || 'N/A'}`);
-                
-                updateSystemLog(`Contadores actualizados: ${counters.total_analizados} analizados, ${counters.total_detecciones} detecciones, ${counters.clientes_activos || 0} clientes activos`, 'success');
-            } else {
-                console.error('❌ Error en datos de contadores:', data);
-                updateSystemLog('Error actualizando contadores: ' + (data.error || 'Sin datos'), 'error');
-            }
-        })
-        .catch(error => {
-            console.error('❌ Error actualizando contadores:', error);
-            updateSystemLog('Error de conexión actualizando contadores', 'error');
-        });
-}
+
+                    updateSystemLog(`Contadores actualizados: ${counters.total_analizados} analizados, ${counters.total_detecciones} detecciones, ${counters.clientes_activos || 0} clientes activos`, 'success');
+                } else {
+                    console.error('❌ Error en datos de contadores:', data);
+                    updateSystemLog('Error actualizando contadores: ' + (data.error || 'Sin datos'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error actualizando contadores:', error);
+                updateSystemLog('Error de conexión actualizando contadores', 'error');
+            });
+    }
     function updateCounterElement(elementId, value) {
         const element = document.getElementById(elementId);
         if (!element) {
