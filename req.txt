@@ -143,3 +143,4 @@ multiprocessing-logging>=0.3.4
 supervisor>=4.2.0
 systemd-python>=234
 #hlaaaaaa
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
